@@ -33,7 +33,11 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+/local
 
 # System Files
 .DS_Store
 Thumbs.db
+
+# Environment Files
+.env

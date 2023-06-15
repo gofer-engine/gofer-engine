@@ -1,0 +1,175 @@
+[
+  {
+    "encodingCharacters": {
+      "fieldSep": "|",
+      "componentSep": "^",
+      "repetitionSep": "~",
+      "escapeChar": "\\",
+      "subComponentSep": "&"
+    },
+    "encodedAt": "2023-01-11T00:15:27.216Z",
+    "version": "2.5.1",
+    "messageCode": "PMU",
+    "triggerEvent": "B01",
+    "messageStructure": "PMU_B01",
+    "messageControlId": "MSGID002"
+  },
+  [
+    [
+      "MSH",
+      "|",
+      "^~\\&",
+      "HL7REG",
+      "UH",
+      "HL7LAB",
+      "CH",
+      "200702280700",
+      null,
+      ["PMU", "B01", "PMU_B01"],
+      "MSGID002",
+      "P",
+      "2.5.1",
+      null
+    ],
+    ["EVN", "B01", "200702280700", null],
+    [
+      "STF",
+      null,
+      [
+        { "rep": true },
+        ["U2246", null, null, "PLW"],
+        ["111223333", null, null, "USSSA", "SS"]
+      ],
+      ["HIPPOCRATES", "HAROLD", "H", "JR", "DR", "M.D."],
+      "P",
+      "M",
+      "19511004",
+      "A",
+      [null, "ICU"],
+      [null, "MED"],
+      [
+        { "rep": true },
+        ["(555)555-1003X345", "C", "O"],
+        ["(555)555-3334", "C", "H"],
+        ["(555)555-1345X789", "C", "B"]
+      ],
+      [
+        { "rep": true },
+        ["1003 HEALTHCARE DRIVE", "SUITE 200", "ANNARBOR", "MI", "98199", "H"],
+        ["3029 HEALTHCARE DRIVE", null, "ANNARBOR", "MI", "98198", "O"]
+      ],
+      ["19890125", ["DOCTORSAREUS MEDICAL SCHOOL", "L01"]],
+      null,
+      "PMF88123453334",
+      "74160.2326@COMPUSERV.COM",
+      "B"
+    ],
+    [
+      "PRA",
+      null,
+      [null, "HIPPOCRATES FAMILY PRACTICE"],
+      "ST",
+      "I",
+      ["OB/GYN", "STATE BOARD OF OBSTETRICS AND GYNECOLOGY", "C", "19790123"],
+      [
+        { "rep": true },
+        ["1234887609", "UPIN"],
+        ["1234987", "CTY", "MECOSTA"],
+        ["223987654", "TAX"],
+        ["1234987757", "DEA"],
+        ["12394433879", "MDD", "CA"]
+      ],
+      [
+        { "rep": true },
+        [["ADMIT", "T", "ADT"], ["MED", null, "L2"], "19941231"],
+        [["DISCH", null, "ADT"], ["MED", null, "L2"], "19941231"]
+      ],
+      null
+    ],
+    [
+      "AFF",
+      "1",
+      "AMERICAN MEDICAL ASSOCIATION",
+      ["123 MAIN STREET", null, "OUR TOWN", "CA", "98765", "U.S.A.", "M "],
+      "19900101",
+      null
+    ],
+    [
+      "LAN",
+      "1",
+      ["ESL", "SPANISH", "ISO639"],
+      ["1", "READ", "HL70403"],
+      ["1", "EXCELLENT", "HL70404"],
+      null
+    ],
+    [
+      "LAN",
+      "2",
+      ["ESL", "SPANISH", "ISO639"],
+      ["2", "WRITE", "HL70403"],
+      ["2", "GOOD", "HL70404"],
+      null
+    ],
+    [
+      "LAN",
+      "3",
+      ["FRE", "FRENCH", "ISO639"],
+      ["3", "SPEAK", "HL70403"],
+      ["3", "FAIR", "HL70404"],
+      null
+    ],
+    [
+      "EDU",
+      "1",
+      ["BA", "BACHELOR OF ARTS", "HL70360"],
+      ["19810901", "19850601"],
+      ["YALE UNIVERSITY", "L"],
+      ["U", "HL70402"],
+      [
+        "456 CONNECTICUT AVENUE",
+        null,
+        "NEW HAVEN",
+        "CO",
+        "87654",
+        "U.S.A.",
+        "M"
+      ],
+      null
+    ],
+    [
+      "EDU",
+      "2",
+      ["MD", "DOCTOR OF MEDICINE", "HL70360"],
+      ["19850901", "19890601"],
+      ["HARVARD MEDICAL SCHOOL", "L "],
+      ["M", "HL70402"],
+      ["123 MASSACHUSETTS AVENUE", "CAMBRIDGE", "MA", "76543", "U.S.A.", "M"],
+      null
+    ],
+    [
+      "ZZZ",
+      "Source",
+      [
+        "HL7 Version 2.5.1 Standard",
+        ["Chapter", "15", "Personnel Management"],
+        ["Section", "5", "Example Transactions"],
+        ["Page", "15-40"],
+        ["Date", "200704"]
+      ]
+    ],
+    [
+      "PID",
+      "1",
+      null,
+      [
+        {
+          "rep": true
+        },
+        ["1", null, null, "DB", "SQL"],
+        ["M1", null, null, "EHR"],
+        ["R1", null, null, null, "RAD"]
+      ],
+      null
+    ]
+  ]
+]

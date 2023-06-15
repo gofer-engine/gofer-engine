@@ -1,0 +1,8 @@
+{
+  "name": "@gofer-engine/handelse",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/node": "^20.3.1"
+  }
+}

@@ -14,7 +14,15 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@gofer-engine/engine": ["libs/engine/src/index.ts"],
+      "@gofer-engine/handelse": ["libs/handelse/src/index.ts"],
+      "@gofer-engine/queue": ["libs/queue/src/index.ts"],
+      "@gofer-engine/stores": ["libs/stores/src/index.ts"],
+      "@gofer-engine/ts-hl7": ["libs/ts-hl7/src/index.ts"]
+    },
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   },
   "exclude": ["node_modules", "tmp"]
 }

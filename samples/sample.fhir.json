@@ -1,0 +1,16 @@
+{
+  "resourceType": "Person",
+  "identifier": [{
+    "value": "john.doe"
+  }],
+  "active": true,
+  "name": [
+    {
+      "text": "John Doe",
+      "family": "Doe",
+      "given": ["John"]
+    }
+  ],
+  "gender": "male",
+  "birthDate": "1974-12-25"
+}
