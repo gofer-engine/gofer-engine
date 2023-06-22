@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @nx/enforce-module-boundaries */
 import * as fs from 'fs'
 import { Msg } from '../src'
 import HL7Json from '../../../samples/sample.json'
@@ -158,7 +158,7 @@ const tests: Record<string, { path: string; expected: unknown }> = {
     expected: 'HIPPOCRATES FAMILY PRACTICE',
   },
   Specialty: {
-    path: 'PRA-5.1',
+    path: 'PRA-5[1].1',
     expected: 'OB/GYN',
   },
   PractitionerIDs: {
@@ -231,7 +231,7 @@ const testSuite = Object.entries(tests).map(([name, { path, expected }]) => {
   return { name, path, expected }
 })
 
-test.each(testSuite)('$name', ({ name, path, expected }) => {
+test.each(testSuite)('$name', ({ path, expected }) => {
   expect(msg.get(path)).toStrictEqual(expected)
 })
 
@@ -245,6 +245,25 @@ test('Get STF-10[1] Field', () => {
   expect(msg.getSegment('STF', 1).getField(10, 1).toString()).toBe(
     '(555)555-1003X345^C^O'
   )
+})
+
+test('Get Non-Existant', () => {
+  expect(msg.getSegment('XXX').json()).toBeUndefined()
+  expect(msg.get('XXX')).toBeUndefined()
+  expect(msg.get('XXX-1')).toBeUndefined()
+  expect(msg.get('ZZZ[2]')).toBeUndefined()
+  expect(msg.get('ZZZ-1[2]')).toBeUndefined()
+  expect(msg.get('ZZZ-2.6')).toBeUndefined()
+  expect(msg.get('ZZZ-2.2.4')).toBeUndefined()
+})
+
+test('Errors', () => {
+  expect(() => msg.get('ABCD')).toThrowError("Could not parse path: ABCD")
+  expect(() => msg.get('ZZZ[0]')).toThrowError("Segment Iteration in path ZZZ[0] cannot be 0.")
+  expect(() => msg.get('ZZZ-0')).toThrowError("Field Position in path ZZZ-0 cannot be 0.")
+  expect(() => msg.get('ZZZ-1.0')).toThrowError("Component Position in path ZZZ-1.0 cannot be 0.")
+  expect(() => msg.get('ZZZ-1.1.0')).toThrowError("Sub Component Position in path ZZZ-1.1.0 cannot be 0.")
+  expect(() => msg.get('ZZZ-1[0]')).toThrowError("Field Iteration in path ZZZ-1[0] cannot be 0.")
 })
 
 test('Get STF-10.1 Component', () => {
