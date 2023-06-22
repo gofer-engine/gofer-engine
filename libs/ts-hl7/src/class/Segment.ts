@@ -20,11 +20,6 @@ export class Seg {
     this._seg = segment
   }
 
-  /**
-   * @deprecated replace with `json()`
-   */
-  public raw = () => this._seg
-
   public json = <S extends boolean | undefined = undefined>(
     strict?: S
   ): IfTrueElse<S, NoPos<StrictSegment>, Segment> => {
@@ -83,7 +78,8 @@ export class Seg {
       Array.isArray(field) &&
       field.length > 1 &&
       typeof field[0] === 'object' &&
-      field[0]?.hasOwnProperty('rep')
+      field[0] !== null &&
+      Object.prototype.hasOwnProperty.call(field[0], 'rep')
     ) {
       const [, ...fields] = field as FieldRep
       return new Fld(fields?.[fieldIteration - 1] ?? null)

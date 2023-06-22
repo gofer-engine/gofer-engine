@@ -6,11 +6,6 @@ export class Sub {
     this._sub = subComponent
   }
 
-  /**
-   * @deprecated replace with `json()`
-   */
-  public raw = () => this._sub
-
   public json = <S extends boolean | undefined = undefined>(
     strict?: S
   ): IfTrueElse<S, NoPos<StrictSubComponent>, SubComponent> => {
@@ -31,11 +26,6 @@ export class Subs {
   constructor(subComponents: SubComponent[]) {
     this._subs = subComponents
   }
-
-  /**
-   * @deprecated replace with `json()`
-   */
-  public raw = () => this._subs
 
   public json = <S extends boolean | undefined = undefined>(
     strict?: S
@@ -64,7 +54,7 @@ export class MultiSubs {
     this._subs = subComponents
   }
 
-  public toSting = (subCompSep = '&', compSep = '^') => {
+  public toString = (subCompSep = '&', compSep = '^') => {
     return this._subs
       .map((sub) => sub.map((s) => s.toString()).join(subCompSep))
       .join(compSep)

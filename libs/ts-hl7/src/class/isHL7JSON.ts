@@ -4,6 +4,7 @@ export const isMessage = (msg: unknown): boolean => {
   if (
     Array.isArray(msg) &&
     typeof msg?.[0] === 'object' &&
+    msg[0] !== null &&
     Object.keys(msg[0]).every((k) =>
       [
         'version',

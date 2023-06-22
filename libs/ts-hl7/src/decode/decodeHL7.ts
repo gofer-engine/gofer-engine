@@ -1,10 +1,10 @@
-import { FuncDecodeHL7, MessageMeta, Segments } from '../types'
-import { decodeSegment } from './decodeSegment'
-import { getEncodingChars } from './getEncodingChars'
+import { FuncDecodeHL7, MessageMeta, Segments } from '../types';
+import { decodeSegment } from './decodeSegment';
+import { getEncodingChars } from './getEncodingChars';
 
 export const decodeHL7: FuncDecodeHL7 = (HL7, encoding = undefined) => {
   if (HL7.length === 0) {
-    return undefined
+    return undefined;
   }
   const encodingCharacters: MessageMeta['encodingCharacters'] =
     encoding !== undefined
@@ -18,19 +18,13 @@ export const decodeHL7: FuncDecodeHL7 = (HL7, encoding = undefined) => {
           repetitionSep: '~',
           subComponentSep: '&',
           truncateChar: undefined,
-        }
+        };
   const meta: MessageMeta = {
     encodingCharacters,
     encodedAt: new Date(),
-  }
+  };
   const segments: Segments = HL7.split(/\r?\n|\r/)
     .filter((s) => s.length)
-    .map((segment) => {
-      try {
-        return decodeSegment(segment, meta)
-      } catch (e) {
-        throw e
-      }
-    })
-  return [meta, segments]
-}
+    .map((segment) => decodeSegment(segment, meta));
+  return [meta, segments];
+};

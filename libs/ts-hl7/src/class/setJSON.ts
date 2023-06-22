@@ -53,7 +53,7 @@ export const setJSON = (
     if (isSubComponent(json)) {
       return msg.setMsg(
         setSubComponent(
-          msg.raw(),
+          msg.json(),
           segmentName,
           segmentIteration,
           fieldPosition,
@@ -74,7 +74,7 @@ export const setJSON = (
     if (isComponent(json)) {
       return msg.setMsg(
         setComponent(
-          msg.raw(),
+          msg.json(),
           segmentName,
           segmentIteration,
           fieldPosition,
@@ -90,7 +90,7 @@ export const setJSON = (
     if (isFieldRep(json as FieldRep)) {
       return msg.setMsg(
         setFieldOrRep(
-          msg.raw(),
+          msg.json(),
           segmentName,
           segmentIteration,
           fieldPosition,
@@ -101,7 +101,7 @@ export const setJSON = (
     if (isField(json as Field)) {
       return msg.setMsg(
         setField(
-          msg.raw(),
+          msg.json(),
           segmentName,
           segmentIteration,
           fieldPosition,
@@ -116,13 +116,9 @@ export const setJSON = (
   }
   if (isSegment(json)) {
     return msg.setMsg(
-      setSegment(msg.raw(), segmentName, segmentIteration, json as Segment)
+      setSegment(msg.json(), segmentName, segmentIteration, json as Segment)
     )
   }
 
-  console.warn(
-    'The json was not a valid HL7 JSON Segment. Returning the original message.'
-  )
-
-  return msg
+  throw new Error('The json was not a valid HL7 JSON.')
 }

@@ -17,22 +17,26 @@ export const get = (
   | (string | Seg | FieldRep | { rep: true } | Field[] | null | undefined)[]
   | null
   | undefined => {
-  const ret = msg
-    .getSegments(segmentName) // Seg[]
+  const segments = msg.getSegments(segmentName)
+  if (segments.length === 0) return undefined
+  const selectedSegmentIterations = segments
     .filter((_, i) => {
       if (segmentIteration === undefined) return true
       return i === segmentIteration - 1
     }) // Seg[]
+  if (selectedSegmentIterations.length === 0) return undefined
+  const ret = selectedSegmentIterations
     .map<Seg | FieldOrRep>((seg) => {
       if (fieldPosition === undefined) return seg // Seg
-      return seg.raw()?.[fieldPosition] as FieldOrRep // FieldOrRep
+      return seg.json()?.[fieldPosition] as FieldOrRep // FieldOrRep
     }) // Seg | FieldOrRep
     .map((field) => {
       if (
         Array.isArray(field) &&
         field.length > 1 &&
         typeof field[0] === 'object' &&
-        field[0]?.hasOwnProperty('rep')
+        field[0] !== null &&
+        Object.prototype.hasOwnProperty.call(field[0], 'rep')
       ) {
         // is a repeating field...
         let f: Component[] | Field[] = []
@@ -62,6 +66,9 @@ export const get = (
           return f[0]
         }
         return f
+      } else if (fieldIteration !== undefined && fieldIteration !== 1) {
+        // non iterable field with a invalid field iteration index as 1 or undefined are the only valid indexes of a non iterable field
+        return undefined
       }
       if (Array.isArray(field)) {
         if (componentPosition === undefined || componentPosition < 1)

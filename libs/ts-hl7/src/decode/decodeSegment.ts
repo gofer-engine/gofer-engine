@@ -19,7 +19,7 @@ export const decodeSegment: FuncDecodeSegment = (HL7, meta) => {
   } else if (HL7.startsWith(meta.encodingCharacters.fieldSep)) {
     HL7 = HL7.slice(1)
   }
-  const [hl7, fields] = decodeRepSep(
+  let [_hl7, fields] = decodeRepSep(
     HL7,
     meta.encodingCharacters.repetitionSep,
     meta.encodingCharacters.fieldSep,
@@ -38,6 +38,7 @@ export const decodeSegment: FuncDecodeSegment = (HL7, meta) => {
       subComponentSep,
       truncateChar,
     } = meta.encodingCharacters
+    if (typeof fields === 'string') fields = [fields]
     if (!Array.isArray(fields)) throw Error('Expected array of fields')
     fields?.unshift(
       fieldSep,
@@ -46,7 +47,6 @@ export const decodeSegment: FuncDecodeSegment = (HL7, meta) => {
       }`
     )
   }
-  if (hl7) console.log('Not Fully Decoded: ', hl7)
   if (fields === null || fields === undefined) return [name]
   if (Array.isArray(fields)) return [name, ...fields]
   return [name, fields]

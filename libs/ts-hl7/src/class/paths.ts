@@ -45,3 +45,28 @@ export const paths = (path?: string): Paths => {
         : parseInt(subComponentPosition),
   }
 }
+
+export const toPath = ({
+  segmentName,
+  segmentIteration,
+  fieldPosition,
+  fieldIteration,
+  componentPosition,
+  subComponentPosition,
+}: Paths): string => {
+  // build the path in reverse order
+  let path = ''
+  // TODO: check that the Path input validity (cannot have subComponentPosition without componentPosition, etc.)
+  if (subComponentPosition && !componentPosition) throw Error('Cannot have subComponentPosition without componentPosition')
+  if (componentPosition && !fieldPosition) throw Error('Cannot have componentPosition without fieldPosition')
+  if (fieldIteration && !fieldPosition) throw Error('Cannot have fieldIteration without fieldPosition')
+  if (fieldPosition && !segmentName) throw Error('Cannot have fieldPosition without segmentName')
+  if (segmentIteration && !segmentName) throw Error('Cannot have segmentIteration without segmentName')
+  if (subComponentPosition !== undefined) path = `.${subComponentPosition}`
+  if (componentPosition !== undefined) path = `.${componentPosition}${path}`
+  if (fieldIteration !== undefined) path = `[${fieldIteration}]${path}`
+  if (fieldPosition !== undefined) path = `-${fieldPosition}${path}`
+  if (segmentIteration !== undefined) path = `[${segmentIteration}]${path}`
+  if (segmentName !== undefined) path = `${segmentName}${path}`
+  return path
+}

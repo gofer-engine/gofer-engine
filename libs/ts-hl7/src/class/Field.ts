@@ -22,11 +22,6 @@ export class Fld {
     this._fld = field
   }
 
-  /**
-   * @deprecated replace with `json()`
-   */
-  public raw = () => this._fld
-
   public json = <S extends boolean | undefined = undefined>(
     strict?: S
   ): IfTrueElse<S, NoPos<StrictField>, Field | FieldRep> => {
@@ -114,9 +109,6 @@ export class Fld {
         typeof this._fld[0] === 'object' &&
         this._fld[0]?.hasOwnProperty('rep')
       ) {
-        console.warn(
-          'getComponents method could return unexpected aggregated results when called on Repetitive Field classes'
-        )
         const comps: Cmp[] = []
         const [, ...fields] = this._fld as FieldRep
         fields.forEach((field) => {
@@ -136,8 +128,6 @@ export class Flds {
   constructor(fields: Fld[]) {
     this._flds = fields
   }
-
-  public raw = () => this._flds.map((f) => f.json())
 
   public json = <S extends boolean | undefined = undefined>(
     strict?: S

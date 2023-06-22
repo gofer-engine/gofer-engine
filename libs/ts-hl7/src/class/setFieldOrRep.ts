@@ -1,5 +1,5 @@
 import { deepCopy } from '../encode/deepCopy'
-import { Message, FieldRep, FieldOrRep } from '../types'
+import { Message, FieldOrRep } from '../types'
 
 export const setFieldOrRep = (
   msg: Message,
@@ -7,7 +7,7 @@ export const setFieldOrRep = (
   // NOTE: this does not respect segment groups, it will iterate over all segments with the same name.
   segmentIteration: number | undefined,
   fieldPosition: number,
-  value: FieldRep | ((fieldRep: FieldOrRep) => FieldOrRep)
+  value: FieldOrRep | ((fieldRep: FieldOrRep) => FieldOrRep)
 ): Message => {
   // eslint-disable-next-line prefer-const
   let [meta, ...segments] = deepCopy(msg)

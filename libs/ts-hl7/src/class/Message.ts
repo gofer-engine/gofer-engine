@@ -11,14 +11,13 @@ import {
   FieldsOrReps,
   Message,
   MsgValue,
-  Paths,
   Segment,
   Segments,
   IfTrueElse,
   StrictMessage,
 } from '../types'
 import { get } from './get'
-import { paths } from './paths'
+import { paths, toPath } from './paths'
 import { setJSON } from './setJSON'
 import { deepCopy } from '../encode/deepCopy'
 import { fromStrictJSON } from '../encode/fromStrictJSON'
@@ -48,10 +47,6 @@ export class Msg {
     this.msg = msg
     return this
   }
-  /**
-   * @deprecated replace with `json()`
-   */
-  public raw = () => this.msg
   public json = <S extends boolean | undefined = undefined>(
     strict?: S
   ): IfTrueElse<S, StrictMessage, Message> => {
@@ -126,25 +121,7 @@ export class Msg {
   }
 
   private _paths = paths
-  private _toPath = ({
-    segmentName,
-    segmentIteration,
-    fieldPosition,
-    fieldIteration,
-    componentPosition,
-    subComponentPosition,
-  }: Paths): string => {
-    // build the path in reverse order
-    let path = ''
-    // TODO: check that the Path input validity (cannot have subComponentPosition without componentPosition, etc.)
-    if (subComponentPosition !== undefined) path = `.${subComponentPosition}`
-    if (componentPosition !== undefined) path = `.${componentPosition}${path}`
-    if (fieldIteration !== undefined) path = `[${fieldIteration}]${path}`
-    if (fieldPosition !== undefined) path = `-${fieldPosition}${path}`
-    if (segmentIteration !== undefined) path = `[${segmentIteration}]${path}`
-    if (segmentName !== undefined) path = `${segmentName}${path}`
-    return path
-  }
+  private _toPath = toPath
 
   public set = (path: string | undefined, value: string | null | undefined) => {
     if (typeof value !== 'string') value = ''
@@ -249,7 +226,7 @@ export class Msg {
             this.setJSON(
               this._toPath({ ...paths, segmentIteration: i + 1 }),
               replacement instanceof Seg
-                ? replacement.raw()
+                ? replacement.json()
                 : (replacement as MsgValue)
             )
           })
@@ -262,7 +239,7 @@ export class Msg {
             this.setJSON(
               this._toPath({ ...paths, fieldIteration: i + 1 }),
               replacement instanceof Seg
-                ? replacement.raw()
+                ? replacement.json()
                 : (replacement as MsgValue)
             )
           })
@@ -271,7 +248,7 @@ export class Msg {
       }
       const replacement = v(original as X, 1)
       if (replacement instanceof Seg) {
-        this.setJSON(path, replacement.raw())
+        this.setJSON(path, replacement.json())
       }
       // if (typeof replacement !== 'string') replacement = replacement?.toString()
       return this.setJSON(path, replacement as MsgValue)
@@ -287,7 +264,7 @@ export class Msg {
       }
       return this.set(path, v?.[index] ?? '')
     }
-    if (!v.hasOwnProperty(original)) {
+    if (!Object.prototype.hasOwnProperty.call(v, original)) {
       console.warn(
         'Value at path was not a key in the map object. Returning original message.'
       )

@@ -36,18 +36,14 @@ export const decodeRepSep = <
       // console.log({ rep, input, val })
       if (noRep) break
     }
-    if (reps.length === 0) {
-      seps.push(undefined as SepType)
-    } else if (reps.length === 1) {
+    if (reps.length === 1) {
       seps.push(reps[0] as unknown as SepType)
     } else {
       reps.unshift({ rep: true } as unknown as RepType)
       seps.push(reps as SepType)
     }
   }
-  if (seps.length === 0) {
-    return [input, undefined]
-  } else if (seps.length === 1 && typeof seps[0] == 'string') {
+  if (seps.length === 1 && typeof seps[0] == 'string') {
     return [input, seps[0]]
   }
   return [input, seps]
