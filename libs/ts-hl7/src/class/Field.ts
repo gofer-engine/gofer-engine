@@ -5,6 +5,9 @@ import {
   Component,
   Field,
   FieldRep,
+  IFld,
+  IFlds,
+  IRep,
   IfTrueElse,
   NoPos,
   StrictField,
@@ -12,7 +15,7 @@ import {
 import { Cmp, Cmps } from './Component'
 import { Rep } from './Repetitions'
 
-export class Fld {
+export class Fld implements IFld {
   private _fld: Field | FieldRep
   private _compSep = '^'
   private _subCompSep = '&'
@@ -61,7 +64,7 @@ export class Fld {
   /**
    * split possible field repetitions into an array of singular separation field classes.
    */
-  public getRepetitions = (): Rep[] => {
+  public getRepetitions = (): IRep[] => {
     if (
       Array.isArray(this._fld) &&
       this._fld.length > 1 &&
@@ -102,7 +105,7 @@ export class Fld {
     return new Cmp((this._fld as Component[])?.[componentPosition - 1] ?? null)
   }
 
-  public getComponents = (): Cmp[] => {
+  public getComponents = () => {
     if (Array.isArray(this._fld)) {
       if (
         this._fld.length > 1 &&
@@ -122,7 +125,7 @@ export class Fld {
   }
 }
 
-export class Flds {
+export class Flds implements IFlds {
   private _flds: Fld[]
 
   constructor(fields: Fld[]) {
@@ -162,9 +165,7 @@ export class Flds {
       .join(fieldSep)
   }
 
-  public getComponent = (
-    componentPosition: number | undefined = 1
-  ): Cmp | Cmps => {
+  public getComponent = (componentPosition = 1) => {
     if (this._flds.length === 0) return new Cmp(null)
     if (this._flds.length === 1) return this._flds[0].getComponent()
     const comps = this._flds.map((f) => f.getComponent(componentPosition))
@@ -179,7 +180,7 @@ export class Flds {
     return new Cmps(cmps)
   }
 
-  public getComponents = (): Cmps => {
+  public getComponents = () => {
     if (this._flds.length === 0) return new Cmps([])
     if (this._flds.length === 1) return new Cmps(this._flds[0].getComponents())
     const cmps: Cmp[] = []

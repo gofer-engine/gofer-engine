@@ -6,10 +6,13 @@ import {
   Segment,
   Segments,
   StrictSegment,
+  ISeg,
+  ISegs,
+  IFld,
 } from '../types'
 import { Fld, Flds } from './Field'
 
-export class Seg {
+export class Seg implements ISeg {
   private _seg: Segment
   private _fieldSep = '|'
   private _compSep = '^'
@@ -20,7 +23,7 @@ export class Seg {
     this._seg = segment
   }
 
-  public json = <S extends boolean | undefined = undefined>(
+  public json: ISeg['json'] = <S extends boolean | undefined = undefined>(
     strict?: S
   ): IfTrueElse<S, NoPos<StrictSegment>, Segment> => {
     if (strict) {
@@ -67,11 +70,7 @@ export class Seg {
 
   public getName = () => this._seg[0]
 
-  public getField = (
-    fieldPosition: number,
-    // NOTE: iteration is 1-indexed
-    fieldIteration?: number | undefined
-  ): Fld => {
+  public getField: ISeg['getField'] = (fieldPosition, fieldIteration) => {
     const field = this._seg?.[fieldPosition]
     if (
       fieldIteration !== undefined &&
@@ -89,8 +88,8 @@ export class Seg {
     return new Fld(field)
   }
 
-  public getFields = () => {
-    const fields: Fld[] = []
+  public getFields: ISeg['getFields'] = () => {
+    const fields: IFld[] = []
     const fieldCount = this._seg.length
     for (let i = 1; i < fieldCount; i++) {
       fields.push(this.getField(i))
@@ -124,16 +123,12 @@ export class Segs {
     new Seg(this._segs[segmentPosition - 1] ?? null)
   public all = (): Seg[] => this._segs.map((s) => new Seg(s))
 
-  public getField = (
-    fieldPosition: number,
-    // NOTE: iteration is 1-indexed
-    fieldIteration?: number | undefined
-  ): Flds =>
+  public getField: ISegs['getField'] = (fieldPosition, fieldIteration) =>
     new Flds(
       this._segs.map((s) => new Seg(s).getField(fieldPosition, fieldIteration))
     )
 
-  public getFields = (): Fld[][] =>
+  public getFields: ISegs['getFields'] = () =>
     this._segs.map((s) => new Seg(s).getFields())
 
   public toString = (): string =>

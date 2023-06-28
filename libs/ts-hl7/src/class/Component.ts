@@ -1,6 +1,8 @@
 import { encodeSep } from '../encode/encodeSep'
 import {
   Component,
+  ICmp,
+  ICmps,
   IfTrueElse,
   NoPos,
   StrictComponent,
@@ -8,7 +10,7 @@ import {
 } from '../types'
 import { Sub, Subs } from './SubComponent'
 
-export class Cmp {
+export class Cmp implements ICmp {
   private _cmp: Component
   private _subCompSep = '&'
   constructor(component: Component) {
@@ -63,18 +65,13 @@ export class Cmp {
   }
 }
 
-export class Cmps {
+export class Cmps implements ICmps {
   private _cmps: Cmp[]
   private _subCompSep = '&'
   private _fieldRepSep = '~'
   constructor(components: Cmp[]) {
     this._cmps = components
   }
-
-  /**
-   * @deprecated replace with `json()`
-   */
-  public raw = () => this._cmps.map((c) => c.json())
   public json = <S extends boolean | undefined = undefined>(
     strict?: S
   ): IfTrueElse<S, StrictComponent[], Component[]> => {

@@ -1,6 +1,7 @@
 import { encodeSep } from '../encode/encodeSep'
 import {
   Field,
+  IRep,
   IfTrueElse,
   NoPos,
   StrictComponent,
@@ -8,7 +9,7 @@ import {
 } from '../types'
 import { Cmp } from './Component'
 
-export class Rep {
+export class Rep implements IRep {
   private _rep: Field
   private _compSep = '^'
   private _subCompSep = '&'
@@ -54,7 +55,7 @@ export class Rep {
    * @param componentPosition 1-indexed component position to get. Defaults to 1.
    * @returns a Component Class or an array of Component Classes
    */
-  public getComponent = (componentPosition = 1): Cmp => {
+  public getComponent = (componentPosition = 1) => {
     if (this._rep === null) return new Cmp(null)
     if (!Array.isArray(this._rep)) {
       if (componentPosition === 1) {
@@ -65,7 +66,7 @@ export class Rep {
     return new Cmp(this._rep[componentPosition - 1] ?? null)
   }
 
-  public getComponents = (): Cmp[] => {
+  public getComponents = () => {
     if (Array.isArray(this._rep)) {
       return this._rep.map((c) => new Cmp(c))
     }

@@ -4,6 +4,7 @@ import { initServers } from './initServers'
 import { initStores } from './initStores'
 import { ChannelConfig, Connection, OGofer } from './types'
 import { IngestionClass } from './IngestionClass'
+import { messenger } from './messenger'
 
 class Gofer implements OGofer {
   private init = (channels?: ChannelConfig[]) => {
@@ -39,8 +40,9 @@ class Gofer implements OGofer {
   //   return undefined as any
   // }
   // public msg: OGofer['msg'] = (msg) => {
-  //   return undefined as any
+  //    RouteClass()
   // }
+  public messenger: OGofer['messenger'] = messenger
 }
 
 export const gofer = new Gofer()

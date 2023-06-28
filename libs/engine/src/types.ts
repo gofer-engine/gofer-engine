@@ -1,5 +1,5 @@
 import { StoreConfig } from '@gofer-engine/stores'
-import Msg from '@gofer-engine/ts-hl7'
+import Msg, { Message, StrictMessage } from '@gofer-engine/ts-hl7'
 
 export type MaybePromise<T> = Promise<T> | T
 
@@ -378,6 +378,7 @@ export interface OGofer {
   listen: (method: 'tcp', host: string, port: number) => OIngest
   // files: (config: FileConfig) => OIngest
   // msg: (msg: Msg) => OIngest
+  messenger: Messenger
 }
 
 export type MsgVar<V> = V | ((msg: Msg, context?: IMessageContext) => V)
@@ -437,3 +438,8 @@ export interface ORoute extends OBase<ORoute> {
   send: (method: 'tcp', host: string, port: number) => ORoute
   export: () => RequiredProperties<Route<'F', 'F', 'S'>, 'id' | 'flows'>
 }
+
+export type MessengerRoute = (R: Exclude<ORoute, 'export'>) => Exclude<ORoute, 'export'>
+export type MessengerInput = Message | string | StrictMessage | Msg | ((msg: Msg) => Msg)
+export type MessengerFunc = (msg: MessengerInput) => Promise<Msg>
+export type Messenger = (route: MessengerRoute) => [messenger: MessengerFunc, messengerId: string]

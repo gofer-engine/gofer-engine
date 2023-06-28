@@ -90,7 +90,7 @@ class DBStore implements IStoreClass {
       }
     }
     const contents =
-      this.format === 'string' ? data.toString() : JSON.stringify(data.raw())
+      this.format === 'string' ? data.toString() : JSON.stringify(data.json())
     return new Promise<boolean>((res, rej) => {
       fs.writeFile(
         fullPath,
