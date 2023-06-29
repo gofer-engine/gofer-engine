@@ -1,6 +1,6 @@
-import { IfTrueElse, NoPos, StrictSubComponent, SubComponent } from '../types'
+import { IMultiSubs, ISub, ISubs, IfTrueElse, NoPos, StrictSubComponent, SubComponent } from '../types'
 
-export class Sub {
+export class Sub implements ISub {
   private _sub: SubComponent
   constructor(subComponent: SubComponent) {
     this._sub = subComponent
@@ -21,7 +21,7 @@ export class Sub {
   public toString = () => this._sub ?? ''
 }
 
-export class Subs {
+export class Subs implements ISubs {
   private _subs: SubComponent[]
   constructor(subComponents: SubComponent[]) {
     this._subs = subComponents
@@ -48,7 +48,7 @@ export class Subs {
   }
 }
 
-export class MultiSubs {
+export class MultiSubs implements IMultiSubs {
   private _subs: Sub[][]
   constructor(subComponents: Sub[][]) {
     this._subs = subComponents

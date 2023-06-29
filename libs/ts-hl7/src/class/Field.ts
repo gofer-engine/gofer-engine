@@ -5,6 +5,7 @@ import {
   Component,
   Field,
   FieldRep,
+  ICmp,
   IFld,
   IFlds,
   IRep,
@@ -126,9 +127,9 @@ export class Fld implements IFld {
 }
 
 export class Flds implements IFlds {
-  private _flds: Fld[]
+  private _flds: IFld[]
 
-  constructor(fields: Fld[]) {
+  constructor(fields: IFld[]) {
     this._flds = fields
   }
 
@@ -167,9 +168,9 @@ export class Flds implements IFlds {
 
   public getComponent = (componentPosition = 1) => {
     if (this._flds.length === 0) return new Cmp(null)
-    if (this._flds.length === 1) return this._flds[0].getComponent()
+    if (this._flds.length === 1) return this._flds[0].getComponent(1)
     const comps = this._flds.map((f) => f.getComponent(componentPosition))
-    const cmps: Cmp[] = []
+    const cmps: ICmp[] = []
     comps.forEach((c) => {
       if (c instanceof Cmp) {
         cmps.push(c)
@@ -183,7 +184,7 @@ export class Flds implements IFlds {
   public getComponents = () => {
     if (this._flds.length === 0) return new Cmps([])
     if (this._flds.length === 1) return new Cmps(this._flds[0].getComponents())
-    const cmps: Cmp[] = []
+    const cmps: ICmp[] = []
     this._flds.forEach((f) => {
       cmps.push(...f.getComponents())
     })

@@ -11,6 +11,8 @@ import {
   IfTrueElse,
   StrictMessage,
   IMsg,
+  ISeg,
+  ISegs,
 } from '../types';
 import { get } from './get';
 import { paths, toPath } from './paths';
@@ -154,7 +156,7 @@ export class Msg implements IMsg {
   public getSegment: IMsg['getSegment'] = (
     segmentName: string | undefined,
     iteration: number | undefined = undefined
-  ): Seg | Segs => {
+  ): ISeg | ISegs => {
     const segments = getSegments(this.msg, segmentName);
     if (iteration === undefined && segments.length > 1) {
       return new Segs(segments);
@@ -195,11 +197,14 @@ export class Msg implements IMsg {
   public move: IMsg['move'] = (fromPath, toPath) =>
     this.set(toPath, this.get(fromPath)?.toString()).delete(fromPath);
 
-  public map: IMsg['map'] = (
-    path,
-    v,
-    { iteration } = {}
-  ) => {
+  public map = <X>(
+    path: string,
+    v: string | Record<string, string> | string[] | (<T extends X>(v: T, i: number) => T),
+    options: {
+      iteration?: boolean | undefined;
+    } = {}
+  ): IMsg => {
+    const { iteration } = options;
     if (typeof v === 'string') return this.set(path, v);
     if (typeof v === 'function') {
       const original = this.get(path);

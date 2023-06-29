@@ -1,10 +1,8 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 import * as fs from 'fs'
-import { Msg } from '../src'
+import { ICmp, IFld, Msg } from '../src'
 import HL7Json from '../../../samples/sample.json'
 import { strictJSON } from '../../../samples/data'
-import { Fld } from '../src/class/Field'
-import { Cmp } from '../src/class/Component'
 
 const HL7 = fs.readFileSync('./samples/sample.hl7', 'utf8')
 
@@ -354,8 +352,8 @@ test('Deeply Nested LAN Values', () => {
   const deepValues = new Msg(HL7)
     .getSegment('LAN')
     .getFields()
-    .map((f: Fld | Fld[]) => {
-      const mapper = (c: Cmp) => c.getSubComponents().map((s) => s.toString())
+    .map((f: IFld | IFld[]) => {
+      const mapper = (c: ICmp) => c.getSubComponents().map((s) => s.toString())
       if (Array.isArray(f)) {
         return f.map((f) => f.getComponents().map(mapper))
       }

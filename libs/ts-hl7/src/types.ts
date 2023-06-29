@@ -15,17 +15,30 @@ export type Segment = [name: string, ...fields: FieldsOrReps];
 export type Segments = Segment[];
 
 export interface ISub {
-
+  json: <S extends boolean | undefined = undefined>(
+    strict?: S
+  ) => IfTrueElse<S, NoPos<StrictSubComponent>, SubComponent>
+  toString: () => string
 }
 
 export interface ISubs {
-  
+  toString: (subCompSep?: string) => string
+  json: <S extends boolean | undefined = undefined>(strict?: S) => IfTrueElse<S, StrictSubComponent[], SubComponent[]>
+}
+
+export interface IMultiSubs {
+  toString: (
+    subCompSep?: string,
+    compSep?: string
+  ) => string
+  json: () => SubComponent[][]
 }
 
 export interface ICmp {
   json: <S extends boolean | undefined = undefined>(strict?: S) =>
     IfTrueElse<S, NoPos<StrictComponent>, Component>
   one: () => ICmp
+  all: () => ICmp[]
   toString: (options?: {
     subCompSep?: string
   }) => string
@@ -68,7 +81,7 @@ export interface IFld {
     escChar?: string
   }) => string;
   getRepetitions: () => IRep[]
-  getComponent: (position: number | undefined) => ICmp
+  getComponent: (position?: number) => ICmp | ICmps
   getComponents: () => ICmp[]
 }
 
@@ -106,8 +119,11 @@ export interface ISeg {
   getFields: () => IFld[];
 }
 
-export interface ISegs extends Pick<ISeg, 'json' | 'toString'> {
-  one: () => ISeg;
+export interface ISegs {
+  json: <S extends boolean | undefined = undefined>(strict?: S) =>
+    IfTrueElse<S, StrictSegment[], Segments>;
+  toString: () => string;
+  one: (position: number) => ISeg;
   all: () => ISeg[];
   getField: (
     fieldPosition: number,
@@ -163,9 +179,9 @@ export interface IMsg {
   delete: (path: string) => IMsg;
   copy: (path: string, toPath: string) => IMsg;
   move: (fromPath: string, toPath: string) => IMsg;
-  map: <X = unknown>(
+  map: (
     path: string,
-    v: string | Record<string, string> | string[] | (<T extends X>(v: T, i: number) => T),
+    v: string | Record<string, string> | string[] | (<T>(v: T, i: number) => T),
     options?: {
       iteration?: boolean | undefined;
     }

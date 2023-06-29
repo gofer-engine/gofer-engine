@@ -98,7 +98,7 @@ export class Seg implements ISeg {
   }
 }
 
-export class Segs {
+export class Segs implements ISegs {
   private _segs: Segments
 
   constructor(segments: Segments) {

@@ -1,10 +1,10 @@
 import decode from '../decode'
 import { isSegmentArray } from '../typeGuards'
-import { Message, Segment, Segments } from '../types'
+import { ISeg, ISegs, Message, Segment, Segments } from '../types'
 import { Seg, Segs } from './Segment'
 import { findSegmentInMsg } from './findSegmentPos'
 
-export const addSegment = (segment: string | Segment | Segments | Seg | Segs, msg: Message, after?: number | string): Message | false => {
+export const addSegment = (segment: string | Segment | Segments | ISeg | ISegs, msg: Message, after?: number | string): Message | false => {
   const segments: Segment[] = []
   if (segment instanceof Seg) {
     segments.push(segment.json())
@@ -16,7 +16,7 @@ export const addSegment = (segment: string | Segment | Segments | Seg | Segs, ms
       return false
     }
     segments.push(...seg[1])
-  } else if (segment.length > 0) {
+  } else if (Array.isArray(segment) && segment.length > 0) {
     if (isSegmentArray(segment)) {
       segments.push(...segment)
     } else {

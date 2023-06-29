@@ -3,6 +3,7 @@ import {
   Component,
   ICmp,
   ICmps,
+  ISub,
   IfTrueElse,
   NoPos,
   StrictComponent,
@@ -43,6 +44,7 @@ export class Cmp implements ICmp {
   }
 
   public one = () => this
+  public all = () => [this]
   public toString = ({ subCompSep = this._subCompSep } = {}): string => {
     this._subCompSep = subCompSep
     return encodeSep(this._cmp, subCompSep) as string
@@ -56,7 +58,7 @@ export class Cmp implements ICmp {
     return new Sub(this._cmp)
   }
 
-  public getSubComponents = (): Sub[] => {
+  public getSubComponents = (): ISub[] => {
     if (this._cmp === null) return [new Sub(null)]
     if (Array.isArray(this._cmp)) {
       return this._cmp.map((sub) => new Sub(sub))
@@ -66,10 +68,10 @@ export class Cmp implements ICmp {
 }
 
 export class Cmps implements ICmps {
-  private _cmps: Cmp[]
+  private _cmps: ICmp[]
   private _subCompSep = '&'
   private _fieldRepSep = '~'
-  constructor(components: Cmp[]) {
+  constructor(components: ICmp[]) {
     this._cmps = components
   }
   public json = <S extends boolean | undefined = undefined>(

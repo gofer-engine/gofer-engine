@@ -1,6 +1,5 @@
-import { Component, Field, FieldOrRep, FieldRep } from '../types'
+import { Component, Field, FieldOrRep, FieldRep, ISeg } from '../types'
 import Msg from './Message'
-import { Seg } from './Segment'
 
 export const get = (
   msg: Msg,
@@ -12,9 +11,9 @@ export const get = (
   subComponentPosition?: number | undefined
 ):
   | string
-  | Seg
+  | ISeg
   | { rep: true }
-  | (string | Seg | FieldRep | { rep: true } | Field[] | null | undefined)[]
+  | (string | ISeg | FieldRep | { rep: true } | Field[] | null | undefined)[]
   | null
   | undefined => {
   const segments = msg.getSegments(segmentName)
@@ -26,7 +25,7 @@ export const get = (
     }) // Seg[]
   if (selectedSegmentIterations.length === 0) return undefined
   const ret = selectedSegmentIterations
-    .map<Seg | FieldOrRep>((seg) => {
+    .map<ISeg | FieldOrRep>((seg) => {
       if (fieldPosition === undefined) return seg // Seg
       return seg.json()?.[fieldPosition] as FieldOrRep // FieldOrRep
     }) // Seg | FieldOrRep
