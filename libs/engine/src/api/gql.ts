@@ -1,12 +1,7 @@
-import { graphql, buildSchema } from 'graphql'
+import { graphql } from 'graphql'
 import { Maybe } from 'graphql/jsutils/Maybe'
 import State from '../state'
-import fs from 'fs'
-import path from 'path'
-
-const schemaFile = path.join(__dirname, 'schema.graphql')
-
-const schema = buildSchema(fs.readFileSync(schemaFile, { encoding: 'utf8' }))
+import { schema } from './schema.graphql'
 
 const rootValue = (state: State) => {
   return {
