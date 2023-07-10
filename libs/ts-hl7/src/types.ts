@@ -175,6 +175,7 @@ export interface IMsg {
     // NOTE: if undefined, returns first segment
     iteration?: number | undefined
   ) => ISeg | ISegs;
+  id: (id?: string | undefined) => string | undefined;
   transform: (transformers: IMsgLimiter) => IMsg;
   delete: (path: string) => IMsg;
   copy: (path: string, toPath: string) => IMsg;
@@ -197,6 +198,11 @@ export interface MessageMeta {
    * @example 2.5.1
    */
   version?: `${number}.${number}` | `${number}`;
+  /**
+   * MSH-10
+   * length: 20
+   */
+  id?: string;
   /**
    * MSH-9.1
    * length: 3

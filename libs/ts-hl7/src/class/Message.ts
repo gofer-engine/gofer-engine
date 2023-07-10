@@ -127,7 +127,7 @@ export class Msg implements IMsg {
     return this;
   };
 
-  public setJSON: IMsg['setJSON'] = (path, json): Msg =>
+  public setJSON: IMsg['setJSON'] = (path, json): IMsg =>
     setJSON(this, json, this._paths(path));
 
   public get: IMsg['get'] = (path: string | undefined) => {
@@ -149,6 +149,18 @@ export class Msg implements IMsg {
       subComponentPosition
     );
   };
+
+  public id = (id?: string | undefined) => {
+    if (id) {
+      if (id.length > 20) {
+        throw new Error('Message id cannot be longer than 20 characters.');
+      }
+      this._msg[0].id = id
+      return id
+    } else {
+      return this._msg[0].id
+    }
+  }
 
   public getSegments: IMsg['getSegments'] = (segmentName) =>
     getSegments(this.msg, segmentName).map((s) => new Seg(s));

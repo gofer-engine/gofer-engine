@@ -1,8 +1,8 @@
-import Msg from './Message'
 import {
   Component,
   Field,
   FieldRep,
+  IMsg,
   Message,
   MsgValue,
   Paths,
@@ -24,7 +24,7 @@ import { setSegment } from './setSegment'
 import { setSubComponent } from './setSubComponent'
 
 export const setJSON = (
-  msg: Msg,
+  msg: IMsg,
   json: MsgValue,
   {
     segmentName,
@@ -34,7 +34,7 @@ export const setJSON = (
     componentPosition,
     subComponentPosition,
   }: Paths
-): Msg => {
+): IMsg => {
   if (segmentName === undefined) {
     if (isMessage(json)) {
       msg.setMsg(json as Message)
