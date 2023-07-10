@@ -1,4 +1,4 @@
-import Msg from "@gofer-engine/ts-hl7";
+import { IMsg } from "@gofer-engine/ts-hl7";
 import { isMsgVFunc } from "./isMsgVFunc";
 import { ChannelConfig, Connection, IMessageContext, OIngest, WithVarDo, varTypes } from "./types";
 import { CompleteClass } from "./CompleteClass";
@@ -25,6 +25,10 @@ export class IngestionClass implements OIngest {
         seed: id,
       })
     }
+  }
+  public logLevel: OIngest['logLevel'] = (level) => {
+    this.config.logLevel = level
+    return this
   }
   public name: OIngest['name'] = (name) => {
     this.config.name = name
@@ -170,7 +174,7 @@ export class IngestionClass implements OIngest {
   }
   public getMsgVar = <V>(
     varName: string,
-    getVal: (v: V | undefined, msg: Msg, context: IMessageContext) => void
+    getVal:  WithVarDo<V>
   ) => {
     this.config.ingestion.push({
       id: genId(),
@@ -190,7 +194,7 @@ export class IngestionClass implements OIngest {
   }
   public getChannelVar = <V>(
     varName: string,
-    getVal: (v: V | undefined, msg: Msg, context: IMessageContext) => void
+    getVal: WithVarDo<V>
   ) => {
     this.config.ingestion.push({
       id: genId(),
@@ -210,7 +214,7 @@ export class IngestionClass implements OIngest {
   }
   public getGlobalVar = <V>(
     varName: string,
-    getVal: (v: V | undefined, msg: Msg, context: IMessageContext) => void
+    getVal:  WithVarDo<V>
   ) => {
     this.config.ingestion.push({
       id: genId(),
@@ -251,7 +255,7 @@ export class IngestionClass implements OIngest {
   public run = () => {
     gofer.run(this.config)
   }
-  public msg = (cb: (msg: Msg, context: IMessageContext) => void) => {
+  public msg = (cb: (msg: IMsg, context: IMessageContext) => void) => {
     this.config.ingestion.push({
       id: genId(),
       kind: 'flow',

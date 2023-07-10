@@ -1,5 +1,5 @@
 import stores, { Store, StoreConfig } from '@gofer-engine/stores'
-import Msg from '@gofer-engine/ts-hl7'
+import { IMsg } from '@gofer-engine/ts-hl7'
 import { hash } from './hash'
 import { ChannelConfig } from './types'
 
@@ -59,7 +59,7 @@ export const getStore = (config: StoreConfig): Store | undefined => {
 
 export const store = (
   config: StoreConfig & { kind?: string },
-  msg: Msg
+  msg: IMsg
 ): Promise<boolean> => {
   const c = { ...config }
   delete c.kind

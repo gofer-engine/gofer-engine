@@ -1,4 +1,4 @@
-import Msg from '@gofer-engine/ts-hl7'
+import Msg, { IMsg } from '@gofer-engine/ts-hl7'
 import handelse from '@gofer-engine/handelse'
 import { IQueueOptions } from '@gofer-engine/queue'
 import { publishers } from './eventHandlers'
@@ -200,8 +200,8 @@ export const coerceStrictTypedChannels = (
   })
 }
 export const functionalVal = <T extends string | number | object | boolean>(
-  val: T | ((msg: Msg, context: IMessageContext) => T),
-  msg: Msg,
+  val: T | ((msg: IMsg, context: IMessageContext) => T),
+  msg: IMsg,
   context: IMessageContext
 ): T => {
   if (typeof val === 'function') return val(msg, context)
@@ -224,7 +224,7 @@ export const atLeastOne = (res: Record<string, boolean>) =>
 export const atLeastOnePass = (res: Record<string, boolean>) =>
   Object.values(res).some((v) => v)
 
-export const mapOptions = (opt: QueueConfig): IQueueOptions<Msg> => {
+export const mapOptions = (opt: QueueConfig): IQueueOptions<IMsg> => {
   return {
     filo: opt.filo,
     max_retries: opt.retries,

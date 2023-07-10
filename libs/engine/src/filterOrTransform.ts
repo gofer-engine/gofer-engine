@@ -1,9 +1,9 @@
-import Msg from '@gofer-engine/ts-hl7'
+import { IMsg } from '@gofer-engine/ts-hl7'
 import handelse from '@gofer-engine/handelse'
 import { IMessageContext } from './types'
 import { logger } from './helpers'
 
-export const filterOrTransform = <T = Msg>(
+export const filterOrTransform = <T = IMsg>(
   msg: T,
   filtered: boolean,
   flow: (msg: T, context: IMessageContext) => T | boolean,

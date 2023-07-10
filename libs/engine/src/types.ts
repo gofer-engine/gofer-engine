@@ -1,5 +1,5 @@
 import { StoreConfig } from '@gofer-engine/stores'
-import Msg, { Message, StrictMessage } from '@gofer-engine/ts-hl7'
+import { IMsg, Message, StrictMessage } from '@gofer-engine/ts-hl7'
 
 export type MaybePromise<T> = Promise<T> | T
 
@@ -63,7 +63,7 @@ export type IAckContext = IMessageContext & {
   filtered: boolean
 }
 
-export type FunctProp<R> = ((msg: Msg, context: IMessageContext) => R) | R
+export type FunctProp<R> = ((msg: IMsg, context: IMessageContext) => R) | R
 export type AllowFuncProp<Allow, R> = Allow extends true ? FunctProp<R> : R
 
 interface ITcpConfig<Functional extends boolean = false> {
@@ -75,7 +75,7 @@ interface ITcpConfig<Functional extends boolean = false> {
   maxConnections?: number // used only for server TCP connections
 }
 
-export interface QueueConfig<T = Msg> {
+export interface QueueConfig<T = IMsg> {
   kind: 'queue'
   // interval?: number // milliseconds between retries. Defaults to 10x1000 = 10 seconds
   // FIXME: better-queue does not currently support a queue limit.
@@ -177,7 +177,7 @@ export type AckConfig = {
     | 'AR' // Application Reject
   // A Store configuration to save persistent messages
   text?: string // Text to use in ACK MSA.3
-  msg?: (ack: Msg, msg: Msg, context: IAckContext) => Msg // returns the ack message to send
+  msg?: (ack: IMsg, msg: IMsg, context: IAckContext) => IMsg // returns the ack message to send
 }
 
 interface Tag {
@@ -185,8 +185,8 @@ interface Tag {
   color?: string // a valid hexidecimal color string or valid CSS color name
 }
 
-export type FilterFunc = (msg: Msg, context: IMessageContext) => boolean
-export type MsgVFunc<V> = (msg: Msg, context: IMessageContext) => V
+export type FilterFunc = (msg: IMsg, context: IMessageContext) => boolean
+export type MsgVFunc<V> = (msg: IMsg, context: IMessageContext) => V
 
 // Returns true to pass through. Return false to filter out.
 // O = require objectified filters
@@ -198,7 +198,7 @@ export type FilterFlow<Filt extends 'O' | 'F' | 'B' = 'B'> = Filt extends 'O'
   ? FilterFunc
   : FilterFunc | { kind: 'filter'; filter: FilterFunc }
 
-type TransformFunc = (msg: Msg, context: IMessageContext) => Msg
+type TransformFunc = (msg: IMsg, context: IMessageContext) => IMsg
 
 // O = require objectified transformers
 // F = require raw function transformers
@@ -213,9 +213,9 @@ export type TransformFlow<Tran extends 'O' | 'F' | 'B' = 'B'> = Tran extends 'O'
 // If it returns false it will filter out the message
 // Otherwise it returns the transformed message
 type TransformFilterFunction = (
-  msg: Msg,
+  msg: IMsg,
   context: IMessageContext
-) => false | Msg
+) => false | IMsg
 
 export type TransformOrFilterFlow<Tran extends 'O' | 'F' | 'B' = 'B'> =
   Tran extends 'O'
@@ -340,25 +340,27 @@ export type InitServers = <
   channels: ChannelConfig<Filt, Tran, 'S'>[]
 ) => void
 
-export type AckFunc = (ack: Msg, context: IMessageContext) => void
+export type AckFunc = (ack: IMsg, context: IMessageContext) => void
 
 export type IngestFunc = <
   Filt extends 'O' | 'F' | 'B' = 'B',
   Tran extends 'O' | 'F' | 'B' = 'B'
 >(
   channel: ChannelConfig<Filt, Tran, 'S'>,
-  msg: Msg,
+  msg: IMsg,
   ack: AckFunc | undefined,
   context: IMessageContext
-) => Msg | false
+) => IMsg | false
 
 export type RunRoutesFunc = <
   Filt extends 'O' | 'F' | 'B' = 'B',
   Tran extends 'O' | 'F' | 'B' = 'B'
 >(
   channel: ChannelConfig<Filt, Tran, 'S'>,
-  msg: Msg,
-  context: IMessageContext
+  msg: IMsg,
+  context: IMessageContext,
+  // direct provides a way to bypass non-existent event handlers. This is used for direct calls to routes such as the messenger.
+  direct?: boolean
 ) => Promise<boolean>
 
 export type RunRouteFunc = <
@@ -368,8 +370,11 @@ export type RunRouteFunc = <
   channelId: string | number,
   routeId: string | number,
   route: RequiredProperties<RouteFlowNamed<Filt, Tran>, 'id'>[],
-  msg: Msg,
-  context: IMessageContext
+  msg: IMsg,
+  context: IMessageContext,
+  // direct provides a way to bypass non-existent event handlers. This is used for direct calls to routes such as the messenger.
+  direct?: boolean,
+  callback?: (msg: IMsg) => void
 ) => Promise<boolean>
 
 export interface OGofer {
@@ -381,8 +386,8 @@ export interface OGofer {
   messenger: Messenger
 }
 
-export type MsgVar<V> = V | ((msg: Msg, context?: IMessageContext) => V)
-export type WithVarDo<V> = (v: V | undefined, msg: Msg, context: IMessageContext) => void | Msg | boolean
+export type MsgVar<V> = V | ((msg: IMsg, context?: IMessageContext) => V)
+export type WithVarDo<V> = (v: V | undefined, msg: IMsg, context: IMessageContext) => void | IMsg | boolean
 
 // TODO: implement cron schedule
 
@@ -404,7 +409,7 @@ export interface OComplete {
   // TODO: implement cron scheduled runs
   // schedule: (schedule: ICronSchedule) => void
   export: () => ChannelConfig<'B', 'B', 'S'>
-  msg: (cb: (msg: Msg, context: IMessageContext) => void) => void
+  msg: (cb: (msg: IMsg, context: IMessageContext) => void) => void
 }
 
 export interface OBase<O> {
@@ -423,6 +428,7 @@ export interface OBase<O> {
 }
 
 export interface OIngest extends OComplete, OBase<OIngest> {
+  logLevel: (level: TLogLevel) => OIngest
   setVar: <V>(scope: Exclude<varTypes, 'Route'>, varName: string, varValue: MsgVar<V>) => OIngest
   getVar: <V>(scope: Exclude<varTypes, 'Route'>, varName: string, getVal: WithVarDo<V>) => OIngest
   ack: (ack?: AckConfig) => OIngest
@@ -440,6 +446,6 @@ export interface ORoute extends OBase<ORoute> {
 }
 
 export type MessengerRoute = (R: Exclude<ORoute, 'export'>) => Exclude<ORoute, 'export'>
-export type MessengerInput = Message | string | StrictMessage | Msg | ((msg: Msg) => Msg)
-export type MessengerFunc = (msg: MessengerInput) => Promise<Msg>
+export type MessengerInput = Message | string | StrictMessage | IMsg | ((msg: IMsg) => IMsg)
+export type MessengerFunc = (msg: MessengerInput) => Promise<IMsg>
 export type Messenger = (route: MessengerRoute) => [messenger: MessengerFunc, messengerId: string]

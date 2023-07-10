@@ -1,6 +1,6 @@
 import net from 'net'
 import handelse from '@gofer-engine/handelse'
-import Msg from '@gofer-engine/ts-hl7'
+import Msg, { IMsg } from '@gofer-engine/ts-hl7'
 import { onLog } from './eventHandlers'
 import { IMessageContext, TcpConfig } from './types'
 import { functionalVal } from './helpers'
@@ -13,8 +13,9 @@ type TcpClientFunc<T, R> = (
   channelId: string | number | undefined,
   routeId: string | number | undefined,
   flowId: string | number | undefined,
-  context: IMessageContext
-) => Promise<Msg>
+  context: IMessageContext,
+  direct?: boolean
+) => Promise<IMsg>
 
 const sendMessage = async (
   host: string,
@@ -26,7 +27,8 @@ const sendMessage = async (
   data: string,
   channel?: string | number,
   route?: string | number,
-  flow?: string | number
+  flow?: string | number,
+  direct?: boolean
 ): Promise<string> => {
   if (responseTimeout !== undefined) {
     handelse.go(`gofer:${channel}.onLog`, {
@@ -80,13 +82,15 @@ const sendMessage = async (
         channel,
         route,
         flow,
+      }, {
+        createIfNotExists: direct
       })
       rej(err)
     })
   })
 }
 
-export const tcpClient: TcpClientFunc<Msg, Msg> = async (
+export const tcpClient: TcpClientFunc<IMsg, IMsg> = async (
   {
     host,
     port,
@@ -96,12 +100,13 @@ export const tcpClient: TcpClientFunc<Msg, Msg> = async (
     responseTimeout,
   },
   msg,
-  stringify = (msg: Msg) => msg.toString(),
+  stringify = (msg: IMsg) => msg.toString(),
   parse = (data: string) => new Msg(data),
   channelId,
   routeId,
   flowId,
-  context
+  context,
+  direct
 ) => {
   const config: {
     host?: string
@@ -123,6 +128,8 @@ export const tcpClient: TcpClientFunc<Msg, Msg> = async (
       channel: channelId,
       route: routeId,
       flow: flowId,
+    }, {
+      createIfNotExists: direct
     })
   }
   if (
@@ -142,7 +149,8 @@ export const tcpClient: TcpClientFunc<Msg, Msg> = async (
       stringify(msg),
       channelId,
       routeId,
-      flowId
+      flowId,
+      direct
     )
     return parse(ack)
   }

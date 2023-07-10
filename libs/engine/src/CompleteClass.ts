@@ -1,4 +1,4 @@
-import Msg from "@gofer-engine/ts-hl7"
+import { IMsg } from "@gofer-engine/ts-hl7"
 import gofer from "."
 import { ChannelConfig, IMessageContext, OComplete } from "./types"
 import { genId } from "./genId"
@@ -16,7 +16,7 @@ export class CompleteClass implements OComplete {
     gofer.run(this.config)
   }
   // NOTE: if this is used with multiple routes, it will be called once at the end of each route
-  public msg = (cb: (msg: Msg, context: IMessageContext) => void): void => {
+  public msg = (cb: (msg: IMsg, context: IMessageContext) => void): void => {
     this.config.routes?.forEach((route) => {
       route.flows.push({
         id: genId(),

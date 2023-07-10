@@ -1,9 +1,9 @@
-import Msg from '@gofer-engine/ts-hl7'
+import Msg, { IMsg } from '@gofer-engine/ts-hl7'
 import { AckConfig, IMessageContext } from './types'
 import { logger } from './helpers'
 
 export const doAck = (
-  msg: Msg,
+  msg: IMsg,
   ackConfig: AckConfig = {},
   {
     filtered = false,
@@ -27,7 +27,7 @@ export const doAck = (
     .toUTCString()
     .replace(/[^0-9]/g, '')
     .slice(0, -3)
-  let ackMsg = new Msg(
+  let ackMsg: IMsg = new Msg(
     `MSH|^~\\&|${app}|${org}|||${now}||ACK|${id}|P|2.5.1|\nMSA|${res}|${id}${
       txt ? `|${txt}` : ''
     }`

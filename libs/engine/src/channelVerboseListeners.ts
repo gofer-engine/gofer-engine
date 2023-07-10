@@ -1,11 +1,11 @@
-import Msg from '@gofer-engine/ts-hl7'
+import { IMsg } from '@gofer-engine/ts-hl7'
 import { IChannelEvents } from './events'
 import { TLogLevel } from './types'
 import { isLogging } from './helpers'
 
 export const verboseListeners = (
   logLevel: TLogLevel | undefined,
-  handlers: IChannelEvents<Msg>
+  handlers: IChannelEvents<IMsg>
 ) => {
   const logger = (channel: string | number | undefined, log: string) => {
     console.log(`${new Date().toISOString()}: <${channel}> ${log}`)

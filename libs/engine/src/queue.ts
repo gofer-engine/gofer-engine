@@ -1,7 +1,7 @@
 import { IQueueOptions, queue as goferQueue } from '@gofer-engine/queue'
-import Msg from '@gofer-engine/ts-hl7'
+import { IMsg } from '@gofer-engine/ts-hl7'
 
-export const queue = <T = Msg>(
+export const queue = <T = IMsg>(
   id: string,
   process: (msg: T, timedOut: () => boolean) => Promise<boolean>,
   msg: T,

@@ -1,6 +1,6 @@
 import net from 'net'
 import handelse from '@gofer-engine/handelse'
-import Msg from '@gofer-engine/ts-hl7'
+import Msg, { IMsg } from '@gofer-engine/ts-hl7'
 import { AckFunc, ChannelConfig, IContext, IMessageContext } from './types'
 import { queue } from './queue'
 import { doAck } from './doAck'
@@ -14,12 +14,13 @@ export const tcpServer = <
 >(
   channel: ChannelConfig<Filt, Tran, 'S'>,
   ingestMessage: (
-    msg: Msg,
+    msg: IMsg,
     ack: AckFunc | undefined,
     context: IMessageContext
   ) => Promise<boolean>,
-  context: IContext
-) => {
+  context: IContext,
+  direct?: boolean
+): net.Server => {
   const {
     host,
     port,
@@ -36,6 +37,8 @@ export const tcpServer = <
     handelse.go(`gofer:${id}.onLog`, {
       log: `Server listening on ${host}:${port}`,
       channel: id,
+    }, {
+      createIfNotExists: direct
     })
   })
   server.on('connection', (socket) => {
@@ -45,6 +48,8 @@ export const tcpServer = <
     handelse.go(`gofer:${id}.onLog`, {
       log: `New client connection from ${clientAddress}`,
       channel: id,
+    }, {
+      createIfNotExists: direct
     })
 
     const data: Record<string, string> = {}
@@ -53,6 +58,8 @@ export const tcpServer = <
       handelse.go(`gofer:${id}.onLog`, {
         log: `Received Data from Client ${clientAddress}:`,
         channel: id,
+      }, {
+        createIfNotExists: direct
       })
       let hl7 = packet.toString()
       const f = hl7[0]
@@ -63,6 +70,8 @@ export const tcpServer = <
         handelse.go(`gofer:${id}.onError`, {
           error: `MESSAGE LOSS: Partial message removed from ${clientAddress}`,
           channel: id,
+        }, {
+          createIfNotExists: direct
         })
         delete data[clientAddress]
       }
@@ -94,11 +103,15 @@ export const tcpServer = <
       handelse.go(`gofer:${id}.onReceive`, {
         msg,
         channel: id,
+      }, {
+        createIfNotExists: direct
       })
       if (queueConfig) {
         handelse.go(`gofer:${id}.onLog`, {
           log: `Utilizing queue ${id}.source`,
           channel: id,
+        }, {
+          createIfNotExists: direct
         })
         const ack = doAck(
           msg,
@@ -114,6 +127,8 @@ export const tcpServer = <
           channel: channel.id,
           msg: msg,
           ack: ack,
+        }, {
+          createIfNotExists: direct
         })
         queue(
           `${id}.source`,
@@ -130,7 +145,7 @@ export const tcpServer = <
       } else {
         ingestMessage(
           msg,
-          (ack: Msg) => {
+          (ack: IMsg) => {
             socket.write(SoM + ack.toString() + EoM + CR)
           },
           context as IMessageContext
@@ -145,4 +160,5 @@ export const tcpServer = <
         )
     })
   })
+  return server
 }

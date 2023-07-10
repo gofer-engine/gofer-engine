@@ -1,6 +1,6 @@
 import { FilterFunc, IMessageContext, MsgVar, ORoute, RequiredProperties, Route, WithVarDo, varTypes } from "./types"
 import { StoreConfig } from "@gofer-engine/stores"
-import Msg from "@gofer-engine/ts-hl7"
+import { IMsg } from "@gofer-engine/ts-hl7"
 import { genId } from "./genId"
 import { isMsgVFunc } from "./isMsgVFunc"
 
@@ -31,7 +31,7 @@ export class RouteClass implements ORoute {
     })
     return this
   }
-  public transform: (t: (msg: Msg, context: IMessageContext) => Msg) => ORoute = (transform) => {
+  public transform: (t: (msg: IMsg, context: IMessageContext) => IMsg) => ORoute = (transform) => {
     const id = genId()
     this.config.flows.push({
       id,
@@ -154,7 +154,7 @@ export class RouteClass implements ORoute {
     })
     return this
   }
-  public getMsgVar = <V>(varName: string, getVal: (v: V | undefined, msg: Msg, context: IMessageContext) => void): ORoute => {
+  public getMsgVar = <V>(varName: string, getVal: WithVarDo<V>): ORoute => {
     this.config.flows.push({
       id: genId(),
       kind: 'flow',
@@ -182,7 +182,7 @@ export class RouteClass implements ORoute {
     })
     return this
   }
-  public getChannelVar = <V>(varName: string, getVal: (v: V | undefined, msg: Msg, context: IMessageContext) => void): ORoute => {
+  public getChannelVar = <V>(varName: string, getVal: WithVarDo<V>): ORoute => {
     this.config.flows.push({
       id: genId(),
       kind: 'flow',
@@ -196,7 +196,7 @@ export class RouteClass implements ORoute {
     })
     return this
   }
-  public getGlobalVar = <V>(varName: string, getVal: (v: V | undefined, msg: Msg, context: IMessageContext) => void): ORoute => {
+  public getGlobalVar = <V>(varName: string, getVal: WithVarDo<V>): ORoute => {
     this.config.flows.push({
       id: genId(),
       kind: 'flow',

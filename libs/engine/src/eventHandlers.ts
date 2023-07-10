@@ -1,4 +1,4 @@
-import Msg from '@gofer-engine/ts-hl7'
+import { IMsg } from '@gofer-engine/ts-hl7'
 import handelse, { SubFunc, SubscriberID } from '@gofer-engine/handelse'
 import { ChannelConfig } from './types'
 import { IChannelEvents } from './events'
@@ -49,7 +49,7 @@ type TListeners = {
   preChannelInit: (handler: SubFunc<ChannelConfig>) => SubscriberID
   onError: (handler: SubFunc<Error>) => SubscriberID
   onLog: (handler: SubFunc<unknown>) => SubscriberID
-  channels: Record<string, IChannelEvents<Msg>>
+  channels: Record<string, IChannelEvents<IMsg>>
 }
 
 export const listeners: TListeners = {

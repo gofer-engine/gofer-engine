@@ -1,20 +1,20 @@
 import { StoreConfig } from '@gofer-engine/stores'
 import handelse from '@gofer-engine/handelse'
-import Msg from '@gofer-engine/ts-hl7'
 import { doAck } from './doAck'
-import { logger, mapOptions } from './helpers'
+import { mapOptions } from './helpers'
 import { store } from './initStores'
 import { queue } from './queue'
 import { tcpClient } from './tcpClient'
-import {
-  Connection,
-  IMessageContext,
-  RunRouteFunc,
-  RunRoutesFunc,
-} from './types'
+import { Connection, RunRouteFunc, RunRoutesFunc } from './types'
 import { getRouteVar, setRouteVar } from './variables'
+import { doFilterTransform } from './doFilterTransform'
 
-export const runRoutes: RunRoutesFunc = async (channel, msg, context) => {
+export const runRoutes: RunRoutesFunc = async (
+  channel,
+  msg,
+  context,
+  direct
+) => {
   const routes = channel?.routes ?? []
   return Promise.all(
     routes?.map((route) => {
@@ -34,14 +34,20 @@ export const runRoutes: RunRoutesFunc = async (channel, msg, context) => {
                     res(true)
                   })
                   .catch((error: unknown) => {
-                    handelse.go(`gofer:${channel.id}.onError`, {
-                      error: error,
-                      channe: channel.id,
-                      route: route.id,
-                    })
+                    handelse.go(
+                      `gofer:${channel.id}.onError`,
+                      {
+                        error: error,
+                        channe: channel.id,
+                        route: route.id,
+                      },
+                      {
+                        createIfNotExists: direct,
+                      }
+                    )
                     res(false)
                   })
-              })
+              });
             },
             msg,
             options
@@ -49,7 +55,7 @@ export const runRoutes: RunRoutesFunc = async (channel, msg, context) => {
           return res(true)
         })
       }
-      return runRoute(channel.id, route.id, route.flows, msg, context)
+      return runRoute(channel.id, route.id, route.flows, msg, context, direct)
     }) || []
   ).then((res) => !res.some((r) => !r))
 }
@@ -59,75 +65,102 @@ export const runRoute: RunRouteFunc = async (
   routeId,
   route,
   msg,
-  context
+  context,
+  direct,
+  callback
 ) => {
-  handelse.go(`gofer:${channelId}.onRouteStart`, {
-    msg,
-    channel: channelId.toString(),
-    route: route.toString(),
-  })
-  let filtered = false
-  const flows: (boolean | Promise<boolean>)[] = []
-  const doFilterTransform = (
-    msg: Msg,
-    flow: (msg: Msg, context: IMessageContext) => boolean | Msg,
-    flowId: string | number
-  ) => {
-    context.logger = logger({
-      channelId,
-      routeId,
-      flowId,
+  handelse.go(
+    `gofer:${channelId}.onRouteStart`,
+    {
       msg,
-    })
-    const filterOrTransform = flow(msg, context)
-    if (typeof filterOrTransform === 'boolean') {
-      if (!filterOrTransform)
-        handelse.go(`gofer:${channelId}.onFilter`, {
-          msg,
-          channel: channelId,
-          route: routeId,
-          flow: flowId,
-        })
-      filtered = !filterOrTransform
-      flows.push(true)
-    } else {
-      handelse.go(`gofer:${channelId}.onTransform`, {
-        pre: msg,
-        post: filterOrTransform,
-        channel: channelId,
-        route: routeId,
-        flow: flowId,
-      })
+      channel: channelId.toString(),
+      route: route.toString(),
+    },
+    {
+      createIfNotExists: direct,
     }
-  }
+  )
+  let filtered = false
+  let flows: (boolean | Promise<boolean>)[] = []
+
   for (const namedFlow of route) {
     const flow = namedFlow.flow
     if (filtered) return false
     if (typeof flow === 'function') {
-      doFilterTransform(msg, flow, namedFlow.id)
+      const filterFlows = doFilterTransform(
+        msg,
+        flow,
+        namedFlow.id,
+        context,
+        flows,
+        filtered,
+        direct
+      )
+      filtered = filterFlows.filtered
+      flows = filterFlows.flows
+      msg = filterFlows.msg
       continue
     }
     if (typeof flow === 'object') {
       if (flow.kind === 'filter') {
-        doFilterTransform(msg, flow.filter, namedFlow.id)
+        const filterFlows = doFilterTransform(
+          msg,
+          flow.filter,
+          namedFlow.id,
+          context,
+          flows,
+          filtered,
+          direct
+        )
+        filtered = filterFlows.filtered
+        flows = filterFlows.flows
+        msg = filterFlows.msg
         continue
       }
       if (flow.kind === 'transform') {
-        doFilterTransform(msg, flow.transform, namedFlow.id)
-        continue
+        const filterFlows = doFilterTransform(
+          msg,
+          flow.transform,
+          namedFlow.id,
+          context,
+          flows,
+          filtered,
+          direct
+        )
+        filtered = filterFlows.filtered
+        flows = filterFlows.flows
+        msg = filterFlows.msg
+        continue;
       }
       if (flow.kind === 'transformFilter') {
-        doFilterTransform(msg, flow.transformFilter, namedFlow.id)
+        const filterFlows = doFilterTransform(
+          msg,
+          flow.transformFilter,
+          namedFlow.id,
+          context,
+          flows,
+          filtered,
+          direct
+        )
+        filtered = filterFlows.filtered
+        flows = filterFlows.flows
+        msg = filterFlows.msg
         continue
       }
       if (flow.kind === 'tcp') {
         const { tcp: tcpConfig } = flow as Connection<'O'>
-        handelse.go(`gofer:${channelId}.onLog`, {
-          log: `tcpConfig: ${JSON.stringify(tcpConfig)}`,
-          channel: channelId,
-          route: routeId,
-          flow: namedFlow.id,
-        })
+        handelse.go(
+          `gofer:${channelId}.onLog`,
+          {
+            log: `tcpConfig: ${JSON.stringify(tcpConfig)}`,
+            channel: channelId,
+            route: routeId,
+            flow: namedFlow.id,
+          },
+          {
+            createIfNotExists: direct,
+          }
+        )
         if (namedFlow.queue) {
           const queueConfig = namedFlow.queue
           /**
@@ -174,7 +207,8 @@ export const runRoute: RunRouteFunc = async (
           channelId,
           routeId,
           namedFlow.id,
-          context
+          context,
+          direct
         )
         flows.push(true)
         continue
@@ -186,22 +220,37 @@ export const runRoute: RunRouteFunc = async (
         continue
       }
     }
-    handelse.go(`gofer:${channelId}.onError`, {
-      error: 'unknown flow type not yet implemented',
-      channel: channelId,
-      flow: namedFlow.id.toString(),
-      route: routeId,
-    })
+    handelse.go(
+      `gofer:${channelId}.onError`,
+      {
+        error: 'unknown flow type not yet implemented',
+        channel: channelId,
+        flow: namedFlow.id.toString(),
+        route: routeId,
+      },
+      {
+        createIfNotExists: direct,
+      }
+    )
     return false
   }
   return Promise.all(flows).then((res) => {
     const status = !res.some((r) => !r)
-    handelse.go(`gofer:${channelId}.onRouteEnd`, {
-      msg,
-      channel: channelId.toString(),
-      route: route.toString(),
-      status,
-    })
+    handelse.go(
+      `gofer:${channelId}.onRouteEnd`,
+      {
+        msg,
+        channel: channelId.toString(),
+        route: route.toString(),
+        status,
+      },
+      {
+        createIfNotExists: direct,
+      }
+    )
+    if (status && typeof callback === 'function') {
+      callback(msg)
+    }
     return status
   })
 }

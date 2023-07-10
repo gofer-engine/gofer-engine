@@ -1,4 +1,4 @@
-import Msg from '@gofer-engine/ts-hl7'
+import { IMsg } from '@gofer-engine/ts-hl7'
 import { verboseListeners } from './channelVerboseListeners'
 import { events } from './events'
 import { runIngestFlows } from './runIngestFlows'
@@ -18,7 +18,7 @@ export const initServers: InitServers = (channels) => {
   channels
     .filter((channel) => Object.prototype.hasOwnProperty.call(channel.source, 'tcp'))
     .forEach((c) => {
-      const e = events<Msg>(c.id.toString())
+      const e = events<IMsg>(c.id.toString())
       listeners.channels[c.id] = e
       verboseListeners(c.logLevel, e)
       const context: IContext = {
