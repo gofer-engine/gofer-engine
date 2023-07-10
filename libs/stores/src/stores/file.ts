@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto'
 import fs from 'fs'
-import Msg from '@gofer-engine/ts-hl7'
+import { IMsg } from '@gofer-engine/ts-hl7'
 import { IStoreClass, StoreFunc, StoreOption } from '../types'
 
 /**
@@ -16,7 +16,7 @@ export interface IDBStoreOptions extends StoreOption {
   autoCreateDir?: boolean
   warnOnError?: boolean
   extension?: string
-  filename?: string | string[] | ((msg: Msg) => string)
+  filename?: string | string[] | ((msg: IMsg) => string)
   verbose?: boolean
 }
 

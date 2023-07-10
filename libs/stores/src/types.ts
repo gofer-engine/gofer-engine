@@ -1,4 +1,4 @@
-import Msg from '@gofer-engine/ts-hl7'
+import { IMsg } from '@gofer-engine/ts-hl7'
 
 export interface IStoreClass {
   store: StoreFunc
@@ -16,7 +16,7 @@ export type RequireOnlyOne<T, Keys extends keyof T = keyof T> = Pick<
   }[Keys]
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type StoreFunc = (data: Msg, id?: string) => Promise<boolean>
+export type StoreFunc = (data: IMsg, id?: string) => Promise<boolean>
 
 /**
  * @param id - When defined in the Store Config, this id prop accepts a HL7 reference like `$MSH-10.1`. Or can also use `UUID` to generate a universally unique identifier.
