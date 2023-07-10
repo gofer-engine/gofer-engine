@@ -1,5 +1,5 @@
-import {randomUUID} from 'node:crypto'
-import {resolveObj} from './resolveObj'
+import { randomUUID } from 'node:crypto'
+import { resolveObj } from './resolveObj'
 import {
   IEventSystemManager,
   IEventHandler,
@@ -8,6 +8,7 @@ import {
   IEventHandlerConfig,
   SubscriberID,
   SubFunc,
+  TEventGetHandlerOptions,
 } from './types'
 
 export * from './types'
@@ -143,11 +144,15 @@ class EventSystemManager implements IEventSystemManager {
   public local = this.createInstance
   public get = <T = unknown>(
     handle: string,
-    options?: Pick<IEventHandlerConfig, 'eventType'> & {verbose?: boolean},
+    options?: TEventGetHandlerOptions,
   ) => {
-    const handler = this.eventHandlers.get(handle)
+    let handler = this.eventHandlers.get(handle)
     if (!handler) {
-      throw new Error('Event handler does not exist')
+      if (options?.createIfNotExists) {
+        handler = this.create(handle, options)
+      } else {
+        throw new Error(`Event handler ${handle} does not exist`)
+      }
     }
     if (
       options?.eventType !== undefined &&
@@ -173,22 +178,22 @@ Handler set event type: "${handler.eventType ?? 'undefined'}"
     return handler as IEventHandler<T>
   }
   public delete = (handle: string) => this.eventHandlers.delete(handle)
-  public pub = <T = unknown>(handle: string, event: T) =>
-    this.get<T>(handle).pub(event)
+  public pub = <T = unknown>(handle: string, event: T, options?: TEventGetHandlerOptions) =>
+    this.get<T>(handle, options).pub(event)
   public publish = this.pub
   public go = this.pub
   public emit = this.pub
   public broadcast = this.pub
   public signal = this.pub
-  public sub = <T = unknown>(handle: string, handler: SubFunc<T>) =>
-    this.get<T>(handle).sub(handler)
+  public sub = <T = unknown>(handle: string, handler: SubFunc<T>, options?: TEventGetHandlerOptions) =>
+    this.get<T>(handle, options).sub(handler)
   public subscribe = this.sub
   public on = this.sub
   public do = this.sub
   public start = this.sub
   public listen = this.sub
-  public remove = (handle: string, id: SubscriberID) =>
-    this.get(handle).remove(id)
+  public remove = (handle: string, id: SubscriberID, options?: TEventGetHandlerOptions) =>
+    this.get(handle, options).remove(id)
   public unsub = this.remove
   public unsubscribe = this.remove
   public off = this.remove
@@ -196,8 +201,8 @@ Handler set event type: "${handler.eventType ?? 'undefined'}"
   public deafen = this.remove
 }
 
-const eventSystemManager = new EventSystemManager()
+const eventSystemManager = new EventSystemManager();
 
-Object.freeze(eventSystemManager)
+Object.freeze(eventSystemManager);
 
-export default eventSystemManager
+export default eventSystemManager;

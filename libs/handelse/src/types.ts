@@ -2,6 +2,10 @@ export interface IEventHandlerConfig {
   quitEarly?: boolean
   eventType?: string
 }
+export type TEventGetHandlerOptions = Pick<IEventHandlerConfig, 'eventType'> & {
+  verbose?: boolean,
+  createIfNotExists?: boolean
+}
 export type SubFunc<T> = (event: T) => boolean | Promise<boolean>
 export type SubscriberID = string | number
 type PubResponse = Promise<Record<SubscriberID, boolean>>
