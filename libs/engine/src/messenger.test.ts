@@ -1,11 +1,10 @@
-import Msg from "@gofer-engine/ts-hl7"
+import { isMsg } from "@gofer-engine/ts-hl7"
 import { messenger as Messenger } from "./messenger"
 import { genId } from "./genId"
 
 const [messenger, messengerId] = Messenger(route => {
   route.id(genId())
   route.send('tcp', '127.0.0.1', 5503)
-  console.log(route)
   return route
 })
 
@@ -17,11 +16,10 @@ test('messenger defined', () => {
   expect(messenger).toBeInstanceOf(Function)
 })
 
-test('messenger works', () => {
-  const msgDate = new Date().toISOString().slice(0, 8)
-  const ack = messenger(msg => {
+test('messenger works', async () => {
+  const msgDate = new Date().toISOString().replace(/-|:|T/g, '').slice(0, 12)
+  const ack = await messenger(msg => {
     const msgId = genId('ID')
-    // console.log(msg.json())
     msg
       .set('MSH-3', 'MRHC Apps') 
       .set('MSH-4', 'MRHC') 
@@ -42,6 +40,6 @@ test('messenger works', () => {
     console.log(msg.toString())
     return msg
   })
-  expect(ack).toBeInstanceOf(Msg)
+  expect(isMsg(ack)).toBeTruthy()
   expect(ack.toString()).toBe(`MSH|^~\\&|MRHC Apps|MRHC|ADM|MT|2023-06-||ADT^A20^ADT_A20|1|T|2.4\nEVN||2023-06-|||0507\nNPU|1`)
 })
