@@ -1,5 +1,5 @@
-const name = 'ts-hl7'
-const srcRoot = 'libs/ts-hl7'
+const name = 'hl7'
+const srcRoot = 'libs/hl7'
 
 module.exports = {
   extends: 'release.config.base.js',

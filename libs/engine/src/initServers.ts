@@ -1,4 +1,4 @@
-import { IMsg } from '@gofer-engine/ts-hl7'
+import { IMsg } from '@gofer-engine/hl7'
 import { verboseListeners } from './channelVerboseListeners'
 import { events } from './events'
 import { runIngestFlows } from './runIngestFlows'

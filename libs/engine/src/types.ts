@@ -1,5 +1,5 @@
 import { StoreConfig } from '@gofer-engine/stores'
-import { IMsg, Message, StrictMessage } from '@gofer-engine/ts-hl7'
+import { IMsg, Message, StrictMessage } from '@gofer-engine/hl7'
 
 export type MaybePromise<T> = Promise<T> | T
 

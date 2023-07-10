@@ -1,4 +1,4 @@
-import Msg from '@gofer-engine/ts-hl7'
+import Msg from '@gofer-engine/hl7'
 import fs from 'fs'
 import stores from '..'
 import { 

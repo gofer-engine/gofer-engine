@@ -1,11 +1,11 @@
 {
-  "name": "@gofer-engine/ts-hl7",
+  "name": "@gofer-engine/hl7",
   "version": "0.0.1",
   "type": "commonjs",
   "repository": {
     "type": "git",
     "url": "https://github.com/gofer-engine/gofer-engine.git",
-    "directory": "libs/ts-hl7"
+    "directory": "libs/hl7"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"

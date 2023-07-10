@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto'
 import fs from 'fs'
-import { IMsg } from '@gofer-engine/ts-hl7'
+import { IMsg } from '@gofer-engine/hl7'
 import { IStoreClass, StoreFunc, StoreOption } from '../types'
 
 /**

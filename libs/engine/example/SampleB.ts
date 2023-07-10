@@ -1,4 +1,4 @@
-import { Seg } from '../../ts-hl7/src'
+import { Seg } from '../../hl7/src'
 import { ChannelConfig } from '../src/types'
 
 const SampleB: ChannelConfig = {

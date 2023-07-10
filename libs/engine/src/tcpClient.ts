@@ -1,6 +1,6 @@
 import net from 'net'
 import handelse from '@gofer-engine/handelse'
-import Msg, { IMsg } from '@gofer-engine/ts-hl7'
+import Msg, { IMsg } from '@gofer-engine/hl7'
 import { onLog } from './eventHandlers'
 import { IMessageContext, TcpConfig } from './types'
 import { functionalVal } from './helpers'

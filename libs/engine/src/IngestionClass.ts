@@ -1,4 +1,4 @@
-import { IMsg } from "@gofer-engine/ts-hl7";
+import { IMsg } from "@gofer-engine/hl7";
 import { isMsgVFunc } from "./isMsgVFunc";
 import { ChannelConfig, Connection, IMessageContext, OIngest, WithVarDo, varTypes } from "./types";
 import { CompleteClass } from "./CompleteClass";

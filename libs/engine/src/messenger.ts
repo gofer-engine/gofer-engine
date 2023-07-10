@@ -1,4 +1,4 @@
-import Msg, { IMsg, isMsg } from "@gofer-engine/ts-hl7";
+import Msg, { IMsg, isMsg } from "@gofer-engine/hl7";
 import { MessengerFunc, MessengerRoute } from "./types";
 import { RouteClass } from "./RouteClass";
 import { runRoute } from "./runRoutes";

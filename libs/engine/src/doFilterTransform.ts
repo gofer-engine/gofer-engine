@@ -1,5 +1,5 @@
 import handelse from '@gofer-engine/handelse';
-import { IMsg } from '@gofer-engine/ts-hl7';
+import { IMsg } from '@gofer-engine/hl7';
 import { IMessageContext } from './types';
 import { logger } from './helpers';
 

@@ -1,5 +1,5 @@
 import { IQueueOptions, queue as goferQueue } from '@gofer-engine/queue'
-import { IMsg } from '@gofer-engine/ts-hl7'
+import { IMsg } from '@gofer-engine/hl7'
 
 export const queue = <T = IMsg>(
   id: string,

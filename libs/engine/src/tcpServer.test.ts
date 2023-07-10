@@ -3,7 +3,7 @@ import { logger } from './helpers';
 import { tcpServer } from './tcpServer'
 import { getChannelVar, getGlobalVar, setChannelVar, setGlobalVar } from "./variables";
 import { AckFunc, IMessageContext } from './types';
-import { IMsg } from '@gofer-engine/ts-hl7';
+import { IMsg } from '@gofer-engine/hl7';
 
 const channelID = 'test'
 let server: net.Server | undefined = undefined

@@ -1,4 +1,4 @@
-import Msg from '../../ts-hl7/src'
+import Msg from '../../hl7/src'
 import { ChannelConfig } from '../src/types'
 
 // This channel and transformer are based upon the example posted here: https://outcomehealthcare.com/sample-mirth-connect-project-hl7-2-x-transformation-2-3-to-2-4/

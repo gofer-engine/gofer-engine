@@ -1,5 +1,5 @@
 import stores, { Store, StoreConfig } from '@gofer-engine/stores'
-import { IMsg } from '@gofer-engine/ts-hl7'
+import { IMsg } from '@gofer-engine/hl7'
 import { hash } from './hash'
 import { ChannelConfig } from './types'
 

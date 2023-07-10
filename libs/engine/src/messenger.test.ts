@@ -1,4 +1,4 @@
-import { isMsg } from "@gofer-engine/ts-hl7"
+import { isMsg } from "@gofer-engine/hl7"
 import { messenger as Messenger } from "./messenger"
 import { genId } from "./genId"
 

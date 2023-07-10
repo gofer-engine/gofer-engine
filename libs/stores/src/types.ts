@@ -1,4 +1,4 @@
-import { IMsg } from '@gofer-engine/ts-hl7'
+import { IMsg } from '@gofer-engine/hl7'
 
 export interface IStoreClass {
   store: StoreFunc

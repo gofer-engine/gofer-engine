@@ -1,4 +1,4 @@
-import Msg from '../../ts-hl7/src'
+import Msg from '../../hl7/src'
 import { randomUUID } from 'crypto'
 import { ChannelConfig } from '../src/types'
 

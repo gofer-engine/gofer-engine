@@ -1,35 +1,35 @@
 {
-  "name": "ts-hl7",
+  "name": "hl7",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/ts-hl7/src",
+  "sourceRoot": "libs/hl7/src",
   "projectType": "library",
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/libs/ts-hl7",
-        "main": "libs/ts-hl7/src/index.ts",
-        "tsConfig": "libs/ts-hl7/tsconfig.lib.json",
-        "assets": ["libs/ts-hl7/*.md"]
+        "outputPath": "dist/libs/hl7",
+        "main": "libs/hl7/src/index.ts",
+        "tsConfig": "libs/hl7/tsconfig.lib.json",
+        "assets": ["libs/hl7/*.md"]
       }
     },
     "publish": {
-      "command": "node tools/scripts/publish.mjs ts-hl7 {args.ver} {args.tag}",
+      "command": "node tools/scripts/publish.mjs hl7 {args.ver} {args.tag}",
       "dependsOn": ["build"]
     },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/ts-hl7/**/*.ts"]
+        "lintFilePatterns": ["libs/hl7/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "libs/ts-hl7/jest.config.ts",
+        "jestConfig": "libs/hl7/jest.config.ts",
         "passWithNoTests": true
       },
       "configurations": {
@@ -43,7 +43,13 @@
       "executor": "nx:run-commands",
       "outputs": [],
       "options": {
-        "command": "npx semantic-release-plus --extends ./libs/ts-hl7/release.config.js"
+        "command": "npx semantic-release-plus --extends ./libs/hl7/release.config.js"
+      }
+    },
+    "version": {
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "preset": "conventional"
       }
     }
   },

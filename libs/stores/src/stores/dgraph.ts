@@ -9,7 +9,7 @@ import {
 import { credentials } from '@grpc/grpc-js'
 import { IStoreClass, StoreFunc, StoreOption } from '../types'
 import { randomUUID } from 'crypto'
-import { StrictComponent, StrictField, StrictFieldRepetition, StrictMessage, StrictSegment, StrictSubComponent } from '@gofer-engine/ts-hl7'
+import { StrictComponent, StrictField, StrictFieldRepetition, StrictMessage, StrictSegment, StrictSubComponent } from '@gofer-engine/hl7'
 
 const schema = `
 type Mesage {

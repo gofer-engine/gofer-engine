@@ -1,6 +1,6 @@
 import { FilterFunc, IMessageContext, MsgVar, ORoute, RequiredProperties, Route, WithVarDo, varTypes } from "./types"
 import { StoreConfig } from "@gofer-engine/stores"
-import { IMsg } from "@gofer-engine/ts-hl7"
+import { IMsg } from "@gofer-engine/hl7"
 import { genId } from "./genId"
 import { isMsgVFunc } from "./isMsgVFunc"
 
