@@ -1,4 +1,4 @@
-import { StrictMessage } from '../libs/hl7/src/types'
+import { StrictMessage } from "../libs/hl7/src";
 
 export const strictJSON: StrictMessage = {
   meta: {

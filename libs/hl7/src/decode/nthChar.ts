@@ -3,5 +3,5 @@ export const nthChar = (
   searchFor: string,
   nthChar: number
 ) => {
-  return searchIn.split(searchFor, nthChar).join(searchFor).length
-}
+  return searchIn.split(searchFor, nthChar).join(searchFor).length;
+};

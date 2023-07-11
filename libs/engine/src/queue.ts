@@ -1,5 +1,5 @@
-import { IQueueOptions, queue as goferQueue } from '@gofer-engine/queue'
-import { IMsg } from '@gofer-engine/hl7'
+import { IQueueOptions, queue as goferQueue } from '@gofer-engine/queue';
+import { IMsg } from '@gofer-engine/hl7';
 
 export const queue = <T = IMsg>(
   id: string,
@@ -7,6 +7,6 @@ export const queue = <T = IMsg>(
   msg: T,
   options?: IQueueOptions<T>
 ) => {
-  const q = goferQueue(id, process, options)
-  q.push(msg)
-}
+  const q = goferQueue(id, process, options);
+  q.push(msg);
+};

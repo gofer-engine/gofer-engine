@@ -17,98 +17,104 @@ export type Segments = Segment[];
 export interface ISub {
   json: <S extends boolean | undefined = undefined>(
     strict?: S
-  ) => IfTrueElse<S, NoPos<StrictSubComponent>, SubComponent>
-  toString: () => string
+  ) => IfTrueElse<S, NoPos<StrictSubComponent>, SubComponent>;
+  toString: () => string;
 }
 
 export interface ISubs {
-  toString: (subCompSep?: string) => string
-  json: <S extends boolean | undefined = undefined>(strict?: S) => IfTrueElse<S, StrictSubComponent[], SubComponent[]>
+  toString: (subCompSep?: string) => string;
+  json: <S extends boolean | undefined = undefined>(
+    strict?: S
+  ) => IfTrueElse<S, StrictSubComponent[], SubComponent[]>;
 }
 
 export interface IMultiSubs {
-  toString: (
-    subCompSep?: string,
-    compSep?: string
-  ) => string
-  json: () => SubComponent[][]
+  toString: (subCompSep?: string, compSep?: string) => string;
+  json: () => SubComponent[][];
 }
 
 export interface ICmp {
-  json: <S extends boolean | undefined = undefined>(strict?: S) =>
-    IfTrueElse<S, NoPos<StrictComponent>, Component>
-  one: () => ICmp
-  all: () => ICmp[]
-  toString: (options?: {
-    subCompSep?: string
-  }) => string
-  getSubComponent: (position?: number) => ISub
-  getSubComponents: (position?: number) => ISub[]
+  json: <S extends boolean | undefined = undefined>(
+    strict?: S
+  ) => IfTrueElse<S, NoPos<StrictComponent>, Component>;
+  one: () => ICmp;
+  all: () => ICmp[];
+  toString: (options?: { subCompSep?: string }) => string;
+  getSubComponent: (position?: number) => ISub;
+  getSubComponents: (position?: number) => ISub[];
 }
 
 export interface ICmps {
-  json: <S extends boolean | undefined = undefined>(strict?: S) =>
-    IfTrueElse<S, StrictComponent[], Component[]>
-  one: (iteration?: number) => ICmp
-  all: () => ICmp[]
-  toString: (options?: {
-    subCompSep?: string
-    fieldRepSep?: string
-  }, stringify?: boolean) => string | string[]
-  getSubComponent: (position?: number) => ISubs
-  getSubComponents: (position?: number) => ISub[][]
+  json: <S extends boolean | undefined = undefined>(
+    strict?: S
+  ) => IfTrueElse<S, StrictComponent[], Component[]>;
+  one: (iteration?: number) => ICmp;
+  all: () => ICmp[];
+  toString: (
+    options?: {
+      subCompSep?: string;
+      fieldRepSep?: string;
+    },
+    stringify?: boolean
+  ) => string | string[];
+  getSubComponent: (position?: number) => ISubs;
+  getSubComponents: (position?: number) => ISub[][];
 }
 
 export interface IRep {
-  json: <S extends boolean | undefined = undefined>(strict?: S) =>
-    IfTrueElse<S, NoPos<StrictFieldRepetition>, Field>
+  json: <S extends boolean | undefined = undefined>(
+    strict?: S
+  ) => IfTrueElse<S, NoPos<StrictFieldRepetition>, Field>;
   toString: (options?: {
-    compSep?: string
-    subCompSep?: string
-    escChar?: string
+    compSep?: string;
+    subCompSep?: string;
+    escChar?: string;
   }) => string;
-  getComponent: (position?: number) => ICmp
-  getComponents: () => ICmp[]
+  getComponent: (position?: number) => ICmp;
+  getComponents: () => ICmp[];
 }
 
 export interface IFld {
-  json: <S extends boolean | undefined = undefined>(strict?: S) =>
-    IfTrueElse<S, NoPos<StrictField>, Field | FieldRep>;
+  json: <S extends boolean | undefined = undefined>(
+    strict?: S
+  ) => IfTrueElse<S, NoPos<StrictField>, Field | FieldRep>;
   toString: (options?: {
-    compSep?: string
-    subCompSep?: string
-    repSep?: string
-    escChar?: string
+    compSep?: string;
+    subCompSep?: string;
+    repSep?: string;
+    escChar?: string;
   }) => string;
-  getRepetitions: () => IRep[]
-  getComponent: (position?: number) => ICmp | ICmps
-  getComponents: () => ICmp[]
+  getRepetitions: () => IRep[];
+  getComponent: (position?: number) => ICmp | ICmps;
+  getComponents: () => ICmp[];
 }
 
 export interface IFlds {
-  json: <S extends boolean | undefined = undefined>(strict?: S) =>
-    IfTrueElse<S, StrictField[], Field[]>;
+  json: <S extends boolean | undefined = undefined>(
+    strict?: S
+  ) => IfTrueElse<S, StrictField[], Field[]>;
   one: () => IFld;
   toString: (options?: {
-    fieldSep?: string,
-    compSep?: string,
-    subCompSep?: string,
-    repSep?: string,
-    escChar?: string
+    fieldSep?: string;
+    compSep?: string;
+    subCompSep?: string;
+    repSep?: string;
+    escChar?: string;
   }) => string;
   getComponent: (position: number | undefined) => ICmp | ICmps;
-  getComponents: () => ICmps
+  getComponents: () => ICmps;
 }
 
 export interface ISeg {
-  json: <S extends boolean | undefined = undefined>(strict?: S) =>
-    IfTrueElse<S, NoPos<StrictSegment>, Segment>;
+  json: <S extends boolean | undefined = undefined>(
+    strict?: S
+  ) => IfTrueElse<S, NoPos<StrictSegment>, Segment>;
   toString: (options?: {
-    fieldSep?: string,
-    compSep?: string,
-    subCompSep?: string,
-    repSep?: string,
-    escChar?: string,
+    fieldSep?: string;
+    compSep?: string;
+    subCompSep?: string;
+    repSep?: string;
+    escChar?: string;
   }) => string;
   getName: () => string;
   getField: (
@@ -120,8 +126,9 @@ export interface ISeg {
 }
 
 export interface ISegs {
-  json: <S extends boolean | undefined = undefined>(strict?: S) =>
-    IfTrueElse<S, StrictSegment[], Segments>;
+  json: <S extends boolean | undefined = undefined>(
+    strict?: S
+  ) => IfTrueElse<S, StrictSegment[], Segments>;
   toString: () => string;
   one: (position: number) => ISeg;
   all: () => ISeg[];
@@ -187,7 +194,11 @@ export interface IMsg {
       iteration?: boolean | undefined;
     }
   ) => IMsg;
-  setIteration: <Y>(path: string, map: Y[] | ((val: Y, i: number) => Y), options?: { allowLoop: boolean }) => IMsg;
+  setIteration: <Y>(
+    path: string,
+    map: Y[] | ((val: Y, i: number) => Y),
+    options?: { allowLoop: boolean }
+  ) => IMsg;
 }
 
 export interface MessageMeta {

@@ -1,5 +1,5 @@
-import { deepCopy } from '../encode/deepCopy'
-import { Message } from '../types'
+import { deepCopy } from '../encode/deepCopy';
+import { Message } from '../types';
 
 export const deleteSegment = (
   msg: Message,
@@ -8,22 +8,22 @@ export const deleteSegment = (
   segmentIteration: number | undefined
 ): Message => {
   // eslint-disable-next-line prefer-const
-  let [meta, ...segments] = deepCopy(msg)
+  let [meta, ...segments] = deepCopy(msg);
   segments = segments.map((segmentGroups) => {
-    let segIndex = 0
+    let segIndex = 0;
     return segmentGroups.filter((segment) => {
       // eslint-disable-next-line prefer-const
-      let [name] = segment
+      let [name] = segment;
       if (name === segName) {
-        segIndex++
+        segIndex++;
         if (segIndex === segmentIteration || segmentIteration === undefined) {
-          return false
+          return false;
         }
       }
-      return true
-    })
-  })
+      return true;
+    });
+  });
 
-  msg = [meta, ...segments]
-  return msg
-}
+  msg = [meta, ...segments];
+  return msg;
+};

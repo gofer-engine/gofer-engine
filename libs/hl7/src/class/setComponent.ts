@@ -1,12 +1,12 @@
-import { deepCopy } from '../encode/deepCopy'
-import { Message, Component } from '../types'
+import { deepCopy } from '../encode/deepCopy';
+import { Message, Component } from '../types';
 import {
   toFieldRep,
   toFieldStrict,
   toArray,
   toFieldLoose,
   toFieldOrRep,
-} from './coerce'
+} from './coerce';
 
 export const setComponent = (
   msg: Message,
@@ -20,32 +20,32 @@ export const setComponent = (
   decode = true
 ): Message => {
   // eslint-disable-next-line prefer-const
-  let [meta, ...segments] = deepCopy(msg)
+  let [meta, ...segments] = deepCopy(msg);
   segments = segments.map((segmentGroups) => {
-    let segIndex = 0
+    let segIndex = 0;
     return segmentGroups.map((segment) => {
       // eslint-disable-next-line prefer-const
-      let [name, ...fields] = segment
+      let [name, ...fields] = segment;
       if (name === segName) {
-        segIndex++
+        segIndex++;
         if (segIndex === segmentIteration || segmentIteration === undefined) {
           if (fields.length < fieldPosition) {
-            fields[fieldPosition - 1] = null
+            fields[fieldPosition - 1] = null;
           }
           fields = fields.map((field, i) => {
             if (i === fieldPosition - 1) {
-              let [, ...fields] = toFieldRep(field)
+              let [, ...fields] = toFieldRep(field);
               if (
                 fieldIteration !== undefined &&
                 fields.length < fieldIteration
               ) {
-                fields[fieldIteration - 1] = null
+                fields[fieldIteration - 1] = null;
               }
               fields = fields.map((f, i) => {
                 if (fieldIteration === undefined || i === fieldIteration - 1) {
-                  let field = toFieldStrict(f)
+                  let field = toFieldStrict(f);
                   if (field.length < componentPosition) {
-                    field[componentPosition - 1] = []
+                    field[componentPosition - 1] = [];
                   }
                   field = field.map((comp, i) => {
                     if (i === componentPosition - 1) {
@@ -55,25 +55,25 @@ export const setComponent = (
                           : decode && typeof value === 'string'
                           ? value
                           : value
-                      )
+                      );
                     }
-                    return comp
-                  })
-                  return toFieldLoose(field)
+                    return comp;
+                  });
+                  return toFieldLoose(field);
                 }
-                return f
-              })
-              return toFieldOrRep([{ rep: true }, ...fields])
+                return f;
+              });
+              return toFieldOrRep([{ rep: true }, ...fields]);
             }
-            return field
-          })
-          return [name, ...fields]
+            return field;
+          });
+          return [name, ...fields];
         }
       }
-      return segment
-    })
-  })
+      return segment;
+    });
+  });
 
-  msg = [meta, ...segments]
-  return msg
-}
+  msg = [meta, ...segments];
+  return msg;
+};

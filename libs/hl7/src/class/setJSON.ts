@@ -8,20 +8,20 @@ import {
   Paths,
   Segment,
   SubComponent,
-} from '../types'
-import { isFieldRep } from './isFieldRep'
+} from '../types';
+import { isFieldRep } from './isFieldRep';
 import {
   isMessage,
   isSubComponent,
   isComponent,
   isField,
   isSegment,
-} from './isHL7JSON'
-import { setComponent } from './setComponent'
-import { setField } from './setField'
-import { setFieldOrRep } from './setFieldOrRep'
-import { setSegment } from './setSegment'
-import { setSubComponent } from './setSubComponent'
+} from './isHL7JSON';
+import { setComponent } from './setComponent';
+import { setField } from './setField';
+import { setFieldOrRep } from './setFieldOrRep';
+import { setSegment } from './setSegment';
+import { setSubComponent } from './setSubComponent';
 
 export const setJSON = (
   msg: IMsg,
@@ -37,13 +37,13 @@ export const setJSON = (
 ): IMsg => {
   if (segmentName === undefined) {
     if (isMessage(json)) {
-      msg.setMsg(json as Message)
-      return msg
+      msg.setMsg(json as Message);
+      return msg;
     }
     console.warn(
       'The json was not a valid HL7 JSON Message. Returning the original message.'
-    )
-    return msg
+    );
+    return msg;
   }
   if (
     subComponentPosition !== undefined &&
@@ -62,12 +62,12 @@ export const setJSON = (
           subComponentPosition,
           json as SubComponent
         )
-      )
+      );
     }
     console.warn(
       'The json was not a valid HL7 JSON SubComponent. Returning the original message.'
-    )
-    return msg
+    );
+    return msg;
   }
 
   if (componentPosition !== undefined && fieldPosition !== undefined) {
@@ -82,7 +82,7 @@ export const setJSON = (
           componentPosition,
           json as Component
         )
-      )
+      );
     }
   }
 
@@ -96,7 +96,7 @@ export const setJSON = (
           fieldPosition,
           json as FieldRep
         )
-      )
+      );
     }
     if (isField(json as Field)) {
       return msg.setMsg(
@@ -108,17 +108,17 @@ export const setJSON = (
           fieldIteration,
           json as Field
         )
-      )
+      );
     }
     console.warn(
       'The json was not a valid HL7 JSON Field or FieldRep. Returning the original message.'
-    )
+    );
   }
   if (isSegment(json)) {
     return msg.setMsg(
       setSegment(msg.json(), segmentName, segmentIteration, json as Segment)
-    )
+    );
   }
 
-  throw new Error('The json was not a valid HL7 JSON.')
-}
+  throw new Error('The json was not a valid HL7 JSON.');
+};

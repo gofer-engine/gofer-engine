@@ -6,8 +6,5 @@
     "type": "git",
     "url": "https://github.com/gofer-engine/gofer-engine.git",
     "directory": "libs/hl7"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
   }
 }

@@ -1,8 +1,8 @@
-import { MessageMeta } from '../types'
+import { MessageMeta } from '../types';
 
 export const escapeString = (str: string, meta: MessageMeta) => {
   const { escapeChar, fieldSep, componentSep, subComponentSep, repetitionSep } =
-    meta.encodingCharacters
+    meta.encodingCharacters;
   return str
     .split(escapeChar)
     .join(`${escapeChar}${escapeChar}`)
@@ -13,13 +13,13 @@ export const escapeString = (str: string, meta: MessageMeta) => {
     .split(subComponentSep)
     .join(`${escapeChar}${subComponentSep}`)
     .split(repetitionSep)
-    .join(`${escapeChar}${repetitionSep}`)
-}
+    .join(`${escapeChar}${repetitionSep}`);
+};
 
 export const escapeSubComp = (
   value: string | null | undefined,
   meta: MessageMeta
 ) => {
-  if (value === undefined || value === null) return value
-  return escapeString(value, meta)
-}
+  if (value === undefined || value === null) return value;
+  return escapeString(value, meta);
+};

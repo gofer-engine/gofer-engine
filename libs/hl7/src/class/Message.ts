@@ -155,12 +155,12 @@ export class Msg implements IMsg {
       if (id.length > 20) {
         throw new Error('Message id cannot be longer than 20 characters.');
       }
-      this._msg[0].id = id
-      return id
+      this._msg[0].id = id;
+      return id;
     } else {
-      return this._msg[0].id
+      return this._msg[0].id;
     }
-  }
+  };
 
   public getSegments: IMsg['getSegments'] = (segmentName) =>
     getSegments(this.msg, segmentName).map((s) => new Seg(s));
@@ -211,7 +211,11 @@ export class Msg implements IMsg {
 
   public map = <X>(
     path: string,
-    v: string | Record<string, string> | string[] | (<T extends X>(v: T, i: number) => T),
+    v:
+      | string
+      | Record<string, string>
+      | string[]
+      | (<T extends X>(v: T, i: number) => T),
     options: {
       iteration?: boolean | undefined;
     } = {}

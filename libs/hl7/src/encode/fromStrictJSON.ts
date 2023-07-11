@@ -7,23 +7,23 @@ import {
   StrictComponent,
   StrictMessage,
   SubComponent,
-} from '../types'
-import { deepCopy } from './deepCopy'
-import { flattenSingleArrayItem } from './flattenSingleArrayItem'
+} from '../types';
+import { deepCopy } from './deepCopy';
+import { flattenSingleArrayItem } from './flattenSingleArrayItem';
 
 const fromStrictComp = (comp: StrictComponent): Component => {
   const component: Component = comp.subComponents.map((subComp) => {
-    let subComponent: SubComponent = subComp.value
-    if (subComponent === '') subComponent = null
-    return subComponent
-  })
-  return flattenSingleArrayItem(component)
-}
+    let subComponent: SubComponent = subComp.value;
+    if (subComponent === '') subComponent = null;
+    return subComponent;
+  });
+  return flattenSingleArrayItem(component);
+};
 
 export const fromStrictJSON = (_msg: StrictMessage): Message => {
-  const msg = deepCopy(_msg)
+  const msg = deepCopy(_msg);
   const { encodingCharacters, encodedAt, messageStructure, version, ...rest } =
-    msg.meta
+    msg.meta;
   return [
     {
       encodingCharacters,
@@ -41,19 +41,19 @@ export const fromStrictJSON = (_msg: StrictMessage): Message => {
             const fieldRep: FieldRep = [
               { rep: true },
               ...field.repetitions.map((repetition) => {
-                const field: Field = repetition.components.map(fromStrictComp)
-                return flattenSingleArrayItem(field)
+                const field: Field = repetition.components.map(fromStrictComp);
+                return flattenSingleArrayItem(field);
               }),
-            ]
-            return fieldRep
+            ];
+            return fieldRep;
           } else {
             const fields: Field =
-              field.repetitions[0].components.map(fromStrictComp)
-            return flattenSingleArrayItem(fields)
+              field.repetitions[0].components.map(fromStrictComp);
+            return flattenSingleArrayItem(fields);
           }
         }),
-      ]
-      return segment
+      ];
+      return segment;
     }),
-  ]
-}
+  ];
+};

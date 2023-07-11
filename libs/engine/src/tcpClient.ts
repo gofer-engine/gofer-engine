@@ -1,9 +1,9 @@
-import net from 'net'
-import handelse from '@gofer-engine/handelse'
-import Msg, { IMsg } from '@gofer-engine/hl7'
-import { onLog } from './eventHandlers'
-import { IMessageContext, TcpConfig } from './types'
-import { functionalVal } from './helpers'
+import net from 'net';
+import handelse from '@gofer-engine/handelse';
+import Msg, { IMsg } from '@gofer-engine/hl7';
+import { onLog } from './eventHandlers';
+import { IMessageContext, TcpConfig } from './types';
+import { functionalVal } from './helpers';
 
 type TcpClientFunc<T, R> = (
   opt: TcpConfig<'O'>,
@@ -15,7 +15,7 @@ type TcpClientFunc<T, R> = (
   flowId: string | number | undefined,
   context: IMessageContext,
   direct?: boolean
-) => Promise<IMsg>
+) => Promise<IMsg>;
 
 const sendMessage = async (
   host: string,
@@ -36,13 +36,13 @@ const sendMessage = async (
       channel,
       route,
       flow,
-    })
-    onLog.go('TODO: TCP responseTimeout is not yet implemented')
-    onLog.go({ responseTimeout })
+    });
+    onLog.go('TODO: TCP responseTimeout is not yet implemented');
+    onLog.go({ responseTimeout });
   }
   return new Promise((res, rej) => {
-    let responseBuffer = ''
-    const client = new net.Socket()
+    let responseBuffer = '';
+    const client = new net.Socket();
     client.connect({ port, host }, () => {
       handelse.go(`gofer:${channel}.onLog`, {
         log: `TCP connection established to ${host}:${port}`,
@@ -50,11 +50,11 @@ const sendMessage = async (
         channel,
         route,
         flow,
-      })
-      client.write(SoM + data + EoM + CR)
-    })
+      });
+      client.write(SoM + data + EoM + CR);
+    });
     client.on('data', (chunk) => {
-      responseBuffer += chunk.toString()
+      responseBuffer += chunk.toString();
       if (
         responseBuffer.substring(
           responseBuffer.length - 2,
@@ -62,10 +62,10 @@ const sendMessage = async (
         ) ===
         EoM + CR
       ) {
-        res(responseBuffer.substring(1, responseBuffer.length - 2))
-        client.end()
+        res(responseBuffer.substring(1, responseBuffer.length - 2));
+        client.end();
       }
-    })
+    });
     client.on('end', function () {
       handelse.go(`gofer:${channel}.onLog`, {
         log: `Requested an end to the TCP connection`,
@@ -73,22 +73,26 @@ const sendMessage = async (
         channel,
         route,
         flow,
-      })
-    })
+      });
+    });
     client.on('error', (err) => {
-      handelse.go(`gofer:${channel}.onError`, {
-        error: err,
-        msg: data,
-        channel,
-        route,
-        flow,
-      }, {
-        createIfNotExists: direct
-      })
-      rej(err)
-    })
-  })
-}
+      handelse.go(
+        `gofer:${channel}.onError`,
+        {
+          error: err,
+          msg: data,
+          channel,
+          route,
+          flow,
+        },
+        {
+          createIfNotExists: direct,
+        }
+      );
+      rej(err);
+    });
+  });
+};
 
 export const tcpClient: TcpClientFunc<IMsg, IMsg> = async (
   {
@@ -109,28 +113,32 @@ export const tcpClient: TcpClientFunc<IMsg, IMsg> = async (
   direct
 ) => {
   const config: {
-    host?: string
-    port?: number
-    SoM?: string
-    EoM?: string
-    CR?: string
-  } = {}
+    host?: string;
+    port?: number;
+    SoM?: string;
+    EoM?: string;
+    CR?: string;
+  } = {};
   try {
-    config.host = functionalVal(host, msg, context)
-    config.port = functionalVal(port, msg, context)
-    config.SoM = functionalVal(SoM, msg, context)
-    config.EoM = functionalVal(EoM, msg, context)
-    config.CR = functionalVal(CR, msg, context)
+    config.host = functionalVal(host, msg, context);
+    config.port = functionalVal(port, msg, context);
+    config.SoM = functionalVal(SoM, msg, context);
+    config.EoM = functionalVal(EoM, msg, context);
+    config.CR = functionalVal(CR, msg, context);
   } catch (err: unknown) {
-    handelse.go(`gofer:${channelId}.onError`, {
-      error: err,
-      msg,
-      channel: channelId,
-      route: routeId,
-      flow: flowId,
-    }, {
-      createIfNotExists: direct
-    })
+    handelse.go(
+      `gofer:${channelId}.onError`,
+      {
+        error: err,
+        msg,
+        channel: channelId,
+        route: routeId,
+        flow: flowId,
+      },
+      {
+        createIfNotExists: direct,
+      }
+    );
   }
   if (
     config.host !== undefined &&
@@ -151,8 +159,8 @@ export const tcpClient: TcpClientFunc<IMsg, IMsg> = async (
       routeId,
       flowId,
       direct
-    )
-    return parse(ack)
+    );
+    return parse(ack);
   }
-  throw new Error('TCP client configuration is invalid')
-}
+  throw new Error('TCP client configuration is invalid');
+};

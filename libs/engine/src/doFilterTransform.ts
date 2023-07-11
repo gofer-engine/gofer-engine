@@ -11,8 +11,8 @@ export const doFilterTransform = (
   flows: (boolean | Promise<boolean>)[],
   filtered: boolean,
   direct?: boolean
-): { 
-  filtered: boolean; 
+): {
+  filtered: boolean;
   flows: (boolean | Promise<boolean>)[];
   msg: IMsg;
 } => {

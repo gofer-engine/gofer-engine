@@ -1,5 +1,5 @@
-import { deepCopy } from '../encode/deepCopy'
-import { Message, FieldOrRep } from '../types'
+import { deepCopy } from '../encode/deepCopy';
+import { Message, FieldOrRep } from '../types';
 
 export const setFieldOrRep = (
   msg: Message,
@@ -10,31 +10,31 @@ export const setFieldOrRep = (
   value: FieldOrRep | ((fieldRep: FieldOrRep) => FieldOrRep)
 ): Message => {
   // eslint-disable-next-line prefer-const
-  let [meta, ...segments] = deepCopy(msg)
+  let [meta, ...segments] = deepCopy(msg);
   segments = segments.map((segmentGroups) => {
-    let segIndex = 0
+    let segIndex = 0;
     return segmentGroups.map((segment) => {
       // eslint-disable-next-line prefer-const
-      let [name, ...fields] = segment
+      let [name, ...fields] = segment;
       if (name === segName) {
-        segIndex++
+        segIndex++;
         if (segIndex === segmentIteration || segmentIteration === undefined) {
           if (fields.length < fieldPosition) {
-            fields[fieldPosition - 1] = null
+            fields[fieldPosition - 1] = null;
           }
           fields = fields.map((field, i) => {
             if (i === fieldPosition - 1) {
-              return typeof value === 'function' ? value(field) : value
+              return typeof value === 'function' ? value(field) : value;
             }
-            return field
-          })
-          return [name, ...fields]
+            return field;
+          });
+          return [name, ...fields];
         }
       }
-      return segment
-    })
-  })
+      return segment;
+    });
+  });
 
-  msg = [meta, ...segments]
-  return msg
-}
+  msg = [meta, ...segments];
+  return msg;
+};

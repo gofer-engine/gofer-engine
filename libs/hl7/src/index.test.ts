@@ -1,12 +1,12 @@
 /* eslint-disable @nx/enforce-module-boundaries */
-import * as fs from 'fs'
-import { ICmp, IFld, Msg } from '../src'
-import HL7Json from '../../../samples/sample.json'
-import { strictJSON } from '../../../samples/data'
+import * as fs from 'fs';
+import { ICmp, IFld, Msg } from '../src';
+import HL7Json from '../../../samples/sample.json';
+import { strictJSON } from '../../../samples/data';
 
-const HL7 = fs.readFileSync('./samples/sample.hl7', 'utf8')
+const HL7 = fs.readFileSync('./samples/sample.hl7', 'utf8');
 
-const msg = new Msg(HL7)
+const msg = new Msg(HL7);
 
 const tests: Record<string, { path: string; expected: unknown }> = {
   Source: {
@@ -223,46 +223,56 @@ const tests: Record<string, { path: string; expected: unknown }> = {
     path: 'PRA-7[1].1.2',
     expected: 'T',
   },
-}
+};
 
 const testSuite = Object.entries(tests).map(([name, { path, expected }]) => {
-  return { name, path, expected }
-})
+  return { name, path, expected };
+});
 
 test.each(testSuite)('$name', ({ path, expected }) => {
-  expect(msg.get(path)).toStrictEqual(expected)
-})
+  expect(msg.get(path)).toStrictEqual(expected);
+});
 
 test('Get LAN Segment', () => {
   expect(msg.getSegment('LAN', 1).toString()).toBe(
     'LAN|1|ESL^SPANISH^ISO639|1^READ^HL70403|1^EXCELLENT^HL70404|'
-  )
-})
+  );
+});
 
 test('Get STF-10[1] Field', () => {
   expect(msg.getSegment('STF', 1).getField(10, 1).toString()).toBe(
     '(555)555-1003X345^C^O'
-  )
-})
+  );
+});
 
 test('Get Non-Existant', () => {
-  expect(msg.getSegment('XXX').json()).toBeUndefined()
-  expect(msg.get('XXX')).toBeUndefined()
-  expect(msg.get('XXX-1')).toBeUndefined()
-  expect(msg.get('ZZZ[2]')).toBeUndefined()
-  expect(msg.get('ZZZ-1[2]')).toBeUndefined()
-  expect(msg.get('ZZZ-2.6')).toBeUndefined()
-  expect(msg.get('ZZZ-2.2.4')).toBeUndefined()
-})
+  expect(msg.getSegment('XXX').json()).toBeUndefined();
+  expect(msg.get('XXX')).toBeUndefined();
+  expect(msg.get('XXX-1')).toBeUndefined();
+  expect(msg.get('ZZZ[2]')).toBeUndefined();
+  expect(msg.get('ZZZ-1[2]')).toBeUndefined();
+  expect(msg.get('ZZZ-2.6')).toBeUndefined();
+  expect(msg.get('ZZZ-2.2.4')).toBeUndefined();
+});
 
 test('Errors', () => {
-  expect(() => msg.get('ABCD')).toThrowError("Could not parse path: ABCD")
-  expect(() => msg.get('ZZZ[0]')).toThrowError("Segment Iteration in path ZZZ[0] cannot be 0.")
-  expect(() => msg.get('ZZZ-0')).toThrowError("Field Position in path ZZZ-0 cannot be 0.")
-  expect(() => msg.get('ZZZ-1.0')).toThrowError("Component Position in path ZZZ-1.0 cannot be 0.")
-  expect(() => msg.get('ZZZ-1.1.0')).toThrowError("Sub Component Position in path ZZZ-1.1.0 cannot be 0.")
-  expect(() => msg.get('ZZZ-1[0]')).toThrowError("Field Iteration in path ZZZ-1[0] cannot be 0.")
-})
+  expect(() => msg.get('ABCD')).toThrowError('Could not parse path: ABCD');
+  expect(() => msg.get('ZZZ[0]')).toThrowError(
+    'Segment Iteration in path ZZZ[0] cannot be 0.'
+  );
+  expect(() => msg.get('ZZZ-0')).toThrowError(
+    'Field Position in path ZZZ-0 cannot be 0.'
+  );
+  expect(() => msg.get('ZZZ-1.0')).toThrowError(
+    'Component Position in path ZZZ-1.0 cannot be 0.'
+  );
+  expect(() => msg.get('ZZZ-1.1.0')).toThrowError(
+    'Sub Component Position in path ZZZ-1.1.0 cannot be 0.'
+  );
+  expect(() => msg.get('ZZZ-1[0]')).toThrowError(
+    'Field Iteration in path ZZZ-1[0] cannot be 0.'
+  );
+});
 
 test('Get STF-10.1 Component', () => {
   expect(
@@ -271,48 +281,48 @@ test('Get STF-10.1 Component', () => {
       .getField(10)
       .getComponent(1)
       .toString({ fieldRepSep: '; ' }, true)
-  ).toBe('(555)555-1003X345; (555)555-3334; (555)555-1345X789')
-})
+  ).toBe('(555)555-1003X345; (555)555-3334; (555)555-1345X789');
+});
 
 test('Get STF-10[1].1 Component', () => {
   expect(msg.getSegment('ZZZ').getField(2).getComponent(2).toString()).toBe(
     'Chapter&15&Personnel Management'
-  )
-})
+  );
+});
 
 test('Get raw msg', () => {
-  const raw = msg.json()
+  const raw = msg.json();
   expect(JSON.stringify(raw, undefined, 2)).toBe(
     JSON.stringify(HL7Json, undefined, 2)
-  )
-})
+  );
+});
 
 test('Encode to HL7', () => {
-  expect(msg.toString()).toBe(HL7)
-})
+  expect(msg.toString()).toBe(HL7);
+});
 
 test('New Empty Msg Class', () => {
-  const msg = new Msg()
-  expect(msg.get('MSH-1')).toBe('|')
-})
+  const msg = new Msg();
+  expect(msg.get('MSH-1')).toBe('|');
+});
 
 test('New Msg Class By Array', () => {
-  const m = msg.json()
-  const m2 = new Msg(m)
-  expect(m2.toString()).toBe(HL7)
-})
+  const m = msg.json();
+  const m2 = new Msg(m);
+  expect(m2.toString()).toBe(HL7);
+});
 
 test('Add Segment', () => {
-  msg.addSegment(['NTE', '1', 'This is a comment'])
-  expect(msg.get('NTE-2')).toBe('This is a comment')
-})
+  msg.addSegment(['NTE', '1', 'This is a comment']);
+  expect(msg.get('NTE-2')).toBe('This is a comment');
+});
 
 const msg2 = new Msg(
   'MSH!@#$%^!HL7REG!UH!HL7LAB!CH!200702280700!!PMU@B01@PMU_B01!MSGID002!P!2.8!'
-)
+);
 
 test('Encoding Characters', () => {
-  const encodingChars = msg2.json(true).meta.encodingCharacters
+  const encodingChars = msg2.json(true).meta.encodingCharacters;
   expect(encodingChars).toStrictEqual({
     fieldSep: '!',
     componentSep: '@',
@@ -320,26 +330,26 @@ test('Encoding Characters', () => {
     escapeChar: '$',
     subComponentSep: '%',
     truncateChar: '^',
-  })
-})
+  });
+});
 
 test('Custom Encoding Get', () => {
-  expect(msg2.get('MSH-9.3')).toBe('PMU_B01')
-})
+  expect(msg2.get('MSH-9.3')).toBe('PMU_B01');
+});
 
 test('Custom Encoding Stingify', () => {
   expect(msg2.toString()).toBe(
     'MSH!@#$%^!HL7REG!UH!HL7LAB!CH!200702280700!!PMU@B01@PMU_B01!MSGID002!P!2.8!'
-  )
-})
+  );
+});
 
 test('getStrictJSON', () => {
-  expect(new Msg(HL7).json(true)).toStrictEqual(strictJSON)
-})
+  expect(new Msg(HL7).json(true)).toStrictEqual(strictJSON);
+});
 
 test('fromStrictJSON', () => {
-  expect(new Msg(strictJSON).json()).toStrictEqual(new Msg(HL7).json())
-})
+  expect(new Msg(strictJSON).json()).toStrictEqual(new Msg(HL7).json());
+});
 
 // write files for manual comparison and debugging
 // fs.writeFileSync(
@@ -353,12 +363,12 @@ test('Deeply Nested LAN Values', () => {
     .getSegment('LAN')
     .getFields()
     .map((f: IFld | IFld[]) => {
-      const mapper = (c: ICmp) => c.getSubComponents().map((s) => s.toString())
+      const mapper = (c: ICmp) => c.getSubComponents().map((s) => s.toString());
       if (Array.isArray(f)) {
-        return f.map((f) => f.getComponents().map(mapper))
+        return f.map((f) => f.getComponents().map(mapper));
       }
-      return f.getComponents().map(mapper)
-    })
+      return f.getComponents().map(mapper);
+    });
   const exp = [
     [
       [['1']],
@@ -381,6 +391,6 @@ test('Deeply Nested LAN Values', () => {
       [['3'], ['FAIR'], ['HL70404']],
       [['']],
     ],
-  ]
-  expect(deepValues).toEqual(exp)
-})
+  ];
+  expect(deepValues).toEqual(exp);
+});

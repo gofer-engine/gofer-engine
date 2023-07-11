@@ -7,7 +7,7 @@
     "test-handelse": "npx nx run handelse:test",
     "test-queue": "npx nx run queue:test",
     "test-stores": "npx nx run stores:test",
-    "test-ts-hl7": "npx nx run ts-hl7:test",
+    "test-hl7": "npx nx run hl7:test",
     "test": "npx nx run-many -t test",
     "build": "npx nx run gofer-engine:build",
     "dev": "npx nx run gofer-engine:serve",

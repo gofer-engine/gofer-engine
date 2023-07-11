@@ -1,6 +1,6 @@
-import { deepCopy } from '../encode/deepCopy'
-import { Message, Field } from '../types'
-import { toFieldRep, toFieldOrRep } from './coerce'
+import { deepCopy } from '../encode/deepCopy';
+import { Message, Field } from '../types';
+import { toFieldRep, toFieldOrRep } from './coerce';
 
 export const setField = (
   msg: Message,
@@ -12,44 +12,44 @@ export const setField = (
   value: Field | ((field: Field) => Field)
 ): Message => {
   // eslint-disable-next-line prefer-const
-  let [meta, ...segments] = deepCopy(msg)
+  let [meta, ...segments] = deepCopy(msg);
   segments = segments.map((segmentGroups) => {
-    let segIndex = 0
+    let segIndex = 0;
     return segmentGroups.map((segment) => {
       // eslint-disable-next-line prefer-const
-      let [name, ...fields] = segment
+      let [name, ...fields] = segment;
       if (name === segName) {
-        segIndex++
+        segIndex++;
         if (segIndex === segmentIteration || segmentIteration === undefined) {
           if (fields.length < fieldPosition) {
-            fields[fieldPosition - 1] = null
+            fields[fieldPosition - 1] = null;
           }
           fields = fields.map((field, i) => {
             if (i === fieldPosition - 1) {
-              let [, ...fields] = toFieldRep(field)
+              let [, ...fields] = toFieldRep(field);
               if (
                 fieldIteration !== undefined &&
                 fields.length < fieldIteration
               ) {
-                fields[fieldIteration - 1] = null
+                fields[fieldIteration - 1] = null;
               }
               fields = fields.map((f, i) => {
                 if (fieldIteration === undefined || i === fieldIteration - 1) {
-                  return typeof value === 'function' ? value(f) : value
+                  return typeof value === 'function' ? value(f) : value;
                 }
-                return f
-              })
-              return toFieldOrRep([{ rep: true }, ...fields])
+                return f;
+              });
+              return toFieldOrRep([{ rep: true }, ...fields]);
             }
-            return field
-          })
-          return [name, ...fields]
+            return field;
+          });
+          return [name, ...fields];
         }
       }
-      return segment
-    })
-  })
+      return segment;
+    });
+  });
 
-  msg = [meta, ...segments]
-  return msg
-}
+  msg = [meta, ...segments];
+  return msg;
+};

@@ -1,4 +1,4 @@
-import { Seg } from '../../hl7/src'
+import { Seg } from '@gofer-engine/hl7'
 import { ChannelConfig } from '../src/types'
 
 const SampleB: ChannelConfig = {

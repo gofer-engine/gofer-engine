@@ -1,4 +1,4 @@
-import { FieldRep, Message, Segment } from '../types'
+import { FieldRep, Message, Segment } from '../types';
 
 export const isMessage = (msg: unknown): boolean => {
   if (
@@ -48,11 +48,11 @@ export const isMessage = (msg: unknown): boolean => {
       typeof msg[0].encodingCharacters?.encodedAt === 'number' ||
       msg[0].encodingCharacters?.messageControlId === undefined)
   ) {
-    const [, ...segments] = msg as Message
-    return segments.every((segs) => segs.every((seg) => isSegment(seg)))
+    const [, ...segments] = msg as Message;
+    return segments.every((segs) => segs.every((seg) => isSegment(seg)));
   }
-  return false
-}
+  return false;
+};
 
 export const isSegment = (segment: unknown, allowMultiple = false): boolean => {
   if (
@@ -60,17 +60,17 @@ export const isSegment = (segment: unknown, allowMultiple = false): boolean => {
     Array.isArray(segment) &&
     segment.every((s) => isSegment(s))
   )
-    return true
+    return true;
   if (
     Array.isArray(segment) &&
     typeof segment?.[0] === 'string' &&
     segment[0].length === 3
   ) {
-    const [, ...fields] = segment as Segment
-    return fields.every((f) => isField(f))
+    const [, ...fields] = segment as Segment;
+    return fields.every((f) => isField(f));
   }
-  return false
-}
+  return false;
+};
 
 export const isField = (field: unknown, allowRepeating = true): boolean => {
   if (
@@ -80,19 +80,19 @@ export const isField = (field: unknown, allowRepeating = true): boolean => {
     typeof field[0] === 'object' &&
     field[0]?.rep === true
   ) {
-    const [, ...fields] = field as FieldRep
-    return fields.every(isComponent)
+    const [, ...fields] = field as FieldRep;
+    return fields.every(isComponent);
   }
   return (
     (Array.isArray(field) && field.every(isComponent)) || isComponent(field)
-  )
-}
+  );
+};
 
 export const isComponent = (component: unknown): boolean =>
   (Array.isArray(component) && component.every(isSubComponent)) ||
-  isSubComponent(component)
+  isSubComponent(component);
 
 export const isSubComponent = (subcomponent: unknown): boolean =>
   typeof subcomponent === 'string' ||
   subcomponent === null ||
-  subcomponent === undefined
+  subcomponent === undefined;

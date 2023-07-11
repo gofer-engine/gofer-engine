@@ -1,4 +1,4 @@
-import encodeHL7 from '../encode'
+import encodeHL7 from '../encode';
 import {
   FieldRep,
   IfTrueElse,
@@ -9,18 +9,18 @@ import {
   ISeg,
   ISegs,
   IFld,
-} from '../types'
-import { Fld, Flds } from './Field'
+} from '../types';
+import { Fld, Flds } from './Field';
 
 export class Seg implements ISeg {
-  private _seg: Segment
-  private _fieldSep = '|'
-  private _compSep = '^'
-  private _subCompSep = '&'
-  private _repSep = '~'
-  private _escChar = '\\'
+  private _seg: Segment;
+  private _fieldSep = '|';
+  private _compSep = '^';
+  private _subCompSep = '&';
+  private _repSep = '~';
+  private _escChar = '\\';
   constructor(segment: Segment) {
-    this._seg = segment
+    this._seg = segment;
   }
 
   public json: ISeg['json'] = <S extends boolean | undefined = undefined>(
@@ -34,13 +34,13 @@ export class Seg implements ISeg {
           return {
             position: i + 1,
             ...fld.json(true),
-          }
+          };
         }),
-      }
-      return segment as IfTrueElse<S, NoPos<StrictSegment>, Segment>
+      };
+      return segment as IfTrueElse<S, NoPos<StrictSegment>, Segment>;
     }
-    return this._seg as IfTrueElse<S, NoPos<StrictSegment>, Segment>
-  }
+    return this._seg as IfTrueElse<S, NoPos<StrictSegment>, Segment>;
+  };
 
   public toString = ({
     fieldSep = this._fieldSep,
@@ -49,11 +49,11 @@ export class Seg implements ISeg {
     repSep = this._repSep,
     escChar = this._escChar,
   } = {}) => {
-    this._fieldSep = fieldSep
-    this._compSep = compSep
-    this._subCompSep = subCompSep
-    this._repSep = repSep
-    this._escChar = escChar
+    this._fieldSep = fieldSep;
+    this._compSep = compSep;
+    this._subCompSep = subCompSep;
+    this._repSep = repSep;
+    this._escChar = escChar;
     return encodeHL7([
       {
         encodingCharacters: {
@@ -65,13 +65,13 @@ export class Seg implements ISeg {
         },
       },
       [this._seg],
-    ])
-  }
+    ]);
+  };
 
-  public getName = () => this._seg[0]
+  public getName = () => this._seg[0];
 
   public getField: ISeg['getField'] = (fieldPosition, fieldIteration) => {
-    const field = this._seg?.[fieldPosition]
+    const field = this._seg?.[fieldPosition];
     if (
       fieldIteration !== undefined &&
       Array.isArray(field) &&
@@ -80,29 +80,29 @@ export class Seg implements ISeg {
       field[0] !== null &&
       Object.prototype.hasOwnProperty.call(field[0], 'rep')
     ) {
-      const [, ...fields] = field as FieldRep
-      return new Fld(fields?.[fieldIteration - 1] ?? null)
+      const [, ...fields] = field as FieldRep;
+      return new Fld(fields?.[fieldIteration - 1] ?? null);
     } else if (fieldIteration !== undefined) {
-      return new Fld(null)
+      return new Fld(null);
     }
-    return new Fld(field)
-  }
+    return new Fld(field);
+  };
 
   public getFields: ISeg['getFields'] = () => {
-    const fields: IFld[] = []
-    const fieldCount = this._seg.length
+    const fields: IFld[] = [];
+    const fieldCount = this._seg.length;
     for (let i = 1; i < fieldCount; i++) {
-      fields.push(this.getField(i))
+      fields.push(this.getField(i));
     }
-    return fields
-  }
+    return fields;
+  };
 }
 
 export class Segs implements ISegs {
-  private _segs: Segments
+  private _segs: Segments;
 
   constructor(segments: Segments) {
-    this._segs = segments
+    this._segs = segments;
   }
 
   public json = <S extends boolean | undefined = undefined>(
@@ -113,24 +113,24 @@ export class Segs implements ISegs {
         return {
           position: i + 1,
           ...new Seg(seg).json(true),
-        }
-      }) as IfTrueElse<S, StrictSegment[], Segments>
+        };
+      }) as IfTrueElse<S, StrictSegment[], Segments>;
     }
-    return this._segs as IfTrueElse<S, StrictSegment[], Segments>
-  }
+    return this._segs as IfTrueElse<S, StrictSegment[], Segments>;
+  };
 
   public one = (segmentPosition: number): Seg =>
-    new Seg(this._segs[segmentPosition - 1] ?? null)
-  public all = (): Seg[] => this._segs.map((s) => new Seg(s))
+    new Seg(this._segs[segmentPosition - 1] ?? null);
+  public all = (): Seg[] => this._segs.map((s) => new Seg(s));
 
   public getField: ISegs['getField'] = (fieldPosition, fieldIteration) =>
     new Flds(
       this._segs.map((s) => new Seg(s).getField(fieldPosition, fieldIteration))
-    )
+    );
 
   public getFields: ISegs['getFields'] = () =>
-    this._segs.map((s) => new Seg(s).getFields())
+    this._segs.map((s) => new Seg(s).getFields());
 
   public toString = (): string =>
-    this._segs.map((s) => new Seg(s).toString()).join('\n')
+    this._segs.map((s) => new Seg(s).toString()).join('\n');
 }

@@ -1,4 +1,4 @@
-import Msg from '../../hl7/src'
+import Msg from '@gofer-engine/hl7'
 import { randomUUID } from 'crypto'
 import { ChannelConfig } from '../src/types'
 

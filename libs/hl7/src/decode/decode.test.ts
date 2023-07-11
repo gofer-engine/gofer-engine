@@ -18,5 +18,7 @@ test('decode', () => {
   expect(decode('PID')?.[1]).toStrictEqual([['PID']]);
 });
 test('findCharsFirstPos', () => {
-  expect(() => findCharsFirstPos('', ['$^'])).toThrowError('stop character is too long, expected 1 character')
-})
+  expect(() => findCharsFirstPos('', ['$^'])).toThrowError(
+    'stop character is too long, expected 1 character'
+  );
+});

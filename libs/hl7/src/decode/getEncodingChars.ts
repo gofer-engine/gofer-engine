@@ -1,29 +1,29 @@
-import { FuncGetEncodingChars } from '../types'
+import { FuncGetEncodingChars } from '../types';
 
 export const getEncodingChars: FuncGetEncodingChars = (HL7) => {
   if (HL7.startsWith('MSH')) {
-    HL7 = HL7.slice(3)
+    HL7 = HL7.slice(3);
   }
-  const fieldSep = HL7.slice(0, 1)
+  const fieldSep = HL7.slice(0, 1);
   const componentSep =
-    HL7.slice(1, 2) === fieldSep ? undefined : HL7.slice(1, 2)
+    HL7.slice(1, 2) === fieldSep ? undefined : HL7.slice(1, 2);
   const repetitionSep =
     componentSep === undefined || HL7.slice(2, 3) === fieldSep
       ? undefined
-      : HL7.slice(2, 3)
+      : HL7.slice(2, 3);
   const escapeChar =
     componentSep === undefined ||
     repetitionSep === undefined ||
     HL7.slice(3, 4) === fieldSep
       ? undefined
-      : HL7.slice(3, 4)
+      : HL7.slice(3, 4);
   const subComponentSep =
     componentSep === undefined ||
     repetitionSep === undefined ||
     escapeChar === undefined ||
     HL7.slice(4, 5) === fieldSep
       ? undefined
-      : HL7.slice(4, 5)
+      : HL7.slice(4, 5);
   const truncateChar =
     componentSep === undefined ||
     repetitionSep === undefined ||
@@ -31,7 +31,7 @@ export const getEncodingChars: FuncGetEncodingChars = (HL7) => {
     subComponentSep === undefined ||
     HL7.slice(5, 6) === fieldSep
       ? undefined
-      : HL7.slice(5, 6)
+      : HL7.slice(5, 6);
   if (
     fieldSep === undefined ||
     componentSep === undefined ||
@@ -47,7 +47,7 @@ export const getEncodingChars: FuncGetEncodingChars = (HL7) => {
         escapeChar,
         subComponentSep,
       })}`
-    )
+    );
   }
   return {
     fieldSep: fieldSep,
@@ -56,5 +56,5 @@ export const getEncodingChars: FuncGetEncodingChars = (HL7) => {
     escapeChar: escapeChar,
     subComponentSep: subComponentSep,
     truncateChar: truncateChar,
-  }
-}
+  };
+};
