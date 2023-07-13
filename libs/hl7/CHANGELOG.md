@@ -2,6 +2,13 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.2.0](https://github.com/gofer-engine/gofer-engine/compare/hl7-0.1.0...hl7-0.2.0) (2023-07-13)
+
+
+### Features
+
+* **hl7:** update Msg class with setId, version, and setVersion ([71333cb](https://github.com/gofer-engine/gofer-engine/commit/71333cb4298dee963b1557138e29bb12de00a0e9))
+
 ## 0.1.0 (2023-07-11)
 
 
