@@ -23,7 +23,7 @@ function invariant(condition, message) {
 
 // Executing publish script: node path/to/publish.mjs {name} --version {version} --tag {tag}
 // Default "tag" to "next" so we won't publish the "latest" tag by accident.
-const [, , name, version, tag = 'next'] = process.argv;
+const [, , name] = process.argv;
 
 // // A simple SemVer validation to validate the version
 // const validVersion = /^\d+\.\d+\.\d+(-\w+\.\d+)?/;
@@ -60,4 +60,4 @@ process.chdir(outputPath);
 // }
 
 // Execute "npm publish" to publish
-execSync(`npm publish --access public --tag ${tag}`);
+execSync(`npm publish --access public --tag latest`);
