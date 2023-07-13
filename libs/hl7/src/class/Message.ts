@@ -92,6 +92,7 @@ export class Msg implements IMsg {
       messageStructure as Message[0]['messageStructure'];
     this.msg[0].messageControlId =
       messageControlId as Message[0]['messageControlId'];
+    this.msg[0].id = this.msg[0].messageControlId;
   }
 
   /**
@@ -111,6 +112,7 @@ export class Msg implements IMsg {
       throw new Error('Could not addSegment');
     }
     this.msg = transformedMsg;
+    this.updateMeta();
     return this;
   };
 
@@ -121,14 +123,41 @@ export class Msg implements IMsg {
   private _paths = paths;
   private _toPath = toPath;
 
+  private updateMeta = () => {
+    const version = this.get('MSH-12.1');
+    const messageCode = this.get('MSH-9.1');
+    const triggerEvent = this.get('MSH-9.2');
+    const messageStructure = this.get('MSH-9.3');
+    const messageControlId = this.get('MSH-10');
+
+    this.msg[0].version = version as Message[0]['version'];
+    this.msg[0].messageCode = messageCode as Message[0]['messageCode'];
+    this.msg[0].triggerEvent = triggerEvent as Message[0]['triggerEvent'];
+    this.msg[0].messageStructure =
+      messageStructure as Message[0]['messageStructure'];
+    this.msg[0].messageControlId =
+      messageControlId as Message[0]['messageControlId'];
+    this.msg[0].id = this.get('MSH-10') as Message[0]['id'];
+    // TODO update encoding characters
+    return this;
+  }
+
   public set: IMsg['set'] = (path, value) => {
     if (typeof value !== 'string') value = '';
     this.msg = setValue(this.msg, this._paths(path), value);
+    if (path?.startsWith('MSH')) {
+      this.updateMeta();
+    }
     return this;
   };
 
-  public setJSON: IMsg['setJSON'] = (path, json): IMsg =>
-    setJSON(this, json, this._paths(path));
+  public setJSON: IMsg['setJSON'] = (path, json): IMsg => {
+    const msg = setJSON(this, json, this._paths(path));
+    if (path?.startsWith('MSH')) {
+      this.updateMeta();
+    }
+    return msg;
+  }
 
   public get: IMsg['get'] = (path: string | undefined) => {
     if (path === undefined) return this.msg;
@@ -156,11 +185,36 @@ export class Msg implements IMsg {
         throw new Error('Message id cannot be longer than 20 characters.');
       }
       this._msg[0].id = id;
+      this.set('MSH-10', id);
       return id;
     } else {
+      if (this._msg[0].id !== this.get('MSH.10')) {
+        this._msg[0].id = this.get('MSH.10') as string;
+      }
       return this._msg[0].id;
     }
   };
+  public setId = (id: string) => {
+    this.id(id);
+    return this;
+  }
+
+  public version = (version?: `${number}.${number}` | `${number}` | undefined) => {
+    if (version) {
+      this._msg[0].version = version;
+      this.set('MSH-12', version);
+      return version;
+    } else {
+      if (this._msg[0].version !== this.get('MSH.12')) {
+        this._msg[0].id = this.get('MSH.12') as string;
+      }
+      return this._msg[0].version;
+    }
+  }
+  public setVersion = (version: `${number}.${number}` | `${number}`) => {
+    this.version(version);
+    return this;
+  }
 
   public getSegments: IMsg['getSegments'] = (segmentName) =>
     getSegments(this.msg, segmentName).map((s) => new Seg(s));
@@ -196,6 +250,7 @@ export class Msg implements IMsg {
 
   public transform: IMsg['transform'] = (transformers) => {
     this.msg = transform(this.msg, transformers);
+    this.updateMeta();
     return this;
   };
 
@@ -221,7 +276,11 @@ export class Msg implements IMsg {
     } = {}
   ): IMsg => {
     const { iteration } = options;
-    if (typeof v === 'string') return this.set(path, v);
+    if (typeof v === 'string') {
+      this.set(path, v);
+      this.updateMeta();
+      return this;
+    }
     if (typeof v === 'function') {
       const original = this.get(path);
       if (iteration && Array.isArray(original)) {
@@ -237,6 +296,7 @@ export class Msg implements IMsg {
                 : (replacement as MsgValue)
             );
           });
+          this.updateMeta();
           return this;
         }
         if (!paths.fieldIteration) {
@@ -258,7 +318,9 @@ export class Msg implements IMsg {
         this.setJSON(path, replacement.json());
       }
       // if (typeof replacement !== 'string') replacement = replacement?.toString()
-      return this.setJSON(path, replacement as MsgValue);
+      this.setJSON(path, replacement as MsgValue);
+      this.updateMeta();
+      return this;
     }
     const original = this.get(path)?.toString() ?? '';
     if (Array.isArray(v)) {
@@ -269,7 +331,9 @@ export class Msg implements IMsg {
         );
         return this;
       }
-      return this.set(path, v?.[index] ?? '');
+      this.set(path, v?.[index] ?? '');
+      this.updateMeta();
+      return this;
     }
     if (!Object.prototype.hasOwnProperty.call(v, original)) {
       console.warn(
@@ -277,14 +341,16 @@ export class Msg implements IMsg {
       );
       return this;
     }
-    return this.set(path, v?.[original] ?? '');
+    this.set(path, v?.[original] ?? '');
+    this.updateMeta();
+    return this;
   };
 
   public setIteration = <Y>(
     path: string,
     map: Y[] | ((val: Y, i: number) => Y),
     options?: { allowLoop: boolean }
-  ) =>
+  ) => {
     this.map<Y>(
       path,
       (val, i) => {
@@ -299,6 +365,9 @@ export class Msg implements IMsg {
       },
       { iteration: true }
     );
+    this.updateMeta();
+    return this;
+  }
 }
 
 export default Msg;

@@ -182,7 +182,10 @@ export interface IMsg {
     // NOTE: if undefined, returns first segment
     iteration?: number | undefined
   ) => ISeg | ISegs;
+  setId: (id: string) => IMsg;
   id: (id?: string | undefined) => string | undefined;
+  setVersion: (version: `${number}.${number}` | `${number}`) => IMsg;
+  version: (version?: `${number}.${number}` | `${number}` | undefined) => string | undefined;
   transform: (transformers: IMsgLimiter) => IMsg;
   delete: (path: string) => IMsg;
   copy: (path: string, toPath: string) => IMsg;
@@ -210,11 +213,6 @@ export interface MessageMeta {
    */
   version?: `${number}.${number}` | `${number}`;
   /**
-   * MSH-10
-   * length: 20
-   */
-  id?: string;
-  /**
    * MSH-9.1
    * length: 3
    * Table: 0076 @see https://hl7-definition.caristix.com/v2/HL7v2.5.1/Tables/0076
@@ -235,6 +233,12 @@ export interface MessageMeta {
    * @example ADT_A01
    */
   messageStructure?: `${string}_${string}`;
+  // FIXME: `id` and `messageControlId` are the same thing, only really need one of these.
+  /**
+   * MSH-10
+   * length: 20
+   */
+  id?: string;
   /**
    * MSH-10
    * length: 20
