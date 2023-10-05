@@ -1,5 +1,5 @@
 import channels from './channels'
-import gofer from '../src'
+import { gofer } from '../src/gofer'
 
 // start gofer with channel configs
 gofer.configs(channels)

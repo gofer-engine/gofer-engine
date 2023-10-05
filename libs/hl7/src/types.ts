@@ -233,19 +233,13 @@ export interface MessageMeta {
    * @example ADT_A01
    */
   messageStructure?: `${string}_${string}`;
-  // FIXME: `id` and `messageControlId` are the same thing, only really need one of these.
-  /**
-   * MSH-10
-   * length: 20
-   */
-  id?: string;
   /**
    * MSH-10
    * length: 20
    * datatype: ST
    * @example ABC-1234.1
    */
-  messageControlId?: string;
+  id?: string;
   encodedAt?: Date;
   encodingCharacters: {
     fieldSep: string;
@@ -326,7 +320,7 @@ type StrictMessageMeta = {
   messageCode?: string;
   triggerEvent?: string;
   messageStructure?: string;
-  messageControlId?: string;
+  id?: string;
   encodedAt?: string;
   encodingCharacters: StrictEncodingCharacters;
 };

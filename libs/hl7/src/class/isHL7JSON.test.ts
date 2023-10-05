@@ -1,5 +1,5 @@
 import Msg from './Message';
-import { isMessage, isSegment, isField, isComponent } from './isHL7JSON';
+import { isMessage } from './isHL7JSON';
 
 test('isMessage', () => {
   expect(isMessage(undefined)).toBeFalsy();

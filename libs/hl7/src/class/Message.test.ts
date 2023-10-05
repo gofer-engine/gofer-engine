@@ -1,4 +1,4 @@
-import Msg, { Seg } from './';
+import Msg from './';
 
 test('Msg', () => {
   expect(() => new Msg().setJSON('MSH', 'MSH')).toThrowError(

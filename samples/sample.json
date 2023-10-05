@@ -12,7 +12,7 @@
     "messageCode": "PMU",
     "triggerEvent": "B01",
     "messageStructure": "PMU_B01",
-    "messageControlId": "MSGID002"
+    "id": "MSGID002"
   },
   [
     [

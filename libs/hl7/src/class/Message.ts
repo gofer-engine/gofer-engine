@@ -83,16 +83,14 @@ export class Msg implements IMsg {
     const messageCode = this.get('MSH-9.1');
     const triggerEvent = this.get('MSH-9.2');
     const messageStructure = this.get('MSH-9.3');
-    const messageControlId = this.get('MSH-10.1');
+    const id = this.get('MSH-10.1');
 
     this.msg[0].version = version as Message[0]['version'];
     this.msg[0].messageCode = messageCode as Message[0]['messageCode'];
     this.msg[0].triggerEvent = triggerEvent as Message[0]['triggerEvent'];
     this.msg[0].messageStructure =
       messageStructure as Message[0]['messageStructure'];
-    this.msg[0].messageControlId =
-      messageControlId as Message[0]['messageControlId'];
-    this.msg[0].id = this.msg[0].messageControlId;
+    this.msg[0].id = id as Message[0]['id'];
   }
 
   /**
@@ -128,16 +126,14 @@ export class Msg implements IMsg {
     const messageCode = this.get('MSH-9.1');
     const triggerEvent = this.get('MSH-9.2');
     const messageStructure = this.get('MSH-9.3');
-    const messageControlId = this.get('MSH-10');
+    const id = this.get('MSH-10');
 
     this.msg[0].version = version as Message[0]['version'];
     this.msg[0].messageCode = messageCode as Message[0]['messageCode'];
     this.msg[0].triggerEvent = triggerEvent as Message[0]['triggerEvent'];
     this.msg[0].messageStructure =
       messageStructure as Message[0]['messageStructure'];
-    this.msg[0].messageControlId =
-      messageControlId as Message[0]['messageControlId'];
-    this.msg[0].id = this.get('MSH-10') as Message[0]['id'];
+    this.msg[0].id = id as Message[0]['id'];
     // TODO update encoding characters
     return this;
   }

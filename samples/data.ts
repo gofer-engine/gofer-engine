@@ -12,7 +12,7 @@ export const strictJSON: StrictMessage = {
       subComponentSep: '&',
     },
     messageCode: 'PMU',
-    messageControlId: 'MSGID002',
+    id: 'MSGID002',
     messageStructure: 'PMU_B01',
     triggerEvent: 'B01',
     version: '2.5.1',

@@ -40,7 +40,7 @@ const main = async () => {
         messageCode
         triggerEvent
         messageStructure
-        messageControlId
+        id
         encodedAt
         encodingCharacters {
           dgraph.type

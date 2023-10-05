@@ -30,7 +30,7 @@ type MessageMeta {
   messageCode
   triggerEvent
   messageStructure
-  messageControlId
+  id
   encodedAt
   encodingCharacters
 }
@@ -74,7 +74,6 @@ version: string .
 messageCode: string .
 triggerEvent: string .
 messageStructure: string .
-messageControlId: string .
 encodedAt: dateTime .
 encodingCharacters: uid @reverse .
 Segment.position: int .
