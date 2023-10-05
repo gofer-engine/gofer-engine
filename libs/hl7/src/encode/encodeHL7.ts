@@ -9,7 +9,7 @@ export const encodeHL7: FuncEncodeHL7 = (message) => {
   const { fieldSep, repetitionSep, componentSep, subComponentSep } =
     message[0].encodingCharacters;
   const segments = message[1];
-  const hl7 = encodeSep(segments, '\n', (seg) => {
+  const hl7 = encodeSep(segments, '\r', (seg) => {
     if (Array.isArray(seg)) {
       if (seg[0] === 'MSH') {
         const name = seg[0];
