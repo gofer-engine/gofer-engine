@@ -1,11 +1,13 @@
 import { apiServer } from './api'
-import State from './state'
+import { state } from './state'
 import gql from './api/gql'
 import { gofer } from './gofer'
 
 export * from './types'
 
-export const state = new State({})
+export * from './helpers'
+export * from './tcpServer'
+export * from './variables'
 
 export const stopAPI = apiServer(async (req) => {
   const res = await new gql(JSON.parse(req.body), state).res()

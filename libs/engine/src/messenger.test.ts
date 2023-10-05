@@ -1,24 +1,26 @@
-import { isMsg } from '@gofer-engine/hl7';
-import { messenger as Messenger } from './messenger';
+import Msg, { isMsg } from '@gofer-engine/hl7';
+import { messenger } from './messenger';
 import { genId } from './genId';
+// import { gofer } from './gofer';
+// import { servers } from './initServers';
 
-const [messenger, messengerId] = Messenger((route) => {
+const [emitter, messengerId] = messenger((route) => {
   route.id(genId());
-  route.send('tcp', '127.0.0.1', 5503);
+  route.send('tcp', '127.0.0.1', 5504);
   return route;
 });
 
 test('messenger defined', () => {
-  expect(Messenger).toBeDefined();
-  expect(Messenger).toBeInstanceOf(Function);
   expect(messenger).toBeDefined();
-  expect(messengerId).toBe('500f9f18-a8bb-4171-9e94-22c3b681c505');
   expect(messenger).toBeInstanceOf(Function);
+  expect(emitter).toBeDefined();
+  expect(messengerId).toBe('500f9f18-a8bb-4171-9e94-22c3b681c505');
+  expect(emitter).toBeInstanceOf(Function);
 });
 
 test('messenger works', async () => {
   const msgDate = new Date().toISOString().replace(/-|:|T/g, '').slice(0, 12);
-  const ack = await messenger((msg) => {
+  const ack = await emitter((msg) => {
     const msgId = genId('ID');
     msg
       .set('MSH-3', 'MRHC Apps')
@@ -37,11 +39,8 @@ test('messenger works', async () => {
       .addSegment('NPU')
       .set('NPU-1', '1051') // Bed Location (aka Telephony Ext) needs to be set in Meditech in MIS Room Dictionary. Path: Info Systems > MIS > Dictionaries > Administrative > Room
       .set('NPU-1', '1'); // Bed Status. Table 0116: 1=Cleaning in Process, 2=Clean. Any other value will be rejected.
-    console.log(msg.toString());
     return msg;
   });
   expect(isMsg(ack)).toBeTruthy();
-  expect(ack.toString()).toBe(
-    `MSH|^~\\&|MRHC Apps|MRHC|ADM|MT|2023-06-||ADT^A20^ADT_A20|1|T|2.4\nEVN||2023-06-|||0507\nNPU|1`
-  );
+  expect(ack.get('MSA.1')).toBe('AA');
 });

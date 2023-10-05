@@ -17,7 +17,7 @@ type TcpClientFunc<T, R> = (
   direct?: boolean
 ) => Promise<IMsg>;
 
-const sendMessage = async (
+export const sendMessage = async (
   host: string,
   port: number,
   SoM: string,
@@ -36,6 +36,8 @@ const sendMessage = async (
       channel,
       route,
       flow,
+    }, {
+      createIfNotExists: direct,
     });
     onLog.go('TODO: TCP responseTimeout is not yet implemented');
     onLog.go({ responseTimeout });
@@ -50,6 +52,8 @@ const sendMessage = async (
         channel,
         route,
         flow,
+      },{
+        createIfNotExists: direct,
       });
       client.write(SoM + data + EoM + CR);
     });

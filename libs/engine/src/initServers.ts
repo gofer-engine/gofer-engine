@@ -1,3 +1,4 @@
+import net from 'net'
 import { IMsg } from '@gofer-engine/hl7';
 import { verboseListeners } from './channelVerboseListeners';
 import { events } from './events';
@@ -13,6 +14,8 @@ import {
   getChannelVar,
   setChannelVar,
 } from './variables';
+
+export const servers: Record<string | number, net.Server> = {};
 
 export const initServers: InitServers = (channels) => {
   channels
@@ -30,7 +33,7 @@ export const initServers: InitServers = (channels) => {
         setChannelVar: setChannelVar(c.id),
         getChannelVar: getChannelVar(c.id),
       };
-      tcpServer(
+      servers[c.id] = tcpServer(
         c,
         async (msg, ack, context) => {
           const ingestedMsg = runIngestFlows(c, msg, ack, context);

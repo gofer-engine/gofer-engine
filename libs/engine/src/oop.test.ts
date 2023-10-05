@@ -1,7 +1,7 @@
 import { setLoggingConfig } from './eventHandlers'
 setLoggingConfig({ console: false })
 
-import gofer, { stopAPI } from './'
+import { gofer } from './gofer'
 import { SampleE } from '../example/SampleE'
 
 
@@ -19,8 +19,4 @@ test('Basic OOP Config', () => {
     ).export()
 
   expect(config).toStrictEqual(SampleE)
-})
-
-afterAll(() => {
-  stopAPI()
 })

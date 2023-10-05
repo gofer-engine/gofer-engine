@@ -17,7 +17,7 @@ import {
   animals,
 } from 'unique-names-generator';
 import { genId } from './genId';
-import gofer from '.';
+import { gofer } from './gofer';
 
 export class IngestionClass implements OIngest {
   private config: ChannelConfig<'B', 'B', 'S'>;
@@ -253,7 +253,7 @@ export class IngestionClass implements OIngest {
   };
   public export: OIngest['export'] = () => this.config;
   public run = () => {
-    gofer.run(this.config);
+    return gofer.run(this.config);
   };
   public msg = (cb: (msg: IMsg, context: IMessageContext) => void) => {
     this.config.ingestion.push({

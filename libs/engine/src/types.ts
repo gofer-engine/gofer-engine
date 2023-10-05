@@ -349,6 +349,12 @@ export type IngestFunc = <
   context: IMessageContext
 ) => IMsg | false;
 
+export type IngestMsgFunc = (
+  msg: IMsg,
+  ack: AckFunc | undefined,
+  context: IMessageContext
+) => Promise<boolean>
+
 export type RunRoutesFunc = <
   Filt extends 'O' | 'F' | 'B' = 'B',
   Tran extends 'O' | 'F' | 'B' = 'B'
@@ -375,7 +381,7 @@ export type RunRouteFunc = <
 ) => Promise<boolean>;
 
 export interface OGofer {
-  run: (channels: ChannelConfig) => void;
+  run: (channels: ChannelConfig) => string | number | undefined;
   configs: (channels: ChannelConfig[]) => void;
   listen: (method: 'tcp', host: string, port: number) => OIngest;
   // files: (config: FileConfig) => OIngest
@@ -404,7 +410,7 @@ export type WithVarDo<V> = (
 // }
 
 export interface OComplete {
-  run: () => void;
+  run: () => string | number | undefined;
   // TODO: implement one time run
   // once: (when?: Date) => void
   // TODO: implement cron scheduled runs

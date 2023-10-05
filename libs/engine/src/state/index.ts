@@ -147,3 +147,5 @@ class State {
 }
 
 export default State
+
+export const state = new State({})

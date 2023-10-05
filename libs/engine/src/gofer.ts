@@ -1,4 +1,4 @@
-import { state } from '.'
+import { state } from './state'
 import { coerceStrictTypedChannels } from './helpers'
 import { initServers } from './initServers'
 import { initStores } from './initStores'
@@ -22,6 +22,7 @@ class Gofer implements OGofer {
   public configs: OGofer['configs'] = (channels) => this.init(channels)
   public run: OGofer['run'] = (channel) => {
     this.configs([channel])
+    return channel.id
   }
   constructor(channels?: ChannelConfig[]) {
     this.init(channels)

@@ -1,5 +1,5 @@
 import { IMsg } from '@gofer-engine/hl7';
-import gofer from '.';
+import { gofer } from './gofer';
 import { ChannelConfig, IMessageContext, OComplete } from './types';
 import { genId } from './genId';
 
@@ -12,9 +12,7 @@ export class CompleteClass implements OComplete {
     return this.config;
   };
   // public msg = (): Msg => {}
-  public run = (): void => {
-    gofer.run(this.config);
-  };
+  public run = (): string | number | undefined => gofer.run(this.config);
   // NOTE: if this is used with multiple routes, it will be called once at the end of each route
   public msg = (cb: (msg: IMsg, context: IMessageContext) => void): void => {
     this.config.routes?.forEach((route) => {

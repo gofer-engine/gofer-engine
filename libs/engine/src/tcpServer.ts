@@ -1,7 +1,7 @@
 import net from 'net';
 import handelse from '@gofer-engine/handelse';
 import Msg, { IMsg } from '@gofer-engine/hl7';
-import { AckFunc, ChannelConfig, IContext, IMessageContext } from './types';
+import { ChannelConfig, IContext, IMessageContext, IngestMsgFunc } from './types';
 import { queue } from './queue';
 import { doAck } from './doAck';
 import { isLogging, logger, mapOptions } from './helpers';
@@ -13,20 +13,16 @@ export const tcpServer = <
   Tran extends 'O' | 'F' | 'B' = 'B'
 >(
   channel: ChannelConfig<Filt, Tran, 'S'>,
-  ingestMessage: (
-    msg: IMsg,
-    ack: AckFunc | undefined,
-    context: IMessageContext
-  ) => Promise<boolean>,
+  ingestMessage: IngestMsgFunc,
   context: IContext,
   direct?: boolean
 ): net.Server => {
   const {
     host,
     port,
-    SoM = '\x0B',
-    EoM = '\x1C',
-    CR = '\r',
+    SoM = String.fromCharCode(0x0b),
+    EoM = String.fromCharCode(0x1c),
+    CR = String.fromCharCode(0x0d),
     maxConnections,
   } = channel.source.tcp;
   const id = channel.id;
