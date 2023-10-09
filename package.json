@@ -18,7 +18,7 @@
     "axios": "^1.0.0",
     "dgraph-js": "^21.3.1",
     "graphql": "^16.6.0",
-    "mongodb": "^5.6.0",
+    "mongodb": "^6.1.0",
     "surrealdb.js": "^0.8.0",
     "tslib": "^2.6.0",
     "unique-names-generator": "^4.7.1"
