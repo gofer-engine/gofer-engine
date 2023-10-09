@@ -1,10 +1,28 @@
+import net from 'net'
 import Msg, { isMsg } from '@gofer-engine/hl7'
 import { sendMessage } from './tcpClient'
+import quickServer from './quickServer'
+
+const channelID = 'tcpClientTest'
+
+let SERVER: net.Server | undefined;
+let HOST = 'localhost'
+let PORT = 5504
+
+beforeAll((done) => {
+  quickServer(channelID, done)
+  .then(([server, host, port]) => {
+    SERVER = server
+    HOST = host
+    PORT = port
+  })
+  .catch(err => fail(err))
+})
 
 test('tcpClient', async () => {
   const ack = new Msg(await sendMessage(
-    '127.0.0.1',
-    5504,
+    HOST,
+    PORT,
     String.fromCharCode(0x0b),
     String.fromCharCode(0x1c),
     String.fromCharCode(0x0d),
@@ -17,4 +35,8 @@ test('tcpClient', async () => {
   ))
   expect(isMsg(ack)).toBeTruthy()
   expect(ack.get('MSA.1')).toBe('AA')
+})
+
+afterAll(() => {
+  SERVER?.close().unref();
 })

@@ -7,45 +7,48 @@ import {
   setChannelVar,
   setGlobalVar,
 } from './variables';
-import { AckFunc, IMessageContext, IngestMsgFunc } from './types';
-import { IMsg } from '@gofer-engine/hl7';
+import { IngestMsgFunc } from './types';
+import { getPortPromise } from 'portfinder';
 
-const channelID = 'test';
-const cb: IngestMsgFunc = async (msg: IMsg, ack: AckFunc | undefined, context?: IMessageContext) => true
+const channelID = 'tcpServerTest';
+const cb: IngestMsgFunc = async () => true
 
 const HOST = '127.0.0.1';
-const PORT = 5503;
 
 let server: net.Server | undefined;
 
 beforeAll((done) => {
-  server = tcpServer(
-    {
-      id: channelID,
-      logLevel: 'debug',
-      source: {
-        kind: 'tcp',
-        tcp: {
-          host: HOST,
-          port: PORT,
+  getPortPromise({ host: HOST, port: 5503 })
+  .then((openPort) => {
+    server = tcpServer(
+      {
+        id: channelID,
+        logLevel: 'debug',
+        source: {
+          kind: 'tcp',
+          tcp: {
+            host: HOST,
+            port: openPort,
+          },
         },
+        ingestion: [],
+        name: 'test',
       },
-      ingestion: [],
-      name: 'test',
-    },
-    cb,
-    {
-      getChannelVar: getChannelVar(channelID),
-      getGlobalVar: getGlobalVar,
-      logger: logger({ channelId: channelID }),
-      setChannelVar: setChannelVar(channelID),
-      setGlobalVar: setGlobalVar,
-    },
-    true
-  );
-  server?.on('listening', () => {
-    done();
+      cb,
+      {
+        getChannelVar: getChannelVar(channelID),
+        getGlobalVar: getGlobalVar,
+        logger: logger({ channelId: channelID }),
+        setChannelVar: setChannelVar(channelID),
+        setGlobalVar: setGlobalVar,
+      },
+      true
+    );
+    server?.on('listening', () => {
+      done();
+    })
   })
+  .catch(err => fail(err))
 })
 
 test.todo('write tcpServer operation tests')

@@ -1,26 +1,46 @@
-import Msg, { isMsg } from '@gofer-engine/hl7';
+import net from 'net';
+import { isMsg } from '@gofer-engine/hl7';
 import { messenger } from './messenger';
 import { genId } from './genId';
-// import { gofer } from './gofer';
-// import { servers } from './initServers';
+import quickServer from './quickServer';
+import { MessengerFunc } from './types';
 
-const [emitter, messengerId] = messenger((route) => {
-  route.id(genId());
-  route.send('tcp', '127.0.0.1', 5504);
-  return route;
+const channelID = 'messengerTest'
+
+let SERVER: net.Server | undefined;
+let HOST = 'localhost'
+let PORT = 5504
+let EMITTER: MessengerFunc | undefined;
+let messengerId: string | undefined;
+
+beforeAll((done) => {
+  quickServer(channelID, done)
+  .then(([server, host, port]) => {
+    SERVER = server
+    HOST = host
+    PORT = port
+    const [emitter, id] = messenger((route) => {
+      route.id(genId());
+      route.send('tcp', HOST, PORT);
+      return route;
+    });
+    EMITTER = emitter;
+    messengerId = id;
+  })
+  .catch(err => fail(err))
 });
 
 test('messenger defined', () => {
   expect(messenger).toBeDefined();
   expect(messenger).toBeInstanceOf(Function);
-  expect(emitter).toBeDefined();
+  expect(EMITTER).toBeDefined();
   expect(messengerId).toBe('500f9f18-a8bb-4171-9e94-22c3b681c505');
-  expect(emitter).toBeInstanceOf(Function);
+  expect(EMITTER).toBeInstanceOf(Function);
 });
 
 test('messenger works', async () => {
   const msgDate = new Date().toISOString().replace(/-|:|T/g, '').slice(0, 12);
-  const ack = await emitter((msg) => {
+  const ack = await EMITTER?.((msg) => {
     const msgId = genId('ID');
     msg
       .set('MSH-3', 'MRHC Apps')
@@ -42,5 +62,9 @@ test('messenger works', async () => {
     return msg;
   });
   expect(isMsg(ack)).toBeTruthy();
-  expect(ack.get('MSA.1')).toBe('AA');
+  expect(ack?.get('MSA.1')).toBe('AA');
 });
+
+afterAll(() => {
+  SERVER?.close().unref();
+})
