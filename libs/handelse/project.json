@@ -11,7 +11,8 @@
         "outputPath": "dist/libs/handelse",
         "main": "libs/handelse/src/index.ts",
         "tsConfig": "libs/handelse/tsconfig.lib.json",
-        "assets": ["libs/handelse/*.md"]
+        "assets": ["libs/handelse/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true
       }
     },
     "publish": {

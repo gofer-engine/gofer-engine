@@ -11,7 +11,8 @@
         "outputPath": "dist/libs/stores",
         "main": "libs/stores/src/index.ts",
         "tsConfig": "libs/stores/tsconfig.lib.json",
-        "assets": ["libs/stores/*.md"]
+        "assets": ["libs/stores/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true
       }
     },
     "publish": {

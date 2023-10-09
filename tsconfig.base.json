@@ -17,9 +17,9 @@
     "paths": {
       "@gofer-engine/engine": ["libs/engine/src/index.ts"],
       "@gofer-engine/handelse": ["libs/handelse/src/index.ts"],
+      "@gofer-engine/hl7": ["libs/hl7/src/index.ts"],
       "@gofer-engine/queue": ["libs/queue/src/index.ts"],
-      "@gofer-engine/stores": ["libs/stores/src/index.ts"],
-      "@gofer-engine/hl7": ["libs/hl7/src/index.ts"]
+      "@gofer-engine/stores": ["libs/stores/src/index.ts"]
     },
     "resolveJsonModule": true,
     "esModuleInterop": true

@@ -12,7 +12,8 @@ const msg = new Msg(hl7);
 
 beforeAll(async () => {
   await exec('sh ./libs/stores/src/stores/surreal.test.sh');
-  sdb = new Surreal('http://127.0.0.1:8000/rpc');
+  sdb = new Surreal();
+  sdb.connect('http://127.0.0.1:8000/rpc');
 }, 15000);
 
 afterAll(async () => {

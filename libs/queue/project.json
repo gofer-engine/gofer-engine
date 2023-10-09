@@ -11,7 +11,8 @@
         "outputPath": "dist/libs/queue",
         "main": "libs/queue/src/index.ts",
         "tsConfig": "libs/queue/tsconfig.lib.json",
-        "assets": ["libs/queue/*.md"]
+        "assets": ["libs/queue/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true
       }
     },
     "publish": {

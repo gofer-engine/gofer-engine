@@ -64,7 +64,8 @@ class DBStore implements IStoreClass {
     user = user ?? envUser ?? 'root'
     pass = pass ?? envPpass ?? 'root'
     this.credentials = { user, pass }
-    this.db = new Surreal(uri)
+    this.db = new Surreal()
+    this.db.connect(uri)
     this.normalized = normalized
   }
   public store: StoreFunc = async (data) => {

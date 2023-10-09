@@ -11,7 +11,8 @@
         "outputPath": "dist/libs/hl7",
         "main": "libs/hl7/src/index.ts",
         "tsConfig": "libs/hl7/tsconfig.lib.json",
-        "assets": ["libs/hl7/*.md"]
+        "assets": ["libs/hl7/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true
       }
     },
     "publish": {
