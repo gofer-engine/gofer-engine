@@ -29,7 +29,7 @@ const main = async () => {
   await db.updateSchema()
   await db.store(msg)
   const query = `{
-    msgs(func: eq(id, "MSGID002")){
+    msgs(func: eq(id, "MSGID002")) @filter(type(Message)) {
       # uid
       dgraph.type
       id
@@ -104,11 +104,13 @@ const main = async () => {
   }
   const storedMsg = response?.getJson()?.msgs?.[0]
   await db.close()
-  expect(storedMsg).toEqual(db.typeMessage(msg.json(true), 'MSGID002', hl7))
+  const actual = JSON.stringify(storedMsg, undefined, 2)
+  const expected = JSON.stringify(db.typeMessage(msg.json(true), 'MSGID002', hl7), undefined, 2)
+  expect(actual).toEqual(expected)
 }
 
 beforeAll(async () => {
-  await exec('sh ./libs/stores/src/stores/dgraph.test.sh')
+  // await exec('sh ./libs/stores/src/stores/dgraph.test.sh')
   await new Promise((resolve) => setTimeout(resolve, 10000))
   stub = new DgraphClientStub(
     '127.0.0.1:9080',
@@ -117,7 +119,7 @@ beforeAll(async () => {
   dgraph = new DgraphClient(stub)
 }, 60000)
 
-test('store', main, 15000)
+test('dgraph-store', main, 15000)
 
 afterAll(async () => {
   if (stub) stub.close()
