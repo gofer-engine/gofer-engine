@@ -4,6 +4,8 @@ import { RequiredProperties, Route } from "./types";
 const route = new RouteClass()
 
 const router = (r: RouteClass) => {
+  // NOTE: not initializing a tcp server, just testing the config
+  // so we don't need an open port nor `localhost` to resolve.
   return r.id('test').send('tcp', 'localhost', 5500)
 }
 

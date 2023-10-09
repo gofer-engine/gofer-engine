@@ -6,6 +6,8 @@ import { SampleE } from '../example/SampleE'
 
 
 test('Basic OOP Config', () => {
+  // NOTE: not initializing servers here, just testing config
+  // so we don't need an open port nor need `localhost` to resolve
   const config = gofer
     .listen('tcp', 'localhost', 5501)
     .transform((msg) => msg.set('MSH-4.1', 'Gofer'))
