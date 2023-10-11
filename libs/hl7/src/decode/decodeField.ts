@@ -6,18 +6,18 @@ import { findCharsFirstPos } from './findCharsFirstPos';
 export const decodeField = (
   input: string,
   stopChars: string[],
-  meta: MessageMeta
+  meta: MessageMeta,
 ): [
   remaining: string,
   // value: OneOrMany<OneOrMany<string> | null | undefined>
-  value: FieldOrRep
+  value: FieldOrRep,
 ] => {
   const i = findCharsFirstPos(input, stopChars);
   const [, val] = decodeRepSep(
     input.slice(0, i),
     undefined,
     meta.encodingCharacters.componentSep,
-    (input, stCh) => decodeComponent(input, [...stopChars, ...stCh], meta)
+    (input, stCh) => decodeComponent(input, [...stopChars, ...stCh], meta),
   );
   input = input.slice(i);
   return [input, val];

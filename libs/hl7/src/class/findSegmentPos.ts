@@ -34,17 +34,15 @@ export const findSegmentInMsg = (msg: Message, after: string): number => {
 export const findSegmentPos = (
   segments: string[],
   paths: Paths,
-  notIn?: string[]
+  notIn?: string[],
 ) => {
   const { segmentName, segmentIteration } = paths;
   let index = -1; // return the last segment index when not found
   let iteration = 1;
-  let inSegment = false;
   if (segmentName !== undefined) {
     if (
       !segments.some((seg, i) => {
         if (seg === segmentName) {
-          inSegment = true;
           if (segmentIteration === undefined) {
             index = i;
             return true;
@@ -58,8 +56,8 @@ export const findSegmentPos = (
             `Could not find ${segmentName}[${
               segmentIteration ?? 1
             }] with stop keys ${JSON.stringify(
-              segments
-            )} but not in ${JSON.stringify(notIn)}`
+              segments,
+            )} but not in ${JSON.stringify(notIn)}`,
           );
         }
         return false;

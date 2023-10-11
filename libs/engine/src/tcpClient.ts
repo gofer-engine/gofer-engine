@@ -14,7 +14,7 @@ type TcpClientFunc<T, R> = (
   routeId: string | number | undefined,
   flowId: string | number | undefined,
   context: IMessageContext,
-  direct?: boolean
+  direct?: boolean,
 ) => Promise<IMsg>;
 
 export const sendMessage = async (
@@ -28,17 +28,21 @@ export const sendMessage = async (
   channel?: string | number,
   route?: string | number,
   flow?: string | number,
-  direct?: boolean
+  direct?: boolean,
 ): Promise<string> => {
   if (responseTimeout !== undefined) {
-    handelse.go(`gofer:${channel}.onLog`, {
-      log: `TODO: TCP responseTimeout is not yet implemented`,
-      channel,
-      route,
-      flow,
-    }, {
-      createIfNotExists: direct,
-    });
+    handelse.go(
+      `gofer:${channel}.onLog`,
+      {
+        log: `TODO: TCP responseTimeout is not yet implemented`,
+        channel,
+        route,
+        flow,
+      },
+      {
+        createIfNotExists: direct,
+      },
+    );
     onLog.go('TODO: TCP responseTimeout is not yet implemented');
     onLog.go({ responseTimeout });
   }
@@ -46,15 +50,19 @@ export const sendMessage = async (
     let responseBuffer = '';
     const client = new net.Socket();
     client.connect({ port, host }, () => {
-      handelse.go(`gofer:${channel}.onLog`, {
-        log: `TCP connection established to ${host}:${port}`,
-        msg: data,
-        channel,
-        route,
-        flow,
-      },{
-        createIfNotExists: direct,
-      });
+      handelse.go(
+        `gofer:${channel}.onLog`,
+        {
+          log: `TCP connection established to ${host}:${port}`,
+          msg: data,
+          channel,
+          route,
+          flow,
+        },
+        {
+          createIfNotExists: direct,
+        },
+      );
       client.write(SoM + data + EoM + CR);
     });
     client.on('data', (chunk) => {
@@ -62,7 +70,7 @@ export const sendMessage = async (
       if (
         responseBuffer.substring(
           responseBuffer.length - 2,
-          responseBuffer.length
+          responseBuffer.length,
         ) ===
         EoM + CR
       ) {
@@ -91,7 +99,7 @@ export const sendMessage = async (
         },
         {
           createIfNotExists: direct,
-        }
+        },
       );
       rej(err);
     });
@@ -114,7 +122,7 @@ export const tcpClient: TcpClientFunc<IMsg, IMsg> = async (
   routeId,
   flowId,
   context,
-  direct
+  direct,
 ) => {
   const config: {
     host?: string;
@@ -141,7 +149,7 @@ export const tcpClient: TcpClientFunc<IMsg, IMsg> = async (
       },
       {
         createIfNotExists: direct,
-      }
+      },
     );
   }
   if (
@@ -162,7 +170,7 @@ export const tcpClient: TcpClientFunc<IMsg, IMsg> = async (
       channelId,
       routeId,
       flowId,
-      direct
+      direct,
     );
     return parse(ack);
   }

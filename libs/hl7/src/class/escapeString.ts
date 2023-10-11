@@ -18,7 +18,7 @@ export const escapeString = (str: string, meta: MessageMeta) => {
 
 export const escapeSubComp = (
   value: string | null | undefined,
-  meta: MessageMeta
+  meta: MessageMeta,
 ) => {
   if (value === undefined || value === null) return value;
   return escapeString(value, meta);

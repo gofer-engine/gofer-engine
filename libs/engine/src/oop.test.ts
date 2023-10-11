@@ -1,9 +1,8 @@
-import { setLoggingConfig } from './eventHandlers'
-setLoggingConfig({ console: false })
+import { setLoggingConfig } from './eventHandlers';
+setLoggingConfig({ console: false });
 
-import { gofer } from './gofer'
-import { SampleE } from '../example/SampleE'
-
+import { gofer } from './gofer';
+import { SampleE } from '../example/SampleE';
 
 test('Basic OOP Config', () => {
   // NOTE: not initializing servers here, just testing config
@@ -13,12 +12,13 @@ test('Basic OOP Config', () => {
     .transform((msg) => msg.set('MSH-4.1', 'Gofer'))
     .ack()
     .store({ file: {} })
-    .route((route) => 
+    .route((route) =>
       route
         .filter((m) => m.get('MSH-9.2') === 'ADT')
         .send('tcp', 'localhost', 5502)
-        .store({ file: { path: ['local', 'acks'] } })
-    ).export()
+        .store({ file: { path: ['local', 'acks'] } }),
+    )
+    .export();
 
-  expect(config).toStrictEqual(SampleE)
-})
+  expect(config).toStrictEqual(SampleE);
+});

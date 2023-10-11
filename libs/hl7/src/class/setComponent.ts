@@ -17,7 +17,7 @@ export const setComponent = (
   fieldIteration: number | undefined,
   componentPosition: number,
   value: string | Component | ((component: Component) => Component),
-  decode = true
+  decode = true,
 ): Message => {
   // eslint-disable-next-line prefer-const
   let [meta, ...segments] = deepCopy(msg);
@@ -54,7 +54,7 @@ export const setComponent = (
                           ? value(comp)
                           : decode && typeof value === 'string'
                           ? value
-                          : value
+                          : value,
                       );
                     }
                     return comp;

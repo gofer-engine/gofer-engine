@@ -7,7 +7,7 @@ import { findSegmentInMsg } from './findSegmentPos';
 export const addSegment = (
   segment: string | Segment | Segments | ISeg | ISegs,
   msg: Message,
-  after?: number | string
+  after?: number | string,
 ): Message | false => {
   const segments: Segment[] = [];
   if (segment instanceof Seg) {

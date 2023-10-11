@@ -27,7 +27,7 @@ export class Fld implements IFld {
   }
 
   public json = <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ): IfTrueElse<S, NoPos<StrictField>, Field | FieldRep> => {
     if (strict) {
       const field: NoPos<StrictField> = {
@@ -70,7 +70,7 @@ export class Fld implements IFld {
       Array.isArray(this._fld) &&
       this._fld.length > 1 &&
       typeof this._fld[0] === 'object' &&
-      this._fld[0]?.hasOwnProperty('rep')
+      Object.prototype.hasOwnProperty.call(this._fld[0] || {}, 'rep')
     ) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [_rep, ...fields] = this._fld;
@@ -85,7 +85,7 @@ export class Fld implements IFld {
    * @returns a Component Class or an array of Component Classes
    */
   public getComponent = (
-    componentPosition: number | undefined = 1
+    componentPosition: number | undefined = 1,
   ): Cmp | Cmps => {
     if (this._fld === null) return new Cmp(null);
     if (!Array.isArray(this._fld)) {
@@ -96,11 +96,11 @@ export class Fld implements IFld {
     if (this._fld.length === 0) return new Cmp(null);
     if (
       typeof this._fld[0] === 'object' &&
-      this._fld[0]?.hasOwnProperty('rep')
+      Object.prototype.hasOwnProperty.call(this._fld[0] || {}, 'rep')
     ) {
       const [, ...fields] = this._fld as FieldRep;
       return new Cmps(
-        fields.map((field) => new Cmp(field?.[componentPosition - 1] ?? null))
+        fields.map((field) => new Cmp(field?.[componentPosition - 1] ?? null)),
       );
     }
     return new Cmp((this._fld as Component[])?.[componentPosition - 1] ?? null);
@@ -111,7 +111,7 @@ export class Fld implements IFld {
       if (
         this._fld.length > 1 &&
         typeof this._fld[0] === 'object' &&
-        this._fld[0]?.hasOwnProperty('rep')
+        Object.prototype.hasOwnProperty.call(this._fld[0] || {}, 'rep')
       ) {
         const comps: Cmp[] = [];
         const [, ...fields] = this._fld as FieldRep;
@@ -134,7 +134,7 @@ export class Flds implements IFlds {
   }
 
   public json = <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ): IfTrueElse<S, StrictField[], Field[]> => {
     if (strict) {
       const strictField: StrictField[] = this._flds.map((f, i) => {

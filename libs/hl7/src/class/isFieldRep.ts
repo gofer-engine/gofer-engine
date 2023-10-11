@@ -5,7 +5,7 @@ export const isFieldRep = (field: FieldOrRep): boolean => {
   if (typeof field[0] !== 'object') return false;
   if (field[0] === null) return false;
   if (Array.isArray(field[0])) return false;
-  if (!field[0].hasOwnProperty('rep')) return false;
+  if (!Object.prototype.hasOwnProperty.call(field[0], 'rep')) return false;
   if (!field[0].rep) return false;
   return true;
 };

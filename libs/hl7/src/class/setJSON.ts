@@ -33,7 +33,7 @@ export const setJSON = (
     fieldIteration,
     componentPosition,
     subComponentPosition,
-  }: Paths
+  }: Paths,
 ): IMsg => {
   if (segmentName === undefined) {
     if (isMessage(json)) {
@@ -41,7 +41,7 @@ export const setJSON = (
       return msg;
     }
     console.warn(
-      'The json was not a valid HL7 JSON Message. Returning the original message.'
+      'The json was not a valid HL7 JSON Message. Returning the original message.',
     );
     return msg;
   }
@@ -60,12 +60,12 @@ export const setJSON = (
           fieldIteration,
           componentPosition,
           subComponentPosition,
-          json as SubComponent
-        )
+          json as SubComponent,
+        ),
       );
     }
     console.warn(
-      'The json was not a valid HL7 JSON SubComponent. Returning the original message.'
+      'The json was not a valid HL7 JSON SubComponent. Returning the original message.',
     );
     return msg;
   }
@@ -80,8 +80,8 @@ export const setJSON = (
           fieldPosition,
           fieldIteration,
           componentPosition,
-          json as Component
-        )
+          json as Component,
+        ),
       );
     }
   }
@@ -94,8 +94,8 @@ export const setJSON = (
           segmentName,
           segmentIteration,
           fieldPosition,
-          json as FieldRep
-        )
+          json as FieldRep,
+        ),
       );
     }
     if (isField(json as Field)) {
@@ -106,17 +106,17 @@ export const setJSON = (
           segmentIteration,
           fieldPosition,
           fieldIteration,
-          json as Field
-        )
+          json as Field,
+        ),
       );
     }
     console.warn(
-      'The json was not a valid HL7 JSON Field or FieldRep. Returning the original message.'
+      'The json was not a valid HL7 JSON Field or FieldRep. Returning the original message.',
     );
   }
   if (isSegment(json)) {
     return msg.setMsg(
-      setSegment(msg.json(), segmentName, segmentIteration, json as Segment)
+      setSegment(msg.json(), segmentName, segmentIteration, json as Segment),
     );
   }
 

@@ -10,7 +10,7 @@ export const filterOrTransform = <T = IMsg>(
   channelId: string | number,
   flowId: string | number,
   route: string | number | undefined,
-  context: IMessageContext
+  context: IMessageContext,
 ): [T, boolean] => {
   if (filtered) return [msg, filtered];
   context.logger = logger({

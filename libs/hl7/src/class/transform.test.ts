@@ -51,14 +51,14 @@ test('Transformers', () => {
 test('Set Developer ZZZ', () => {
   msg.set('ZZZ', 'ZZZ|Developer|amaster507^github.com');
   expect(msg.getSegment('ZZZ').toString()).toBe(
-    'ZZZ|Developer|amaster507^github.com'
+    'ZZZ|Developer|amaster507^github.com',
   );
 });
 
 test('Set Sending App MSH.3', () => {
   msg.set('MSH.3', 'GOFER');
   expect(msg.getSegment('MSH').toString()).toBe(
-    'MSH|^~\\&|GOFER|UH|HL7LAB|CH|200702280700||PMU^B01^PMU_B01|MSGID002|P|2.5.1|'
+    'MSH|^~\\&|GOFER|UH|HL7LAB|CH|200702280700||PMU^B01^PMU_B01|MSGID002|P|2.5.1|',
   );
 });
 
@@ -80,7 +80,7 @@ test('Map LAN-2.2', () => {
         SPANISH: 'Spanish',
         FRENCH: 'French',
       })
-      .get('LAN-2.2')
+      .get('LAN-2.2'),
   ).toBe('Spanish');
 });
 
@@ -95,13 +95,13 @@ test('Map LAN-4', () => {
         }
         return null as T;
       })
-      .get('LAN-4')
+      .get('LAN-4'),
   ).toStrictEqual('EXCELLENT');
 });
 
 test('Set LAN-4 Raw', () => {
   expect(
-    msg.setJSON('LAN-4', ['3', 'FAIR', 'HL70404']).get('LAN-4')
+    msg.setJSON('LAN-4', ['3', 'FAIR', 'HL70404']).get('LAN-4'),
   ).toStrictEqual(['3', 'FAIR', 'HL70404']);
 });
 
@@ -116,7 +116,7 @@ test('Set Iteration', () => {
       (_v, i) => {
         return i.toString() as typeof _v;
       },
-      { iteration: true }
+      { iteration: true },
     );
   expect(msg.get('LAN-1')).toEqual(['1', '2', '3']);
 });
@@ -146,12 +146,12 @@ test('Set Iteration', () => {
     .delete('LAN')
     .addSegment(
       'LAN|1|ESL^SPANISH^ISO639|1^READ^HL70403~1^EXCELLENT^HL70404|',
-      'STF'
+      'STF',
     )
     .addSegment('LAN|1|ESL^SPANISH^ISO639|2^WRITE^HL70403~2^GOOD^HL70404|', 3)
     .addSegment(
       'LAN|1|FRE^FRENCH^ISO639|3^SPEAK^HL70403~3^FAIR^HL70404|',
-      'MSH:STF[1]:LAN[2]'
+      'MSH:STF[1]:LAN[2]',
     );
   msg.setIteration<string>('LAN-1', (_v, i) => {
     return i.toString();

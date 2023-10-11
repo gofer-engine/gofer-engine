@@ -1,8 +1,10 @@
 {
   "resourceType": "Person",
-  "identifier": [{
-    "value": "john.doe"
-  }],
+  "identifier": [
+    {
+      "value": "john.doe"
+    }
+  ],
   "active": true,
   "name": [
     {

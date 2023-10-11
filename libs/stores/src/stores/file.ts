@@ -81,11 +81,11 @@ class DBStore implements IStoreClass {
     if (!this.overwrite && !this.append && fs.existsSync(fullPath)) {
       if (this.warnOnError) {
         console.warn(
-          `Options set to not overwrite and not append, but the file: ${fullPath} already exists`
+          `Options set to not overwrite and not append, but the file: ${fullPath} already exists`,
         );
       } else {
         throw new Error(
-          `Options set to not overwrite and not append, but the file: ${fullPath} already exists`
+          `Options set to not overwrite and not append, but the file: ${fullPath} already exists`,
         );
       }
     }
@@ -109,7 +109,7 @@ class DBStore implements IStoreClass {
             if (this.verbose) console.log(`file written to ${fullPath}`);
             res(true);
           }
-        }
+        },
       );
     });
   };

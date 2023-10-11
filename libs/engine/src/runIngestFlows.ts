@@ -1,18 +1,18 @@
-import { StoreConfig } from '@gofer-engine/stores'
-import handelse from '@gofer-engine/handelse'
-import { doAck } from './doAck'
-import { filterOrTransform } from './filterOrTransform'
-import { store } from './initStores'
-import { IngestFunc } from './types'
-import { logger } from './helpers'
+import { StoreConfig } from '@gofer-engine/stores';
+import handelse from '@gofer-engine/handelse';
+import { doAck } from './doAck';
+import { filterOrTransform } from './filterOrTransform';
+import { store } from './initStores';
+import { IngestFunc } from './types';
+import { logger } from './helpers';
 
 export const runIngestFlows: IngestFunc = (channel, msg, ack, context) => {
-  let filtered = false
+  let filtered = false;
   channel.ingestion.forEach((flow) => {
-    const step = flow.flow
+    const step = flow.flow;
     if (typeof step === 'object') {
       if (step.kind === 'ack') {
-        const ackConfig = step.ack
+        const ackConfig = step.ack;
         const ackMsg = doAck(
           msg,
           ackConfig,
@@ -21,22 +21,22 @@ export const runIngestFlows: IngestFunc = (channel, msg, ack, context) => {
             channelId: channel.id,
             flowId: flow.id,
           },
-          context
-        )
+          context,
+        );
         if (typeof ack === 'function') {
           context.logger = logger({
             channelId: channel.id,
             flowId: flow.id,
             msg,
-          })
-          ack(ackMsg, context)
+          });
+          ack(ackMsg, context);
           handelse.go(`gofer:${channel.id}.onAck`, {
             msg,
             ack: ackMsg,
             channel: channel.id,
-          })
+          });
         }
-        return
+        return;
       } else if (step.kind === 'filter') {
         const [m, f] = filterOrTransform(
           msg,
@@ -45,10 +45,10 @@ export const runIngestFlows: IngestFunc = (channel, msg, ack, context) => {
           channel.id,
           flow.id,
           undefined,
-          context
-        )
-        msg = m
-        filtered = f
+          context,
+        );
+        msg = m;
+        filtered = f;
       } else if (step.kind === 'transformFilter') {
         const [m, f] = filterOrTransform(
           msg,
@@ -57,10 +57,10 @@ export const runIngestFlows: IngestFunc = (channel, msg, ack, context) => {
           channel.id,
           flow.id,
           undefined,
-          context
-        )
-        msg = m
-        filtered = f
+          context,
+        );
+        msg = m;
+        filtered = f;
       } else if (step.kind === 'transform') {
         const [m, f] = filterOrTransform(
           msg,
@@ -69,12 +69,12 @@ export const runIngestFlows: IngestFunc = (channel, msg, ack, context) => {
           channel.id,
           flow.id,
           undefined,
-          context
-        )
-        msg = m
-        filtered = f
+          context,
+        );
+        msg = m;
+        filtered = f;
       } else if (step.kind === 'store') {
-        const storeConfig = { ...step }
+        const storeConfig = { ...step };
         store(storeConfig as StoreConfig, msg)
           ?.then((res) => {
             if (res)
@@ -83,13 +83,13 @@ export const runIngestFlows: IngestFunc = (channel, msg, ack, context) => {
                 log: `Stored Msg`,
                 channel: channel.id,
                 flow: flow.id,
-              })
+              });
             return handelse.go(`gofer:${channel.id}.onError`, {
               msg,
               error: `Failed to store Msg`,
               channel: channel.id,
               flow: flow.id,
-            })
+            });
           })
           .catch((error: unknown) => {
             handelse.go(`gofer:${channel.id}.onError`, {
@@ -97,8 +97,8 @@ export const runIngestFlows: IngestFunc = (channel, msg, ack, context) => {
               error,
               channel: channel.id,
               flow: flow.id,
-            })
-          }) || false
+            });
+          }) || false;
       }
     } else if (typeof step === 'function') {
       const [m, f] = filterOrTransform(
@@ -108,12 +108,12 @@ export const runIngestFlows: IngestFunc = (channel, msg, ack, context) => {
         channel.id,
         flow.id,
         undefined,
-        context
-      )
-      msg = m
-      filtered = f
+        context,
+      );
+      msg = m;
+      filtered = f;
     }
-  })
-  if (!filtered) return msg
-  return false
-}
+  });
+  if (!filtered) return msg;
+  return false;
+};

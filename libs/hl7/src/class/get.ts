@@ -8,7 +8,7 @@ export const get = (
   fieldPosition?: number | undefined,
   fieldIteration?: number | undefined,
   componentPosition?: number | undefined,
-  subComponentPosition?: number | undefined
+  subComponentPosition?: number | undefined,
 ):
   | string
   | ISeg

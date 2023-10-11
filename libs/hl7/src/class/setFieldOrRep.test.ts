@@ -5,7 +5,7 @@ const msg = new Msg('ZZZ|1\r\nXXX|1');
 
 test('setFieldOrRep', () => {
   expect(
-    new Msg(setFieldOrRep(msg.json(), 'ZZZ', 1, 1, () => 'TEST')).get('ZZZ-1')
+    new Msg(setFieldOrRep(msg.json(), 'ZZZ', 1, 1, () => 'TEST')).get('ZZZ-1'),
   ).toBe('TEST');
   expect(
     new Msg(
@@ -13,7 +13,7 @@ test('setFieldOrRep', () => {
         { rep: true },
         'foo',
         'bar',
-      ])
-    ).get('ZZZ-2')
+      ]),
+    ).get('ZZZ-2'),
   ).toStrictEqual(['foo', 'bar']);
 });

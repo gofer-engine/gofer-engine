@@ -235,13 +235,13 @@ test.each(testSuite)('$name', ({ path, expected }) => {
 
 test('Get LAN Segment', () => {
   expect(msg.getSegment('LAN', 1).toString()).toBe(
-    'LAN|1|ESL^SPANISH^ISO639|1^READ^HL70403|1^EXCELLENT^HL70404|'
+    'LAN|1|ESL^SPANISH^ISO639|1^READ^HL70403|1^EXCELLENT^HL70404|',
   );
 });
 
 test('Get STF-10[1] Field', () => {
   expect(msg.getSegment('STF', 1).getField(10, 1).toString()).toBe(
-    '(555)555-1003X345^C^O'
+    '(555)555-1003X345^C^O',
   );
 });
 
@@ -258,19 +258,19 @@ test('Get Non-Existant', () => {
 test('Errors', () => {
   expect(() => msg.get('ABCD')).toThrowError('Could not parse path: ABCD');
   expect(() => msg.get('ZZZ[0]')).toThrowError(
-    'Segment Iteration in path ZZZ[0] cannot be 0.'
+    'Segment Iteration in path ZZZ[0] cannot be 0.',
   );
   expect(() => msg.get('ZZZ-0')).toThrowError(
-    'Field Position in path ZZZ-0 cannot be 0.'
+    'Field Position in path ZZZ-0 cannot be 0.',
   );
   expect(() => msg.get('ZZZ-1.0')).toThrowError(
-    'Component Position in path ZZZ-1.0 cannot be 0.'
+    'Component Position in path ZZZ-1.0 cannot be 0.',
   );
   expect(() => msg.get('ZZZ-1.1.0')).toThrowError(
-    'Sub Component Position in path ZZZ-1.1.0 cannot be 0.'
+    'Sub Component Position in path ZZZ-1.1.0 cannot be 0.',
   );
   expect(() => msg.get('ZZZ-1[0]')).toThrowError(
-    'Field Iteration in path ZZZ-1[0] cannot be 0.'
+    'Field Iteration in path ZZZ-1[0] cannot be 0.',
   );
 });
 
@@ -280,20 +280,20 @@ test('Get STF-10.1 Component', () => {
       .getSegment('STF')
       .getField(10)
       .getComponent(1)
-      .toString({ fieldRepSep: '; ' }, true)
+      .toString({ fieldRepSep: '; ' }, true),
   ).toBe('(555)555-1003X345; (555)555-3334; (555)555-1345X789');
 });
 
 test('Get STF-10[1].1 Component', () => {
   expect(msg.getSegment('ZZZ').getField(2).getComponent(2).toString()).toBe(
-    'Chapter&15&Personnel Management'
+    'Chapter&15&Personnel Management',
   );
 });
 
 test('Get raw msg', () => {
   const raw = msg.json();
   expect(JSON.stringify(raw, undefined, 2)).toBe(
-    JSON.stringify(HL7Json, undefined, 2)
+    JSON.stringify(HL7Json, undefined, 2),
   );
 });
 
@@ -318,7 +318,7 @@ test('Add Segment', () => {
 });
 
 const msg2 = new Msg(
-  'MSH!@#$%^!HL7REG!UH!HL7LAB!CH!200702280700!!PMU@B01@PMU_B01!MSGID002!P!2.8!'
+  'MSH!@#$%^!HL7REG!UH!HL7LAB!CH!200702280700!!PMU@B01@PMU_B01!MSGID002!P!2.8!',
 );
 
 test('Encoding Characters', () => {
@@ -339,7 +339,7 @@ test('Custom Encoding Get', () => {
 
 test('Custom Encoding Stingify', () => {
   expect(msg2.toString()).toBe(
-    'MSH!@#$%^!HL7REG!UH!HL7LAB!CH!200702280700!!PMU@B01@PMU_B01!MSGID002!P!2.8!'
+    'MSH!@#$%^!HL7REG!UH!HL7LAB!CH!200702280700!!PMU@B01@PMU_B01!MSGID002!P!2.8!',
   );
 });
 

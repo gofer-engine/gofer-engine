@@ -2,10 +2,10 @@ import { FieldRep, Message, Segment } from '../types';
 
 export const isMessage = (msg: unknown): boolean => {
   if (
-    Array.isArray(msg)
-    && typeof msg?.[0] === 'object'
-    && msg[0] !== null
-    && Object.keys(msg[0]).every((k) =>
+    Array.isArray(msg) &&
+    typeof msg?.[0] === 'object' &&
+    msg[0] !== null &&
+    Object.keys(msg[0]).every((k) =>
       [
         'version',
         'messageCode',
@@ -14,59 +14,37 @@ export const isMessage = (msg: unknown): boolean => {
         'encodedAt',
         'encodingCharacters',
         'id',
-      ].includes(k)
-    )
-    && msg[0].hasOwnProperty('encodingCharacters')
-    && typeof msg[0].encodingCharacters === 'object'
-    && typeof msg[0].encodingCharacters?.fieldSep === 'string'
-    && msg[0].encodingCharacters.fieldSep.length === 1
-    && typeof msg[0].encodingCharacters?.componentSep === 'string'
-    && msg[0].encodingCharacters.componentSep.length === 1
-    && typeof msg[0].encodingCharacters?.subComponentSep === 'string'
-    && msg[0].encodingCharacters.subComponentSep.length === 1
-    && typeof msg[0].encodingCharacters?.repetitionSep === 'string'
-    && msg[0].encodingCharacters.repetitionSep.length === 1
-    && typeof msg[0].encodingCharacters?.escapeChar === 'string'
-    && msg[0].encodingCharacters.escapeChar.length === 1
-    && (
-      (
-        typeof msg[0].encodingCharacters?.subCompRepSep === 'string'
-        && msg[0].encodingCharacters.subCompRepSep.length === 1
-      )
-      || msg[0].encodingCharacters?.subCompRepSep === undefined
-    )
-    && (
-      typeof msg[0]?.version === 'string'
-      || msg[0]?.version === undefined
-    )
-    && (
-      (
-        typeof msg[0]?.messageCode === 'string'
-        && msg[0].messageCode.length === 3
-      )
-      || msg[0]?.messageCode === undefined
-    )
-    && (
-      (
-        typeof msg[0]?.triggerEvent === 'string'
-        && msg[0].triggerEvent.length === 3
-      )
-      || msg[0]?.triggerEvent === undefined
-    )
-    && (
-      typeof msg[0]?.messageStructure === 'string'
-      || msg[0]?.messageStructure === undefined
-    )
-    && (
-      typeof msg[0]?.id === 'string'
-      || msg[0]?.id === undefined
-    )
-    && (
-      msg[0]?.encodedAt instanceof Date
-      || typeof msg[0]?.encodedAt === 'string'
-      || typeof msg[0]?.encodedAt === 'number'
-      || msg[0]?.id === undefined
-    )
+      ].includes(k),
+    ) &&
+    Object.prototype.hasOwnProperty.call(msg[0], 'encodingCharacters') &&
+    typeof msg[0].encodingCharacters === 'object' &&
+    typeof msg[0].encodingCharacters?.fieldSep === 'string' &&
+    msg[0].encodingCharacters.fieldSep.length === 1 &&
+    typeof msg[0].encodingCharacters?.componentSep === 'string' &&
+    msg[0].encodingCharacters.componentSep.length === 1 &&
+    typeof msg[0].encodingCharacters?.subComponentSep === 'string' &&
+    msg[0].encodingCharacters.subComponentSep.length === 1 &&
+    typeof msg[0].encodingCharacters?.repetitionSep === 'string' &&
+    msg[0].encodingCharacters.repetitionSep.length === 1 &&
+    typeof msg[0].encodingCharacters?.escapeChar === 'string' &&
+    msg[0].encodingCharacters.escapeChar.length === 1 &&
+    ((typeof msg[0].encodingCharacters?.subCompRepSep === 'string' &&
+      msg[0].encodingCharacters.subCompRepSep.length === 1) ||
+      msg[0].encodingCharacters?.subCompRepSep === undefined) &&
+    (typeof msg[0]?.version === 'string' || msg[0]?.version === undefined) &&
+    ((typeof msg[0]?.messageCode === 'string' &&
+      msg[0].messageCode.length === 3) ||
+      msg[0]?.messageCode === undefined) &&
+    ((typeof msg[0]?.triggerEvent === 'string' &&
+      msg[0].triggerEvent.length === 3) ||
+      msg[0]?.triggerEvent === undefined) &&
+    (typeof msg[0]?.messageStructure === 'string' ||
+      msg[0]?.messageStructure === undefined) &&
+    (typeof msg[0]?.id === 'string' || msg[0]?.id === undefined) &&
+    (msg[0]?.encodedAt instanceof Date ||
+      typeof msg[0]?.encodedAt === 'string' ||
+      typeof msg[0]?.encodedAt === 'number' ||
+      msg[0]?.id === undefined)
   ) {
     const [, ...segments] = msg as Message;
     return segments.every((segs) => segs.every((seg) => isSegment(seg)));

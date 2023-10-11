@@ -3,7 +3,7 @@ import decode, { findCharsFirstPos } from './';
 test('decode', () => {
   expect(decode('')).toBeUndefined();
   expect(() => decode('MSH')).toThrowError(
-    'Invalid encoding characters: {"fieldSep":""}'
+    'Invalid encoding characters: {"fieldSep":""}',
   );
   expect(decode('ZZZ|1')?.[0].encodingCharacters).toStrictEqual({
     componentSep: '^',
@@ -19,6 +19,6 @@ test('decode', () => {
 });
 test('findCharsFirstPos', () => {
   expect(() => findCharsFirstPos('', ['$^'])).toThrowError(
-    'stop character is too long, expected 1 character'
+    'stop character is too long, expected 1 character',
   );
 });

@@ -24,7 +24,7 @@ export class Seg implements ISeg {
   }
 
   public json: ISeg['json'] = <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ): IfTrueElse<S, NoPos<StrictSegment>, Segment> => {
     if (strict) {
       const segment: NoPos<StrictSegment> = {
@@ -106,7 +106,7 @@ export class Segs implements ISegs {
   }
 
   public json = <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ): IfTrueElse<S, StrictSegment[], Segments> => {
     if (strict) {
       return this._segs.map((seg, i) => {
@@ -125,7 +125,7 @@ export class Segs implements ISegs {
 
   public getField: ISegs['getField'] = (fieldPosition, fieldIteration) =>
     new Flds(
-      this._segs.map((s) => new Seg(s).getField(fieldPosition, fieldIteration))
+      this._segs.map((s) => new Seg(s).getField(fieldPosition, fieldIteration)),
     );
 
   public getFields: ISegs['getFields'] = () =>

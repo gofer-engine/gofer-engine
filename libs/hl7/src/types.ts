@@ -16,7 +16,7 @@ export type Segments = Segment[];
 
 export interface ISub {
   json: <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ) => IfTrueElse<S, NoPos<StrictSubComponent>, SubComponent>;
   toString: () => string;
 }
@@ -24,7 +24,7 @@ export interface ISub {
 export interface ISubs {
   toString: (subCompSep?: string) => string;
   json: <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ) => IfTrueElse<S, StrictSubComponent[], SubComponent[]>;
 }
 
@@ -35,7 +35,7 @@ export interface IMultiSubs {
 
 export interface ICmp {
   json: <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ) => IfTrueElse<S, NoPos<StrictComponent>, Component>;
   one: () => ICmp;
   all: () => ICmp[];
@@ -46,7 +46,7 @@ export interface ICmp {
 
 export interface ICmps {
   json: <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ) => IfTrueElse<S, StrictComponent[], Component[]>;
   one: (iteration?: number) => ICmp;
   all: () => ICmp[];
@@ -55,7 +55,7 @@ export interface ICmps {
       subCompSep?: string;
       fieldRepSep?: string;
     },
-    stringify?: boolean
+    stringify?: boolean,
   ) => string | string[];
   getSubComponent: (position?: number) => ISubs;
   getSubComponents: (position?: number) => ISub[][];
@@ -63,7 +63,7 @@ export interface ICmps {
 
 export interface IRep {
   json: <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ) => IfTrueElse<S, NoPos<StrictFieldRepetition>, Field>;
   toString: (options?: {
     compSep?: string;
@@ -76,7 +76,7 @@ export interface IRep {
 
 export interface IFld {
   json: <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ) => IfTrueElse<S, NoPos<StrictField>, Field | FieldRep>;
   toString: (options?: {
     compSep?: string;
@@ -91,7 +91,7 @@ export interface IFld {
 
 export interface IFlds {
   json: <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ) => IfTrueElse<S, StrictField[], Field[]>;
   one: () => IFld;
   toString: (options?: {
@@ -107,7 +107,7 @@ export interface IFlds {
 
 export interface ISeg {
   json: <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ) => IfTrueElse<S, NoPos<StrictSegment>, Segment>;
   toString: (options?: {
     fieldSep?: string;
@@ -120,14 +120,14 @@ export interface ISeg {
   getField: (
     fieldPosition: number,
     // NOTE: iteration is 1-indexed
-    fieldIteration?: number | undefined
+    fieldIteration?: number | undefined,
   ) => IFld;
   getFields: () => IFld[];
 }
 
 export interface ISegs {
   json: <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ) => IfTrueElse<S, StrictSegment[], Segments>;
   toString: () => string;
   one: (position: number) => ISeg;
@@ -135,7 +135,7 @@ export interface ISegs {
   getField: (
     fieldPosition: number,
     // NOTE: iteration is 1-indexed
-    fieldIteration?: number | undefined
+    fieldIteration?: number | undefined,
   ) => IFlds;
   getFields: () => IFld[][];
 }
@@ -143,17 +143,17 @@ export interface ISegs {
 export interface IMsg {
   setMsg: (msg: Message) => IMsg;
   json: <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ) => IfTrueElse<S, StrictMessage, Message>;
   addSegment: (
     segment: string | Segment | ISeg | ISegs,
-    after?: number | string
+    after?: number | string,
   ) => IMsg;
   toString: () => string;
   set: (path?: string | undefined, value?: string | null | undefined) => IMsg;
   setJSON: (
     path: string | undefined,
-    json: Message | Segments | Segment | FieldsOrReps | FieldRep | Field
+    json: Message | Segments | Segment | FieldsOrReps | FieldRep | Field,
   ) => IMsg;
   get: (path: string | undefined) =>
     | string
@@ -180,12 +180,14 @@ export interface IMsg {
     name?: string | undefined,
     // NOTE: iteration is 1-indexed
     // NOTE: if undefined, returns first segment
-    iteration?: number | undefined
+    iteration?: number | undefined,
   ) => ISeg | ISegs;
   setId: (id: string) => IMsg;
   id: (id?: string | undefined) => string | undefined;
   setVersion: (version: `${number}.${number}` | `${number}`) => IMsg;
-  version: (version?: `${number}.${number}` | `${number}` | undefined) => string | undefined;
+  version: (
+    version?: `${number}.${number}` | `${number}` | undefined,
+  ) => string | undefined;
   transform: (transformers: IMsgLimiter) => IMsg;
   delete: (path: string) => IMsg;
   copy: (path: string, toPath: string) => IMsg;
@@ -195,12 +197,12 @@ export interface IMsg {
     v: string | Record<string, string> | string[] | (<T>(v: T, i: number) => T),
     options?: {
       iteration?: boolean | undefined;
-    }
+    },
   ) => IMsg;
   setIteration: <Y>(
     path: string,
     map: Y[] | ((val: Y, i: number) => Y),
-    options?: { allowLoop: boolean }
+    options?: { allowLoop: boolean },
   ) => IMsg;
 }
 
@@ -254,26 +256,26 @@ export type Message = [MessageMeta, ...Segments[]];
 
 export type FuncDecodeHL7 = (
   HL7: string,
-  encodingCharacters?: MessageMeta['encodingCharacters']
+  encodingCharacters?: MessageMeta['encodingCharacters'],
 ) => Message | undefined;
 export type FuncGetEncodingChars = (
-  segment: string
+  segment: string,
 ) => MessageMeta['encodingCharacters'];
 export type FuncDecodeSegment = (hl7: string, meta: MessageMeta) => Segment;
 export type FuncDecodeField = (
   hl7: string,
   meta: MessageMeta,
-  fields?: FieldsOrReps
+  fields?: FieldsOrReps,
 ) => [hl7: string, fields: FieldsOrReps];
 export type FuncDecodeComponent = (
   hl7: string,
   meta: MessageMeta,
-  components?: Component[]
+  components?: Component[],
 ) => [hl7: string, field: Field];
 export type FuncDecodeSubComponent = (
   hl7: string,
   meta: MessageMeta,
-  subComponents?: Component[]
+  subComponents?: Component[],
 ) => [hl7: string, component: Component];
 export type RepType =
   | [{ rep: true }, ...(string | null | undefined)[]]
@@ -286,7 +288,7 @@ export type FuncDecodeRepSep<R extends RepType, S extends OneOrMany<R>> = (
   hl7: string,
   repChar: string | undefined,
   sepChar: string,
-  callback: (hl7: string, stopChars: string[]) => [hl7: string, value: S]
+  callback: (hl7: string, stopChars: string[]) => [hl7: string, value: S],
 ) => [hl7: string, ...value: (OneOrMany<S> | null | undefined)[]];
 
 export type MsgValue =
@@ -365,5 +367,5 @@ export type NoPos<T extends { position?: number }> = Omit<T, 'position'>;
 export type IfTrueElse<
   B extends boolean | undefined,
   T,
-  E
+  E,
 > = B extends undefined ? E : B extends true ? T : E;

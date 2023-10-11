@@ -22,13 +22,13 @@ export const setValue = (
     componentPosition,
     subComponentPosition,
   }: Paths,
-  value: string
+  value: string,
 ): Message => {
   // set the value as the entirity of the message, an empty path, means you are sending a stringified hl7 message.
   if (segmentName === undefined) {
     const [, segments] =
       decodeHL7(value, msg[0].encodingCharacters) ??
-      ([, []] as unknown as Message);
+      ([undefined, []] as unknown as Message);
     return [msg[0], segments];
   }
   // cannot set a path where no segments currently exist, use addSegment instead.
@@ -57,7 +57,7 @@ export const setValue = (
       fieldIteration,
       componentPosition,
       subComponentPosition,
-      subComponent
+      subComponent,
     );
   }
 
@@ -68,7 +68,7 @@ export const setValue = (
         msg[0].encodingCharacters.componentSep,
         msg[0].encodingCharacters.subComponentSep,
       ],
-      msg[0]
+      msg[0],
     );
     if (remaining !== '') {
       // TODO: return more information, custom error/logging?
@@ -81,7 +81,7 @@ export const setValue = (
       fieldPosition,
       fieldIteration,
       componentPosition,
-      component
+      component,
     );
   }
 
@@ -92,7 +92,7 @@ export const setValue = (
         msg[0].encodingCharacters.componentSep,
         msg[0].encodingCharacters.subComponentSep,
       ],
-      msg[0]
+      msg[0],
     );
     if (remaining !== '') {
       // TODO: return more information, custom error/logging?
@@ -104,7 +104,7 @@ export const setValue = (
         segmentName,
         segmentIteration,
         fieldPosition,
-        field as FieldRep
+        field as FieldRep,
       );
     }
     return setField(
@@ -113,7 +113,7 @@ export const setValue = (
       segmentIteration,
       fieldPosition,
       fieldIteration,
-      field as Field
+      field as Field,
     );
   }
   if (value === '') {

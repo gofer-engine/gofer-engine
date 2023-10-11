@@ -1,5 +1,5 @@
-import { Seg } from '@gofer-engine/hl7'
-import { ChannelConfig } from '../src/types'
+import { Seg } from '@gofer-engine/hl7';
+import { ChannelConfig } from '../src/types';
 
 const SampleB: ChannelConfig = {
   id: 'sample-b',
@@ -74,15 +74,18 @@ const SampleB: ChannelConfig = {
         },
         (msg) => msg.move('LAN-2', 'LAN-6'), // a transformer is a function that accepts the Msg class and returns the Msg class.
         { kind: 'store', file: {} }, // a store is a object that conforms to IDBStoreOptions. NOTE: only one store is supported in each object.
-        { kind: 'store', surreal: {
-          id: 'UUID',
-          uri: 'http://127.0.0.1:8000/rpc',
-          verbose: true,
-          warnOnError: true,
-          namespace: 'MyProject',
-          database: '$MSH.9.1',
-          table: '$MSH.9.2',
-        } }, // But we can still persists to multiple stores.
+        {
+          kind: 'store',
+          surreal: {
+            id: 'UUID',
+            uri: 'http://127.0.0.1:8000/rpc',
+            verbose: true,
+            warnOnError: true,
+            namespace: 'MyProject',
+            database: '$MSH.9.1',
+            table: '$MSH.9.2',
+          },
+        }, // But we can still persists to multiple stores.
         (msg) => (msg.get('LAN') as Seg[])?.length > 1, // you can add a filter later on in the flow too.
         { kind: 'store', file: { filename: '$EVN-2' } }, // And we can even persist it again with different settings
         {
@@ -110,6 +113,6 @@ const SampleB: ChannelConfig = {
       ],
     },
   ],
-}
+};
 
-export default SampleB
+export default SampleB;

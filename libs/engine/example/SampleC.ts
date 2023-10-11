@@ -1,5 +1,5 @@
-import { IMsg } from '@gofer-engine/hl7'
-import { ChannelConfig } from '../src/types'
+import { IMsg } from '@gofer-engine/hl7';
+import { ChannelConfig } from '../src/types';
 
 // This channel and transformer are based upon the example posted here: https://outcomehealthcare.com/sample-mirth-connect-project-hl7-2-x-transformation-2-3-to-2-4/
 
@@ -12,21 +12,21 @@ const transformer = (msg: IMsg) => {
     // update datetime
     .set(
       'MSH.7.1',
-      new Date().toISOString().split('.')[0].replace(/[^\d]/gi, '')
-    )
+      new Date().toISOString().split('.')[0].replace(/[^\d]/gi, ''),
+    );
   // Add two digits of seconds if they aren't there
   if ((msg.get('EVN.2.1') as string).length <= 12) {
-    msg.set('EVN.2.1', (msg.get('EVN.2.1') as string).padEnd(14, '0'))
+    msg.set('EVN.2.1', (msg.get('EVN.2.1') as string).padEnd(14, '0'));
   }
   return (
     msg
       // Check whether or not the gender meets the requirements of the destination system. Set to 'O' if not.
       .map('PID.8.1', <T>(gender: T) => {
         // FIXME: if PID.8.1 is not present then an empty array is returned instead of undefined as expected
-        const g = typeof gender === 'string' ? gender : ''
+        const g = typeof gender === 'string' ? gender : '';
         return ['F', 'M', 'U', 'A', 'N'].includes(g.toUpperCase())
           ? (g.toUpperCase() as T)
-          : ('O' as T)
+          : ('O' as T);
       })
       // Set admit reason to upper case
       .map('PV2.3.2', <T>(admitReason: T) => {
@@ -35,10 +35,10 @@ const transformer = (msg: IMsg) => {
           (
             typeof admitReason === 'string' ? admitReason : ''
           ).toUpperCase() as T
-        )
+        );
       })
-  )
-}
+  );
+};
 
 const SampleC: ChannelConfig = {
   id: 'sample-c',
@@ -59,6 +59,6 @@ const SampleC: ChannelConfig = {
     { kind: 'store', file: { path: ['local', 'transformed'] } }, // persists the transformed message
   ],
   routes: [],
-}
+};
 
-export default SampleC
+export default SampleC;

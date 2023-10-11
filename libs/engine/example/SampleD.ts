@@ -1,4 +1,4 @@
-import { ChannelConfig } from '../src/'
+import { ChannelConfig } from '../src/';
 
 const ChannelD: ChannelConfig = {
   logLevel: 'debug',
@@ -32,6 +32,6 @@ const ChannelD: ChannelConfig = {
       },
     },
   ],
-}
+};
 
-export default ChannelD
+export default ChannelD;

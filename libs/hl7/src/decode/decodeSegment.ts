@@ -19,15 +19,15 @@ export const decodeSegment: FuncDecodeSegment = (HL7, meta) => {
   } else if (HL7.startsWith(meta.encodingCharacters.fieldSep)) {
     HL7 = HL7.slice(1);
   }
-  let [_hl7, fields] = decodeRepSep(
+  let [, fields] = decodeRepSep(
     HL7,
     meta.encodingCharacters.repetitionSep,
     meta.encodingCharacters.fieldSep,
     (input, stopChars) =>
       decodeField(input, stopChars, meta) as [
         remaining: string,
-        value: OneOrMany<OneOrMany<string> | null | undefined>
-      ]
+        value: OneOrMany<OneOrMany<string> | null | undefined>,
+      ],
   );
   if (isMSH) {
     const {
@@ -44,7 +44,7 @@ export const decodeSegment: FuncDecodeSegment = (HL7, meta) => {
       fieldSep,
       `${componentSep}${repetitionSep}${escapeChar}${subComponentSep}${
         truncateChar ? truncateChar : ''
-      }`
+      }`,
     );
   }
   if (fields === null || fields === undefined) return [name];

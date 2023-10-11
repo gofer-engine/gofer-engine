@@ -41,7 +41,7 @@ export class RouteClass implements ORoute {
     return this;
   };
   public transform: (
-    t: (msg: IMsg, context: IMessageContext) => IMsg
+    t: (msg: IMsg, context: IMessageContext) => IMsg,
   ) => ORoute = (transform) => {
     const id = genId();
     this.config.flows.push({
@@ -66,7 +66,7 @@ export class RouteClass implements ORoute {
   public setVar = <V>(
     scope: varTypes,
     varName: string,
-    varValue: MsgVar<V>
+    varValue: MsgVar<V>,
   ): ORoute => {
     this.config.flows.push({
       id: genId(),
@@ -105,7 +105,7 @@ export class RouteClass implements ORoute {
   };
   public setRouteVar: <V>(varName: string, varValue: MsgVar<V>) => ORoute = (
     varName,
-    varValue
+    varValue,
   ) => {
     this.config.flows.push({
       id: genId(),
@@ -120,7 +120,7 @@ export class RouteClass implements ORoute {
   };
   public setChannelVar: <V>(varName: string, varValue: MsgVar<V>) => ORoute = (
     varName,
-    varValue
+    varValue,
   ) => {
     this.config.flows.push({
       id: genId(),
@@ -135,7 +135,7 @@ export class RouteClass implements ORoute {
   };
   public setGlobalVar: <V>(varName: string, varValue: MsgVar<V>) => ORoute = (
     varName,
-    varValue
+    varValue,
   ) => {
     this.config.flows.push({
       id: genId(),
@@ -151,7 +151,7 @@ export class RouteClass implements ORoute {
   public getVar = <V>(
     scope: varTypes,
     varName: string,
-    getVal: WithVarDo<V>
+    getVal: WithVarDo<V>,
   ): ORoute => {
     this.config.flows.push({
       id: genId(),

@@ -49,7 +49,7 @@ export const ingestionObjectify = (channel: ChannelConfig) => {
         const ingestionId = genId();
         if (isLogging('warn', channel.logLevel))
           publishers.onLog(
-            `Channel ${channel.name} (${channel.id}) had an ingestion flow without an id. Generated id: ${ingestionId}`
+            `Channel ${channel.name} (${channel.id}) had an ingestion flow without an id. Generated id: ${ingestionId}`,
           );
         flow.id = ingestionId;
       }
@@ -58,7 +58,7 @@ export const ingestionObjectify = (channel: ChannelConfig) => {
     const ingestionId = genId();
     if (isLogging('warn', channel.logLevel))
       publishers.onLog(
-        `Channel ${channel.name} (${channel.id}) had an ingestion flow without an id. Generated id: ${ingestionId}`
+        `Channel ${channel.name} (${channel.id}) had an ingestion flow without an id. Generated id: ${ingestionId}`,
       );
     return {
       id: ingestionId,
@@ -71,9 +71,9 @@ export const ingestionObjectify = (channel: ChannelConfig) => {
 // this function does not modify the original channel object and returns only the ingestion flows
 export const ingestionSimplify = <
   Filt extends 'O' | 'F' | 'B' = 'B',
-  Tran extends 'O' | 'F' | 'B' = 'B'
+  Tran extends 'O' | 'F' | 'B' = 'B',
 >(
-  channel: ChannelConfig<Filt, Tran, 'S' | 'L'>
+  channel: ChannelConfig<Filt, Tran, 'S' | 'L'>,
 ): IngestionFlow[] => {
   return channel.ingestion.map((flow) => {
     if (
@@ -88,7 +88,7 @@ export const ingestionSimplify = <
 
 export const routeFlowObjectify = (
   flows: (RouteFlow<'B', 'B'> | RouteFlowNamed<'B', 'B'>)[],
-  logLevel?: TLogLevel
+  logLevel?: TLogLevel,
 ): RouteFlowNamed<'B', 'B'>[] => {
   return flows.map((flow) => {
     if (typeof flow === 'object' && flow.kind === 'flow') {
@@ -97,7 +97,7 @@ export const routeFlowObjectify = (
         const flowId = genId();
         if (isLogging('warn', logLevel))
           publishers.onLog(
-            `Named Route (${flow.name}) was missing the id. Generated id: ${flowId}`
+            `Named Route (${flow.name}) was missing the id. Generated id: ${flowId}`,
           );
         flow.id = flowId;
       }
@@ -116,7 +116,7 @@ export const routeFlowObjectify = (
 
 // this function modifies the original channel object to prevent generating new ids on every call
 export const routesObjectify = (
-  channel: ChannelConfig
+  channel: ChannelConfig,
 ): ChannelConfig<'B', 'B', 'S'> => {
   channel.routes = channel.routes?.map((route) => {
     if (
@@ -128,7 +128,7 @@ export const routesObjectify = (
         const routeId = genId();
         if (isLogging('warn', channel.logLevel))
           publishers.onLog(
-            `Channel ${channel.name} (${channel.id}) had an route without an id. Generated id: ${routeId}`
+            `Channel ${channel.name} (${channel.id}) had an route without an id. Generated id: ${routeId}`,
           );
         route.id = routeId;
       }
@@ -138,14 +138,14 @@ export const routesObjectify = (
     const routeId = genId();
     if (isLogging('warn', channel.logLevel))
       publishers.onLog(
-        `Channel ${channel.name} (${channel.id}) had an route without an id. Generated id: ${routeId}`
+        `Channel ${channel.name} (${channel.id}) had an route without an id. Generated id: ${routeId}`,
       );
     return {
       kind: 'route',
       id: routeId,
       flows: routeFlowObjectify(
         route as (RouteFlow | RouteFlowNamed)[],
-        channel.logLevel
+        channel.logLevel,
       ),
     };
   });
@@ -176,30 +176,30 @@ export const routesSimplify = (channel: ChannelConfig): RouteFlow[][] => {
 };
 
 export const coerceStrictTypedChannels = (
-  config: ChannelConfig<'B', 'B', 'L'>[]
+  config: ChannelConfig<'B', 'B', 'L'>[],
 ): ChannelConfig<'B', 'B', 'S'>[] => {
   return config.map((channel) => {
     if (!channel.id) {
       channel.id = genId();
       if (isLogging('warn', channel.logLevel))
         publishers.onLog(
-          `Channel "${channel.name}" config did not define an \`id\`. Assigned: "${channel.id}"`
+          `Channel "${channel.name}" config did not define an \`id\`. Assigned: "${channel.id}"`,
         );
     }
     // TODO: implement db source
     if (Object.prototype.hasOwnProperty.call(channel.source, 'db')) {
       publishers.onError(
         new Error(
-          `Channel "${channel.name}"(${channel.id}) tried to use a \`db\` in the source. DB sources are not yet supported`
-        )
+          `Channel "${channel.name}"(${channel.id}) tried to use a \`db\` in the source. DB sources are not yet supported`,
+        ),
       );
     }
     // TODO: implement file reader source
     if (Object.prototype.hasOwnProperty.call(channel.source, 'file')) {
       publishers.onError(
         new Error(
-          `Channel "${channel.name}"(${channel.id}) tried to use a \`file\` in the source. File reader sources are not yet supported`
-        )
+          `Channel "${channel.name}"(${channel.id}) tried to use a \`file\` in the source. File reader sources are not yet supported`,
+        ),
       );
     }
     ingestionObjectify(channel);
@@ -211,7 +211,7 @@ export const coerceStrictTypedChannels = (
 export const functionalVal = <T extends string | number | object | boolean>(
   val: T | ((msg: IMsg, context: IMessageContext) => T),
   msg: IMsg,
-  context: IMessageContext
+  context: IMessageContext,
 ): T => {
   if (typeof val === 'function') return val(msg, context);
   return val;

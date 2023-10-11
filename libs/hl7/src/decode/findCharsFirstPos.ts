@@ -7,6 +7,6 @@ export const findCharsFirstPos = (input: string, chars: string[]): number => {
         return c.length > 0;
       })
       .map((c) => input.indexOf(c))
-      .filter((i) => i !== -1)
+      .filter((i) => i !== -1),
   );
 };

@@ -1,6 +1,6 @@
-import Msg from '@gofer-engine/hl7'
-import { randomUUID } from 'crypto'
-import { ChannelConfig } from '../src/types'
+import Msg from '@gofer-engine/hl7';
+import { randomUUID } from 'crypto';
+import { ChannelConfig } from '../src/types';
 
 const SampleA: ChannelConfig = {
   logLevel: 'debug',
@@ -29,6 +29,6 @@ const SampleA: ChannelConfig = {
     },
   ],
   routes: [[{ kind: 'store', file: {} }]],
-}
+};
 
-export default SampleA
+export default SampleA;

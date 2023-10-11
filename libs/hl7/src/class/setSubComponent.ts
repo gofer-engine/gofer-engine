@@ -18,7 +18,7 @@ export const setSubComponent = (
   componentPosition: number,
   subComponentPosition: number,
   value: SubComponent | ((subComponent: SubComponent) => SubComponent),
-  escape = true
+  escape = true,
 ): Message => {
   // eslint-disable-next-line prefer-const
   let [meta, ...segments] = deepCopy(msg);

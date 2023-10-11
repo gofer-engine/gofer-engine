@@ -46,7 +46,7 @@ export const getEncodingChars: FuncGetEncodingChars = (HL7) => {
         repetitionSep,
         escapeChar,
         subComponentSep,
-      })}`
+      })}`,
     );
   }
   return {

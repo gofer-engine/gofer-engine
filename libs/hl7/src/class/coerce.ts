@@ -23,7 +23,7 @@ export const toFieldStrict = (field: Field): SubComponent[][] => {
 
 export const toFieldLoose = (
   field: SubComponent[][],
-  trimEmpty = false
+  trimEmpty = false,
 ): Field => {
   let foundNonNull = false;
   const f = deepCopy(field);
@@ -66,7 +66,7 @@ export const toFieldLoose = (
 
 export const toFieldOrRep = (
   field: FieldRep,
-  trimEmpty = false
+  trimEmpty = false,
 ): FieldOrRep => {
   const f = deepCopy(field);
   if (f.length < 2) return null;

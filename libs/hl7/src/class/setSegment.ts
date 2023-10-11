@@ -8,7 +8,7 @@ export const setSegment = (
   // NOTE: this does not respect segment groups, it will iterate over all segments with the same name.
   segmentIteration: number | undefined,
   value: Segment | ((segment: Segment) => Segment) | string,
-  decode = true
+  decode = true,
 ): Message => {
   // eslint-disable-next-line prefer-const
   let [meta, ...segments] = deepCopy(msg);

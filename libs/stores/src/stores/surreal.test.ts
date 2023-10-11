@@ -21,7 +21,7 @@ afterAll(async () => {
   await exec('docker stop jest-surrealdb');
 }, 60000);
 
-test('store', async () => {
+test('surreal-store', async () => {
   expect(sdb.status).toBe(1);
   await sdb.signin({ user: 'root', pass: 'root' });
   await sdb.use({
@@ -29,20 +29,20 @@ test('store', async () => {
     ns: 'test',
   });
   const existing = await sdb.query<{ id: string }[][]>(
-    'SELECT id FROM test:MSGID002;'
+    'SELECT id FROM test:MSGID002;',
   );
   const id = existing?.[0]?.result?.[0]?.id;
   if (id) {
     sdb.delete(id);
   }
   const db = new stores.surreal();
-  return db.store(msg).then(async () => {
-    const storedRecord = await sdb.query<
-      { meta: MessageMeta; segs: Segments }[][]
-    >('SELECT meta, msg as segs FROM test');
-    const { meta, segs } = storedRecord?.[0].result?.[0] ?? {};
-    const msg = new Msg([meta as MessageMeta, segs as Segments]);
-    await db.close();
-    expect(msg.toString()).toBe(hl7);
-  });
+  const stored = await db.store(msg);
+  expect(stored).toBe(true);
+  const storedRecord = await sdb.query<
+    { meta: MessageMeta; segs: Segments }[][]
+  >('SELECT meta, msg as segs FROM test');
+  const { meta, segs } = storedRecord?.[0].result?.[0] ?? {};
+  const queriedMsg = new Msg([meta as MessageMeta, segs as Segments]);
+  await db.close();
+  expect(queriedMsg.toString()).toBe(hl7);
 });

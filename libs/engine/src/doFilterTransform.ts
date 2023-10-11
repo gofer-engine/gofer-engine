@@ -10,7 +10,7 @@ export const doFilterTransform = (
   context: IMessageContext,
   flows: (boolean | Promise<boolean>)[],
   filtered: boolean,
-  direct?: boolean
+  direct?: boolean,
 ): {
   filtered: boolean;
   flows: (boolean | Promise<boolean>)[];
@@ -36,7 +36,7 @@ export const doFilterTransform = (
         },
         {
           createIfNotExists: direct,
-        }
+        },
       );
     }
     filtered = !filterOrTransform;
@@ -53,7 +53,7 @@ export const doFilterTransform = (
       },
       {
         createIfNotExists: direct,
-      }
+      },
     );
     msg = filterOrTransform;
   }

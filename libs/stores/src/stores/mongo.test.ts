@@ -48,7 +48,7 @@ const main = async () => {
   });
 };
 
-test('store', main, 15000);
+test('mongo-store', main, 15000);
 
 afterAll(async () => {
   if (mongo) mongo.close();

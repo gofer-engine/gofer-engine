@@ -6,7 +6,7 @@ const hl7 = fs.readFileSync('./samples/sample.hl7', 'utf8');
 
 const msg = new Msg(hl7);
 
-test('store', async () => {
+test('file-store', async () => {
   const fileStore = new stores.file();
   if (fs.existsSync('./local/MSGID002.hl7')) fs.rmSync('./local/MSGID002.hl7');
   if (!fs.existsSync('./local')) fs.mkdirSync('./local');

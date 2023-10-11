@@ -6,7 +6,7 @@ export const paths = (path?: string): Paths => {
   const repRx = '(?:\\[([0-9]+)\\])';
   const posRx = '(?:[-\\.]([0-9]+))';
   const pathRx = new RegExp(
-    `^(?:${segRx})${repRx}?(?:${posRx}${repRx}?(?:${posRx}${posRx}?)?)?$`
+    `^(?:${segRx})${repRx}?(?:${posRx}${repRx}?(?:${posRx}${posRx}?)?)?$`,
   );
   const paths = path.match(pathRx);
   if (paths === null) throw Error(`Could not parse path: ${path}`);

@@ -5,29 +5,29 @@ import { genId } from './genId';
 import quickServer from './quickServer';
 import { MessengerFunc } from './types';
 
-const channelID = 'messengerTest'
+const channelID = 'messengerTest';
 
 let SERVER: net.Server | undefined;
-let HOST = 'localhost'
-let PORT = 5504
+let HOST = 'localhost';
+let PORT = 5504;
 let EMITTER: MessengerFunc | undefined;
 let messengerId: string | undefined;
 
 beforeAll((done) => {
   quickServer(channelID, done)
-  .then(([server, host, port]) => {
-    SERVER = server
-    HOST = host
-    PORT = port
-    const [emitter, id] = messenger((route) => {
-      route.id(genId());
-      route.send('tcp', HOST, PORT);
-      return route;
-    });
-    EMITTER = emitter;
-    messengerId = id;
-  })
-  .catch(err => fail(err))
+    .then(([server, host, port]) => {
+      SERVER = server;
+      HOST = host;
+      PORT = port;
+      const [emitter, id] = messenger((route) => {
+        route.id(genId());
+        route.send('tcp', HOST, PORT);
+        return route;
+      });
+      EMITTER = emitter;
+      messengerId = id;
+    })
+    .catch((err) => fail(err));
 });
 
 test('messenger defined', () => {
@@ -67,4 +67,4 @@ test('messenger works', async () => {
 
 afterAll(() => {
   SERVER?.close().unref();
-})
+});

@@ -1,7 +1,12 @@
 import net from 'net';
 import handelse from '@gofer-engine/handelse';
 import Msg, { IMsg } from '@gofer-engine/hl7';
-import { ChannelConfig, IContext, IMessageContext, IngestMsgFunc } from './types';
+import {
+  ChannelConfig,
+  IContext,
+  IMessageContext,
+  IngestMsgFunc,
+} from './types';
 import { queue } from './queue';
 import { doAck } from './doAck';
 import { isLogging, logger, mapOptions } from './helpers';
@@ -10,12 +15,12 @@ import { setMsgVar, getMsgVar } from './variables';
 
 export const tcpServer = <
   Filt extends 'O' | 'F' | 'B' = 'B',
-  Tran extends 'O' | 'F' | 'B' = 'B'
+  Tran extends 'O' | 'F' | 'B' = 'B',
 >(
   channel: ChannelConfig<Filt, Tran, 'S'>,
   ingestMessage: IngestMsgFunc,
   context: IContext,
-  direct?: boolean
+  direct?: boolean,
 ): net.Server => {
   const {
     host,
@@ -38,7 +43,7 @@ export const tcpServer = <
       },
       {
         createIfNotExists: direct,
-      }
+      },
     );
   });
   server.on('connection', (socket) => {
@@ -53,7 +58,7 @@ export const tcpServer = <
       },
       {
         createIfNotExists: direct,
-      }
+      },
     );
 
     const data: Record<string, string> = {};
@@ -67,7 +72,7 @@ export const tcpServer = <
         },
         {
           createIfNotExists: direct,
-        }
+        },
       );
       let hl7 = packet.toString();
       const f = hl7[0];
@@ -83,7 +88,7 @@ export const tcpServer = <
           },
           {
             createIfNotExists: direct,
-          }
+          },
         );
         delete data[clientAddress];
       }
@@ -120,7 +125,7 @@ export const tcpServer = <
         },
         {
           createIfNotExists: direct,
-        }
+        },
       );
       if (queueConfig) {
         handelse.go(
@@ -131,7 +136,7 @@ export const tcpServer = <
           },
           {
             createIfNotExists: direct,
-          }
+          },
         );
         const ack = doAck(
           msg,
@@ -140,7 +145,7 @@ export const tcpServer = <
             channelId: id,
             flowId: 'source',
           },
-          context as IMessageContext
+          context as IMessageContext,
         );
         socket.write(SoM + ack.toString() + EoM + CR);
         handelse.go(
@@ -152,7 +157,7 @@ export const tcpServer = <
           },
           {
             createIfNotExists: direct,
-          }
+          },
         );
         queue(
           `${id}.source`,
@@ -164,7 +169,7 @@ export const tcpServer = <
               queueConfig !== undefined
                 ? queueConfig.verbose
                 : isLogging('debug', channel.logLevel),
-          })
+          }),
         );
       } else {
         ingestMessage(
@@ -172,7 +177,7 @@ export const tcpServer = <
           (ack: IMsg) => {
             socket.write(SoM + ack.toString() + EoM + CR);
           },
-          context as IMessageContext
+          context as IMessageContext,
         );
       }
     });
@@ -180,7 +185,7 @@ export const tcpServer = <
       if (isLogging('debug', channel.logLevel))
         console.log(
           `Client ${clientAddress} disconnected`,
-          `data: ${JSON.stringify(data)}`
+          `data: ${JSON.stringify(data)}`,
         );
     });
   });

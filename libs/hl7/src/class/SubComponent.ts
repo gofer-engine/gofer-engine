@@ -15,7 +15,7 @@ export class Sub implements ISub {
   }
 
   public json = <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ): IfTrueElse<S, NoPos<StrictSubComponent>, SubComponent> => {
     if (strict) {
       const sub: NoPos<StrictSubComponent> = {
@@ -36,7 +36,7 @@ export class Subs implements ISubs {
   }
 
   public json = <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ): IfTrueElse<S, StrictSubComponent[], SubComponent[]> => {
     if (strict) {
       const sub: StrictSubComponent[] = this._subs.map((sub, i) => {

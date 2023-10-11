@@ -5,19 +5,19 @@ test('paths', () => {
 });
 test('toPath', () => {
   expect(() => toPath({ subComponentPosition: 1 })).toThrowError(
-    'Cannot have subComponentPosition without componentPosition'
+    'Cannot have subComponentPosition without componentPosition',
   );
   expect(() => toPath({ componentPosition: 1 })).toThrowError(
-    'Cannot have componentPosition without fieldPosition'
+    'Cannot have componentPosition without fieldPosition',
   );
   expect(() => toPath({ fieldPosition: 1 })).toThrowError(
-    'Cannot have fieldPosition without segmentName'
+    'Cannot have fieldPosition without segmentName',
   );
   expect(() => toPath({ fieldIteration: 1 })).toThrowError(
-    'Cannot have fieldIteration without fieldPosition'
+    'Cannot have fieldIteration without fieldPosition',
   );
   expect(() => toPath({ segmentIteration: 1 })).toThrowError(
-    'Cannot have segmentIteration without segmentName'
+    'Cannot have segmentIteration without segmentName',
   );
   expect(
     toPath({
@@ -27,6 +27,6 @@ test('toPath', () => {
       fieldIteration: 1,
       componentPosition: 1,
       subComponentPosition: 1,
-    })
+    }),
   ).toBe('ZZZ[1]-1[1].1.1');
 });

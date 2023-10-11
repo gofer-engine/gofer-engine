@@ -7,15 +7,15 @@ export const decodeRepSep = <
     | undefined
     | string
     | (null | string)[],
-  SepType extends OneOrMany<RepType>
+  SepType extends OneOrMany<RepType>,
 >(
   input: string,
   rep: string | undefined,
   sep: string,
   callback: (
     encoded: string,
-    stopChars: string[]
-  ) => [input: string, value: SepType]
+    stopChars: string[],
+  ) => [input: string, value: SepType],
 ): [string, ...(OneOrMany<SepType> | null | undefined)[]] => {
   let noRep = false;
   if (rep === undefined) {

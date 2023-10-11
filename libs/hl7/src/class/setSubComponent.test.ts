@@ -9,7 +9,7 @@ const msg = new Msg(hl7);
 test('setSubComponent', () => {
   expect(
     new Msg(setSubComponent(msg.json(), 'ZZZ', 1, 1, 1, 1, 1, 'TEST')).get(
-      'ZZZ-1'
-    )
+      'ZZZ-1',
+    ),
   ).toBe('TEST');
 });

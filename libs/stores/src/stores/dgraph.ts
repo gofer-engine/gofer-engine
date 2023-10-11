@@ -238,7 +238,7 @@ class DBStore implements IStoreClass {
   public typeMessage = (
     msg: StrictMessage,
     id: string,
-    hl7: string
+    hl7: string,
   ): StoredMessage => {
     return {
       id,
@@ -297,7 +297,7 @@ class DBStore implements IStoreClass {
   public query = async (
     query: string,
     mutations?: Mutation[],
-    variables?: Record<string, string>
+    variables?: Record<string, string>,
   ): Promise<Response | undefined> => {
     const request = new Request();
     if (query) {

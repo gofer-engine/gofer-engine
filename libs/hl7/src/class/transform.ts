@@ -1,7 +1,3 @@
-/* eslint-disable prettier/prettier */
-
-// import fs from 'fs'
-// import decodeHL7 from '../decode'
 import { Field, FieldRep, Message, Segment, Segments } from '../types';
 
 export type IMsgFieldList = Record<
@@ -42,7 +38,7 @@ export interface IMsgLimiter {
 
 export const transform = (
   [meta, segs]: Message,
-  { restrict, remove }: IMsgLimiter = { restrict: {}, remove: {} }
+  { restrict, remove }: IMsgLimiter = { restrict: {}, remove: {} },
 ): Message => {
   let lastSeenSegment: undefined | string = undefined;
   let segmentIteration = 0;

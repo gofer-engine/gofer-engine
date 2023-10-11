@@ -7,7 +7,7 @@ export const setFieldOrRep = (
   // NOTE: this does not respect segment groups, it will iterate over all segments with the same name.
   segmentIteration: number | undefined,
   fieldPosition: number,
-  value: FieldOrRep | ((fieldRep: FieldOrRep) => FieldOrRep)
+  value: FieldOrRep | ((fieldRep: FieldOrRep) => FieldOrRep),
 ): Message => {
   // eslint-disable-next-line prefer-const
   let [meta, ...segments] = deepCopy(msg);

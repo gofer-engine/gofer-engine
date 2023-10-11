@@ -3,7 +3,7 @@ import { deepCopy } from './deepCopy';
 export const encodeRep = (
   _msg: unknown,
   rep: string,
-  map: (msg: unknown) => unknown
+  map: (msg: unknown) => unknown,
 ) => {
   const msg = deepCopy(_msg);
   if (!Array.isArray(msg) || msg === undefined || msg === null) {

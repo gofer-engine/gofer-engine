@@ -39,10 +39,10 @@ test('find SPM:OBR:OBX:TCD', () => {
   let error = undefined;
   try {
     findSegmentInMsg(OUL.json(), 'SPM:OBR:OBX:TCD');
-  } catch (e: any) {
-    error = e.message;
+  } catch (e) {
+    error = (e as { message: string }).message;
   }
   expect(error).toBe(
-    `Could not find TCD[1] with stop keys ["OBX","TCD","INV","INV","OBX","OBX","OBX","OBX","OBX","OBX","OBX","ZZZ"] but not in ["SPM","OBR","OBX"]`
+    `Could not find TCD[1] with stop keys ["OBX","TCD","INV","INV","OBX","OBX","OBX","OBX","OBX","OBX","OBX","ZZZ"] but not in ["SPM","OBR","OBX"]`,
   );
 });

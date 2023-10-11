@@ -24,7 +24,7 @@ export class Cmp implements ICmp {
   public raw = () => this._cmp;
 
   public json = <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ): IfTrueElse<S, NoPos<StrictComponent>, Component> => {
     if (strict) {
       const comp: NoPos<StrictComponent> = {
@@ -75,7 +75,7 @@ export class Cmps implements ICmps {
     this._cmps = components;
   }
   public json = <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ): IfTrueElse<S, StrictComponent[], Component[]> => {
     if (strict) {
       const strictComponent: StrictComponent[] = this._cmps.map((c, i) => {
@@ -103,7 +103,7 @@ export class Cmps implements ICmps {
 
   public toString = (
     { subCompSep = this._subCompSep, fieldRepSep = this._fieldRepSep } = {},
-    stringify = false
+    stringify = false,
   ) => {
     this._subCompSep = subCompSep;
     this._fieldRepSep = fieldRepSep;
@@ -113,10 +113,10 @@ export class Cmps implements ICmps {
   };
 
   public getSubComponent = (
-    subComponentPosition: number | undefined = 1
+    subComponentPosition: number | undefined = 1,
   ): Subs => {
     return new Subs(
-      this._cmps.map((c) => c.getSubComponent(subComponentPosition).json())
+      this._cmps.map((c) => c.getSubComponent(subComponentPosition).json()),
     );
   };
 

@@ -1,4 +1,4 @@
-import { buildSchema } from 'graphql'
+import { buildSchema } from 'graphql';
 
 export const schema = buildSchema(`
   type Query {
@@ -26,4 +26,4 @@ export const schema = buildSchema(`
     active: Boolean
     flows: [FlowStat!]
   }
-`)
+`);

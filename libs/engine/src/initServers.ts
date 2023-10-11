@@ -1,4 +1,4 @@
-import net from 'net'
+import net from 'net';
 import { IMsg } from '@gofer-engine/hl7';
 import { verboseListeners } from './channelVerboseListeners';
 import { events } from './events';
@@ -20,7 +20,7 @@ export const servers: Record<string | number, net.Server> = {};
 export const initServers: InitServers = (channels) => {
   channels
     .filter((channel) =>
-      Object.prototype.hasOwnProperty.call(channel.source, 'tcp')
+      Object.prototype.hasOwnProperty.call(channel.source, 'tcp'),
     )
     .forEach((c) => {
       const e = events<IMsg>(c.id.toString());
@@ -56,7 +56,7 @@ export const initServers: InitServers = (channels) => {
           // NOTE: have to return true on filtered messages or else a Queue if exists will retry
           return true;
         },
-        context
+        context,
       );
     });
 };

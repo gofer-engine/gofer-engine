@@ -34,8 +34,8 @@ export const SampleE: ChannelConfig<'B', 'B', 'S'> = {
       flow: {
         kind: 'store',
         file: {},
-      }
-    }
+      },
+    },
   ],
   routes: [
     {
@@ -56,8 +56,8 @@ export const SampleE: ChannelConfig<'B', 'B', 'S'> = {
             tcp: {
               host: 'localhost',
               port: 5502,
-            }
-          }
+            },
+          },
         },
         {
           id: 'b99e923b-c5f8-4e7a-a251-d8955d691c7b',
@@ -67,9 +67,9 @@ export const SampleE: ChannelConfig<'B', 'B', 'S'> = {
             file: {
               path: ['local', 'acks'],
             },
-          }
+          },
         },
       ],
-    }
+    },
   ],
-}
+};

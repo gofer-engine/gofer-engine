@@ -211,7 +211,7 @@ export type TransformFlow<Tran extends 'O' | 'F' | 'B' = 'B'> = Tran extends 'O'
 // Otherwise it returns the transformed message
 type TransformFilterFunction = (
   msg: IMsg,
-  context: IMessageContext
+  context: IMessageContext,
 ) => false | IMsg;
 
 export type TransformOrFilterFlow<Tran extends 'O' | 'F' | 'B' = 'B'> =
@@ -228,7 +228,7 @@ export type TransformOrFilterFlow<Tran extends 'O' | 'F' | 'B' = 'B'> =
 // B = allow either objectified or raw function filters/transformers
 export type IngestionFlow<
   Filt extends 'O' | 'F' | 'B' = 'B',
-  Tran extends 'O' | 'F' | 'B' = 'B'
+  Tran extends 'O' | 'F' | 'B' = 'B',
 > =
   | { kind: 'ack'; ack: AckConfig }
   | FilterFlow<Filt>
@@ -241,7 +241,7 @@ export type IngestionFlow<
 // B = allow either objectified or raw function filters/transformers
 export type Ingestion<
   Filt extends 'O' | 'F' | 'B' = 'B',
-  Tran extends 'O' | 'F' | 'B' = 'B'
+  Tran extends 'O' | 'F' | 'B' = 'B',
 > = {
   kind: 'flow';
   id?: string | number; // a unique id for this ingestion flow. If not provided will use UUID to generate. if not defined it may not be the same between deployments/reboots
@@ -256,7 +256,7 @@ export type Ingestion<
 // B = allow either objectified or raw function filters/transformers
 export type RouteFlow<
   Filt extends 'O' | 'F' | 'B' = 'B',
-  Tran extends 'O' | 'F' | 'B' = 'B'
+  Tran extends 'O' | 'F' | 'B' = 'B',
 > =
   | FilterFlow<Filt>
   | TransformFlow<Tran>
@@ -269,7 +269,7 @@ export type RouteFlow<
 // B = allow either objectified or raw function filters/transformers
 export type RouteFlowNamed<
   Filt extends 'O' | 'F' | 'B' = 'B',
-  Tran extends 'O' | 'F' | 'B' = 'B'
+  Tran extends 'O' | 'F' | 'B' = 'B',
 > = {
   kind: 'flow';
   id?: string | number; // a unique id for this route flow. If not provided will use UUID to generate. if not defined it may not be the same between deployments/reboots
@@ -286,7 +286,7 @@ export type RouteFlowNamed<
 export type Route<
   Filt extends 'O' | 'F' | 'B' = 'B',
   Tran extends 'O' | 'F' | 'B' = 'B',
-  Stct extends 'S' | 'L' = 'L'
+  Stct extends 'S' | 'L' = 'L',
 > = {
   kind: 'route';
   id?: string | number; // a unique id for this route flow. If not provided will use UUID to generate. if not defined it may not be the same between deployments/reboots
@@ -309,7 +309,7 @@ export type TLogLevel = 'debug' | 'info' | 'warn' | 'error';
 export type ChannelConfig<
   Filt extends 'O' | 'F' | 'B' = 'B',
   Tran extends 'O' | 'F' | 'B' = 'B',
-  Stct extends 'S' | 'L' = 'L'
+  Stct extends 'S' | 'L' = 'L',
 > = RequiredProperties<
   {
     id?: string | number; // a unique id for this channel. If not provided will use UUID to generate. if not defined it may not be the same between deployments/reboots
@@ -332,43 +332,43 @@ export type ChannelConfig<
 
 export type InitServers = <
   Filt extends 'O' | 'F' | 'B' = 'B',
-  Tran extends 'O' | 'F' | 'B' = 'B'
+  Tran extends 'O' | 'F' | 'B' = 'B',
 >(
-  channels: ChannelConfig<Filt, Tran, 'S'>[]
+  channels: ChannelConfig<Filt, Tran, 'S'>[],
 ) => void;
 
 export type AckFunc = (ack: IMsg, context: IMessageContext) => void;
 
 export type IngestFunc = <
   Filt extends 'O' | 'F' | 'B' = 'B',
-  Tran extends 'O' | 'F' | 'B' = 'B'
+  Tran extends 'O' | 'F' | 'B' = 'B',
 >(
   channel: ChannelConfig<Filt, Tran, 'S'>,
   msg: IMsg,
   ack: AckFunc | undefined,
-  context: IMessageContext
+  context: IMessageContext,
 ) => IMsg | false;
 
 export type IngestMsgFunc = (
   msg: IMsg,
   ack: AckFunc | undefined,
-  context: IMessageContext
-) => Promise<boolean>
+  context: IMessageContext,
+) => Promise<boolean>;
 
 export type RunRoutesFunc = <
   Filt extends 'O' | 'F' | 'B' = 'B',
-  Tran extends 'O' | 'F' | 'B' = 'B'
+  Tran extends 'O' | 'F' | 'B' = 'B',
 >(
   channel: ChannelConfig<Filt, Tran, 'S'>,
   msg: IMsg,
   context: IMessageContext,
   // direct provides a way to bypass non-existent event handlers. This is used for direct calls to routes such as the messenger.
-  direct?: boolean
+  direct?: boolean,
 ) => Promise<boolean>;
 
 export type RunRouteFunc = <
   Filt extends 'O' | 'F' | 'B' = 'B',
-  Tran extends 'O' | 'F' | 'B' = 'B'
+  Tran extends 'O' | 'F' | 'B' = 'B',
 >(
   channelId: string | number,
   routeId: string | number,
@@ -377,7 +377,7 @@ export type RunRouteFunc = <
   context: IMessageContext,
   // direct provides a way to bypass non-existent event handlers. This is used for direct calls to routes such as the messenger.
   direct?: boolean,
-  callback?: (msg: IMsg) => void
+  callback?: (msg: IMsg) => void,
 ) => Promise<boolean>;
 
 export interface OGofer {
@@ -393,7 +393,7 @@ export type MsgVar<V> = V | ((msg: IMsg, context?: IMessageContext) => V);
 export type WithVarDo<V> = (
   v: V | undefined,
   msg: IMsg,
-  context: IMessageContext
+  context: IMessageContext,
 ) => void | IMsg | boolean;
 
 // TODO: implement cron schedule
@@ -439,12 +439,12 @@ export interface OIngest extends OComplete, OBase<OIngest> {
   setVar: <V>(
     scope: Exclude<varTypes, 'Route'>,
     varName: string,
-    varValue: MsgVar<V>
+    varValue: MsgVar<V>,
   ) => OIngest;
   getVar: <V>(
     scope: Exclude<varTypes, 'Route'>,
     varName: string,
-    getVal: WithVarDo<V>
+    getVal: WithVarDo<V>,
   ) => OIngest;
   ack: (ack?: AckConfig) => OIngest;
   route: (r: (route: ORoute) => ORoute) => OComplete;
@@ -461,7 +461,7 @@ export interface ORoute extends OBase<ORoute> {
 }
 
 export type MessengerRoute = (
-  R: Exclude<ORoute, 'export'>
+  R: Exclude<ORoute, 'export'>,
 ) => Exclude<ORoute, 'export'>;
 export type MessengerInput =
   | Message
@@ -471,5 +471,5 @@ export type MessengerInput =
   | ((msg: IMsg) => IMsg);
 export type MessengerFunc = (msg: MessengerInput) => Promise<IMsg>;
 export type Messenger = (
-  route: MessengerRoute
+  route: MessengerRoute,
 ) => [messenger: MessengerFunc, messengerId: string];

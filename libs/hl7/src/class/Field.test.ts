@@ -44,7 +44,7 @@ test('Field', () => {
     null,
   ]);
   expect(
-    new Flds([new Fld(null), new Fld(null)]).getComponents().toString()
+    new Flds([new Fld(null), new Fld(null)]).getComponents().toString(),
   ).toStrictEqual([null, null]);
   expect(new Flds([]).one()).toBeUndefined();
   expect(new Flds([new Fld(null)]).json()).toStrictEqual([null]);

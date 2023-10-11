@@ -1,7 +1,7 @@
 import { IMsg, Segment, Segments } from './types';
 
 export const isSegmentArray = (
-  segments: Segment | Segments
+  segments: Segment | Segments,
 ): segments is Segments => Array.isArray(segments[0]);
 
 export const isMsg = (msg: unknown): msg is IMsg => {
@@ -28,6 +28,8 @@ export const isMsg = (msg: unknown): msg is IMsg => {
       'setIteration',
     ] as (keyof IMsg)[]
   ).every(
-    (method) => method in msg && typeof (msg as any)[method] === 'function'
+    (method) =>
+      method in msg &&
+      typeof (msg as Record<string, unknown>)[method] === 'function',
   );
 };

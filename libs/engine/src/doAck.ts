@@ -16,7 +16,7 @@ export const doAck = (
     routeId?: string | number;
     flowId?: string | number;
   },
-  context: IMessageContext
+  context: IMessageContext,
 ) => {
   const app = ackConfig.application ?? 'gofer ENGINE';
   const org = ackConfig.organization ?? '';
@@ -30,7 +30,7 @@ export const doAck = (
   let ackMsg: IMsg = new Msg(
     `MSH|^~\\&|${app}|${org}|||${now}||ACK|${id}|P|2.5.1|\nMSA|${res}|${id}${
       txt ? `|${txt}` : ''
-    }`
+    }`,
   );
   if (typeof ackConfig.msg === 'function') {
     context.logger = logger({

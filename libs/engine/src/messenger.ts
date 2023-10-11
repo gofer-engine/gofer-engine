@@ -16,7 +16,7 @@ import { genId } from './genId';
 const messengers = new Map<string, MessengerFunc>();
 
 export const messenger = (
-  route: MessengerRoute
+  route: MessengerRoute,
 ): [messenger: MessengerFunc, id: string] => {
   const config = route(new RouteClass()).export();
   const flows = config.flows;
@@ -31,8 +31,8 @@ export const messenger = (
           ? msg
           : new Msg(msg);
       const messageId = message.id() ?? genId('ID');
-      return new Promise<IMsg>(async (res, rej) => {
-        const done = await runRoute(
+      return new Promise<IMsg>((res, rej) => {
+        runRoute(
           id,
           id,
           flows,
@@ -50,9 +50,10 @@ export const messenger = (
             getMsgVar: getMsgVar(messageId),
           },
           true, // NOTE: this is a direct call to the route, the event handlers are not already initialized. This is a way to get around that.
-          res
-        );
-        if (!done) rej(`Message ${id} was filtered`);
+          res,
+        ).then((done) => {
+          if (!done) rej(`Message ${id} was filtered`);
+        });
       });
     });
   if (!messengers.has(id)) {

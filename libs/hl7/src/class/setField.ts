@@ -9,7 +9,7 @@ export const setField = (
   segmentIteration: number | undefined,
   fieldPosition: number,
   fieldIteration: number | undefined,
-  value: Field | ((field: Field) => Field)
+  value: Field | ((field: Field) => Field),
 ): Message => {
   // eslint-disable-next-line prefer-const
   let [meta, ...segments] = deepCopy(msg);

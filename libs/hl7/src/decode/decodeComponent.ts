@@ -6,10 +6,10 @@ import { findCharsFirstPos } from './findCharsFirstPos';
 export const decodeComponent = (
   input: string,
   stCh: string[],
-  meta: MessageMeta
+  meta: MessageMeta,
 ): [
   remaining: string,
-  value: Component
+  value: Component,
   // value: OneOrMany<string> | null | undefined
 ] => {
   const i = findCharsFirstPos(input, stCh);
@@ -17,7 +17,7 @@ export const decodeComponent = (
     input.slice(0, i),
     undefined,
     meta.encodingCharacters.subComponentSep,
-    (input, sc) => decodeSubComponent(input, [...stCh, ...sc])
+    (input, sc) => decodeSubComponent(input, [...stCh, ...sc]),
   );
   input = input.slice(i);
   return [input, val];

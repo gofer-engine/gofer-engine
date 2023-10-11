@@ -1,4 +1,4 @@
-import { StrictMessage } from "../libs/hl7/src";
+import { StrictMessage } from '../libs/hl7/src';
 
 export const strictJSON: StrictMessage = {
   meta: {
@@ -3192,4 +3192,4 @@ export const strictJSON: StrictMessage = {
       value: 'PID|1||1^^^DB^SQL~M1^^^EHR~R1^^^^RAD|',
     },
   ],
-}
+};

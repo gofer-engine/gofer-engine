@@ -19,7 +19,7 @@ export class Rep implements IRep {
   }
 
   public json = <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ): IfTrueElse<S, NoPos<StrictFieldRepetition>, Field> => {
     if (strict) {
       const rep: NoPos<StrictFieldRepetition> = {

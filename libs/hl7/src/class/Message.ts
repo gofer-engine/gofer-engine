@@ -46,7 +46,7 @@ export class Msg implements IMsg {
     return this;
   };
   public json = <S extends boolean | undefined = undefined>(
-    strict?: S
+    strict?: S,
   ): IfTrueElse<S, StrictMessage, Message> => {
     if (strict) {
       const msg = deepCopy(this.msg);
@@ -136,7 +136,7 @@ export class Msg implements IMsg {
     this.msg[0].id = id as Message[0]['id'];
     // TODO update encoding characters
     return this;
-  }
+  };
 
   public set: IMsg['set'] = (path, value) => {
     if (typeof value !== 'string') value = '';
@@ -153,7 +153,7 @@ export class Msg implements IMsg {
       this.updateMeta();
     }
     return msg;
-  }
+  };
 
   public get: IMsg['get'] = (path: string | undefined) => {
     if (path === undefined) return this.msg;
@@ -171,7 +171,7 @@ export class Msg implements IMsg {
       fieldPosition,
       fieldIteration,
       componentPosition,
-      subComponentPosition
+      subComponentPosition,
     );
   };
 
@@ -193,9 +193,11 @@ export class Msg implements IMsg {
   public setId = (id: string) => {
     this.id(id);
     return this;
-  }
+  };
 
-  public version = (version?: `${number}.${number}` | `${number}` | undefined) => {
+  public version = (
+    version?: `${number}.${number}` | `${number}` | undefined,
+  ) => {
     if (version) {
       this._msg[0].version = version;
       this.set('MSH-12', version);
@@ -206,18 +208,18 @@ export class Msg implements IMsg {
       }
       return this._msg[0].version;
     }
-  }
+  };
   public setVersion = (version: `${number}.${number}` | `${number}`) => {
     this.version(version);
     return this;
-  }
+  };
 
   public getSegments: IMsg['getSegments'] = (segmentName) =>
     getSegments(this.msg, segmentName).map((s) => new Seg(s));
 
   public getSegment: IMsg['getSegment'] = (
     segmentName: string | undefined,
-    iteration: number | undefined = undefined
+    iteration: number | undefined = undefined,
   ): ISeg | ISegs => {
     const segments = getSegments(this.msg, segmentName);
     if (iteration === undefined && segments.length > 1) {
@@ -232,7 +234,7 @@ export class Msg implements IMsg {
     fieldPosition?: number | undefined,
     fieldIteration?: number | undefined,
     componentPosition?: number | undefined,
-    subComponentPosition?: number | undefined
+    subComponentPosition?: number | undefined,
   ) =>
     get(
       this,
@@ -241,7 +243,7 @@ export class Msg implements IMsg {
       fieldPosition,
       fieldIteration,
       componentPosition,
-      subComponentPosition
+      subComponentPosition,
     );
 
   public transform: IMsg['transform'] = (transformers) => {
@@ -269,7 +271,7 @@ export class Msg implements IMsg {
       | (<T extends X>(v: T, i: number) => T),
     options: {
       iteration?: boolean | undefined;
-    } = {}
+    } = {},
   ): IMsg => {
     const { iteration } = options;
     if (typeof v === 'string') {
@@ -289,7 +291,7 @@ export class Msg implements IMsg {
               this._toPath({ ...paths, segmentIteration: i + 1 }),
               replacement instanceof Seg
                 ? replacement.json()
-                : (replacement as MsgValue)
+                : (replacement as MsgValue),
             );
           });
           this.updateMeta();
@@ -303,7 +305,7 @@ export class Msg implements IMsg {
               this._toPath({ ...paths, fieldIteration: i + 1 }),
               replacement instanceof Seg
                 ? replacement.json()
-                : (replacement as MsgValue)
+                : (replacement as MsgValue),
             );
           });
           return this;
@@ -323,7 +325,7 @@ export class Msg implements IMsg {
       const index = parseInt(original);
       if (isNaN(index)) {
         console.warn(
-          'Value at path was not a number, so could not use to index map array. Returning original message.'
+          'Value at path was not a number, so could not use to index map array. Returning original message.',
         );
         return this;
       }
@@ -333,7 +335,7 @@ export class Msg implements IMsg {
     }
     if (!Object.prototype.hasOwnProperty.call(v, original)) {
       console.warn(
-        'Value at path was not a key in the map object. Returning original message.'
+        'Value at path was not a key in the map object. Returning original message.',
       );
       return this;
     }
@@ -345,7 +347,7 @@ export class Msg implements IMsg {
   public setIteration = <Y>(
     path: string,
     map: Y[] | ((val: Y, i: number) => Y),
-    options?: { allowLoop: boolean }
+    options?: { allowLoop: boolean },
   ) => {
     this.map<Y>(
       path,
@@ -359,11 +361,11 @@ export class Msg implements IMsg {
         }
         return map(val, i) as typeof val;
       },
-      { iteration: true }
+      { iteration: true },
     );
     this.updateMeta();
     return this;
-  }
+  };
 }
 
 export default Msg;

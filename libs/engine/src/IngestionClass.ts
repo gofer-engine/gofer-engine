@@ -148,7 +148,7 @@ export class IngestionClass implements OIngest {
   public getVar = <V>(
     scope: Exclude<varTypes, 'Route'>,
     varName: string,
-    getVal: WithVarDo<V>
+    getVal: WithVarDo<V>,
   ) => {
     this.config.ingestion.push({
       id: genId(),
@@ -247,7 +247,7 @@ export class IngestionClass implements OIngest {
   };
   public routes: OIngest['routes'] = (routes) => {
     this.config.routes = routes(() => new RouteClass()).map((route) =>
-      route.export()
+      route.export(),
     );
     return new CompleteClass(this.config);
   };

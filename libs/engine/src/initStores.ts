@@ -7,9 +7,9 @@ const hashedStores: Record<string, Store> = {};
 
 export const initStores = <
   Filt extends 'O' | 'F' | 'B' = 'B',
-  Tran extends 'O' | 'F' | 'B' = 'B'
+  Tran extends 'O' | 'F' | 'B' = 'B',
 >(
-  config: ChannelConfig<Filt, Tran, 'S'>[]
+  config: ChannelConfig<Filt, Tran, 'S'>[],
 ) => {
   const routeStores: StoreConfig[] = [];
   config.forEach((channel) => {
@@ -38,8 +38,8 @@ export const initStores = <
     if (storeConfig[STORE]?.verbose) {
       console.log(
         `Initializing ${String(STORE)} (${hashed}): ${JSON.stringify(
-          storeConfig
-        )}`
+          storeConfig,
+        )}`,
       );
     }
     const config = storeConfig[STORE];
@@ -61,7 +61,7 @@ export const getStore = (config: StoreConfig): Store | undefined => {
 
 export const store = (
   config: StoreConfig & { kind?: string },
-  msg: IMsg
+  msg: IMsg,
 ): Promise<boolean> => {
   const c = { ...config };
   delete c.kind;
