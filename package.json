@@ -19,6 +19,7 @@
     "dgraph-js": "^21.3.1",
     "graphql": "^16.8.1",
     "mongodb": "^6.1.0",
+    "postgresql-client": "^2.9.1",
     "surrealdb.js": "^0.9.1",
     "tslib": "^2.6.2",
     "unique-names-generator": "^4.7.1"
