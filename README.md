@@ -12,14 +12,7 @@
 
 [![License ISC](https://badgen.net/badge/license/ISC)](https://github.com/gofer-engine/gofer-engine/blob/master/LICENSE.md)
 
-
-
-
-
-
-
 ![gofer Engine Logo](https://github.com/gofer-engine/gofer-engine/blob/master/images/gofer-logo.png?raw=true)
-
 
 An HL7 interface engine built for simplicity and speed, strongly typed, and ready to containerize.
 
@@ -29,11 +22,10 @@ An HL7 interface engine built for simplicity and speed, strongly typed, and read
 
 See Documentation link to view installation and usage instructions.
 
-
 ## Libraries
 
 - [`@gofer-engine/engine`](https://github.com/gofer-engine/gofer-engine/tree/master/libs/engine)
-  
+
   Core engine functionality including sending and receiving messages.
 
 - [`@gofer-engine/handelse`](https://github.com/gofer-engine/gofer-engine/tree/master/libs/handelse)
@@ -51,18 +43,14 @@ See Documentation link to view installation and usage instructions.
 - [`@gofer-engine/stores`](https://github.com/gofer-engine/gofer-engine/tree/master/libs/stores)
 
   Store libraries to support long term storage.
-  
-    [![surrealdb](https://badgen.net/badge/db/SurrealDB)](https://surrealdb.com/)
-    [![postgres](https://badgen.net/badge/db/Postgres)](https://www.postgresql.org/)
-    [![Dgraph](https://badgen.net/badge/db/Dgraph)](https://dgraph.io/)
-    [![Mongo](https://badgen.net/badge/db/MongoDB)](https://www.mongodb.com/)
-    ![File](https://badgen.net/badge/-/File-System?label)
 
+  [![surrealdb](https://badgen.net/badge/db/SurrealDB)](https://surrealdb.com/)
+  [![postgres](https://badgen.net/badge/db/Postgres)](https://www.postgresql.org/)
+  [![Dgraph](https://badgen.net/badge/db/Dgraph)](https://dgraph.io/)
+  [![Mongo](https://badgen.net/badge/db/MongoDB)](https://www.mongodb.com/)
+  ![File](https://badgen.net/badge/-/File-System?label)
 
 ## Community
+
 [![discord](https://badgen.net/badge/-/Discord?icon=discord&label)](https://discord.gg/pDQvMNUwk7)
 [![github](https://badgen.net/badge/-/GitHub?icon=github&label)](https://github.com/gofer-engine/gofer-engine)
-
-
-
-
