@@ -17,7 +17,6 @@ export interface IDBStoreOptions extends StoreOption {
   warnOnError?: boolean;
   extension?: string;
   filename?: string | string[] | ((msg: IMsg) => string);
-  verbose?: boolean;
 }
 
 class DBStore implements IStoreClass {

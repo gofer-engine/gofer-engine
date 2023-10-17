@@ -11,7 +11,6 @@ export interface IDBStoreOptions extends StoreOption {
   user?: string;
   pass?: string;
   warnOnError?: boolean;
-  verbose?: boolean;
   namespace?: string;
   database?: string;
   table?: string;

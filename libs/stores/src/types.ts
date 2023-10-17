@@ -25,4 +25,5 @@ export type StoreFunc = (data: IMsg, id?: string) => Promise<boolean>;
  */
 export interface StoreOption {
   id?: string;
+  verbose?: boolean;
 }

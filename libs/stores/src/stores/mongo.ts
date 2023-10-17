@@ -14,7 +14,6 @@ export interface IDBStoreOptions extends StoreOption {
   // loose JSON is the default.
   // normalized JSON is the same
   normalized?: boolean;
-  verbose?: boolean;
 }
 
 class DBStore implements IStoreClass {

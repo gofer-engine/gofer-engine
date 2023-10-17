@@ -104,7 +104,6 @@ truncateChar: string .
 export interface IDBStoreOptions extends StoreOption {
   uri?: string;
   warnOnError?: boolean;
-  verbose?: boolean;
 }
 
 type Node = {
