@@ -2,7 +2,13 @@ import { state } from './state';
 import { coerceStrictTypedChannels } from './helpers';
 import { initServers } from './initServers';
 import { initStores } from './initStores';
-import { ChannelConfig, Connection, OGofer } from './types';
+import {
+  ChannelConfig,
+  Connection,
+  HTTPConfig,
+  OGofer,
+  OIngest,
+} from './types';
 import { IngestionClass } from './IngestionClass';
 import { messenger } from './messenger';
 
@@ -27,16 +33,33 @@ class Gofer implements OGofer {
   constructor(channels?: ChannelConfig[]) {
     this.init(channels);
   }
-  public listen: OGofer['listen'] = (type, host, port) => {
-    const source: Connection<'I'> = {
-      kind: type,
-      [type]: {
-        host,
-        port,
-      },
-    };
-    return new IngestionClass(source);
-  };
+  public listen(type: 'http', options: HTTPConfig<'I'>): OIngest;
+  public listen(type: 'tcp', host: string, port: number): OIngest;
+  public listen(
+    type: 'http' | 'tcp',
+    hostOrOptions: string | HTTPConfig<'I'>,
+    port?: number,
+  ): OIngest {
+    if (type === 'tcp') {
+      const source: Connection<'I'> = {
+        kind: type,
+        [type]: {
+          host: hostOrOptions as string,
+          port: port as number,
+        },
+      };
+      return new IngestionClass(source);
+    }
+    if (type === 'http') {
+      const source: Connection<'I'> = {
+        kind: type,
+        [type]: hostOrOptions as HTTPConfig<'I'>,
+      };
+      return new IngestionClass(source);
+    }
+    // this error should be unreachable.
+    throw new Error(`Unsupported connection type ${type}`);
+  }
   // public files: OGofer['files'] = (config) => {
   //   return undefined as any
   // }

@@ -1,12 +1,12 @@
-import net from 'net';
+import http from 'http';
 import handelse from '@gofer-engine/handelse';
 import Msg, { IMsg } from '@gofer-engine/hl7';
 import { onLog } from './eventHandlers';
-import { IMessageContext, TcpConfig } from './types';
+import { HTTPConfig, IMessageContext } from './types';
 import { functionalVal } from './helpers';
 
-export type TcpClientFunc<T, R> = (
-  opt: TcpConfig<'O'>,
+export type HttpClientFunc<T, R> = (
+  opt: HTTPConfig<'O'>,
   msg: T,
   stringify: ((msg: T) => string) | undefined,
   parse: ((data: string) => R) | undefined,
@@ -20,21 +20,23 @@ export type TcpClientFunc<T, R> = (
 export const sendMessage = async (
   host: string,
   port: number,
-  SoM: string,
-  EoM: string,
-  CR: string,
+  path: string | undefined,
+  method: HTTPConfig<'O'>['method'] = 'POST',
   responseTimeout: number | false | undefined,
+  username: string | undefined,
+  password: string | undefined,
   data: string,
   channel?: string | number,
   route?: string | number,
   flow?: string | number,
+  context?: IMessageContext,
   direct?: boolean,
 ): Promise<string> => {
   if (responseTimeout !== undefined) {
     handelse.go(
       `gofer:${channel}.onLog`,
       {
-        log: `TODO: TCP responseTimeout is not yet implemented`,
+        log: `TODO: HTTP responseTimeout is not yet implemented`,
         channel,
         route,
         flow,
@@ -43,48 +45,38 @@ export const sendMessage = async (
         createIfNotExists: direct,
       },
     );
-    onLog.go('TODO: TCP responseTimeout is not yet implemented');
+    onLog.go('TODO: HTTP responseTimeout is not yet implemented');
     onLog.go({ responseTimeout });
   }
-  return new Promise((res, rej) => {
-    let responseBuffer = '';
-    const client = new net.Socket();
-    client.connect({ port, host }, () => {
-      handelse.go(
-        `gofer:${channel}.onLog`,
-        {
-          log: `TCP connection established to ${host}:${port}`,
+  return new Promise<string>((res, rej) => {
+    const client = http.request({
+      host,
+      port,
+      path,
+      method,
+      auth: username && password ? `${username}:${password}` : undefined,
+      headers: {
+        'Content-Type': 'x-application/hl7-v2+er7',
+        'Content-Length': Buffer.byteLength(data),
+      },
+    }, (response) => {
+      context?.logger(`STATUS: ${response.statusCode}`, 'debug');
+      context?.logger(`HEADERS: ${JSON.stringify(response.headers)}`, 'debug');
+      response.setEncoding('utf8');
+      const chunks: string[] = [];
+      response.on('data', (chunk) => {
+        console.log('data')
+        chunks.push(chunk);
+      });
+      response.on('end', () => {
+        res(chunks.join(''));
+        handelse.go(`gofer:${channel}.onLog`, {
+          log: `Requested an end to the TCP connection`,
           msg: data,
           channel,
           route,
           flow,
-        },
-        {
-          createIfNotExists: direct,
-        },
-      );
-      client.write(SoM + data + EoM + CR);
-    });
-    client.on('data', (chunk) => {
-      responseBuffer += chunk.toString();
-      if (
-        responseBuffer.substring(
-          responseBuffer.length - 2,
-          responseBuffer.length,
-        ) ===
-        EoM + CR
-      ) {
-        res(responseBuffer.substring(1, responseBuffer.length - 2));
-        client.end();
-      }
-    });
-    client.on('end', function () {
-      handelse.go(`gofer:${channel}.onLog`, {
-        log: `Requested an end to the TCP connection`,
-        msg: data,
-        channel,
-        route,
-        flow,
+        });
       });
     });
     client.on('error', (err) => {
@@ -103,16 +95,21 @@ export const sendMessage = async (
       );
       rej(err);
     });
+    client.write(data);
+    client.end();
   });
 };
 
-export const tcpClient: TcpClientFunc<IMsg, IMsg> = async (
+export const httpClient: HttpClientFunc<IMsg, IMsg> = async (
   {
     host,
     port,
-    SoM = String.fromCharCode(0x0b),
-    EoM = String.fromCharCode(0x1c),
-    CR = String.fromCharCode(0x0d),
+    method = 'POST',
+    path,
+    basicAuth: {
+      username,
+      password,
+    } = {},
     responseTimeout,
   },
   msg,
@@ -127,16 +124,21 @@ export const tcpClient: TcpClientFunc<IMsg, IMsg> = async (
   const config: {
     host?: string;
     port?: number;
-    SoM?: string;
-    EoM?: string;
-    CR?: string;
+    method?: "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "CONNECT" | "OPTIONS" | "TRACE" | "PATCH";
+    path?: string;
+    username?: string;
+    password?: string;
   } = {};
   try {
     config.host = functionalVal(host, msg, context);
     config.port = functionalVal(port, msg, context);
-    config.SoM = functionalVal(SoM, msg, context);
-    config.EoM = functionalVal(EoM, msg, context);
-    config.CR = functionalVal(CR, msg, context);
+    config.method = functionalVal(method, msg, context);
+    config.path = functionalVal(path || '', msg, context);
+    config.username = functionalVal(username || '', msg, context);
+    config.password = functionalVal(password || '', msg, context);
+    if (config.path === '') config.path = undefined;
+    if (config.username === '') config.username = undefined;
+    if (config.password === '') config.password = undefined;
   } catch (err: unknown) {
     handelse.go(
       `gofer:${channelId}.onError`,
@@ -155,24 +157,24 @@ export const tcpClient: TcpClientFunc<IMsg, IMsg> = async (
   if (
     config.host !== undefined &&
     config.port !== undefined &&
-    config.SoM !== undefined &&
-    config.EoM !== undefined &&
-    config.CR !== undefined
+    config.method !== undefined
   ) {
     const ack = await sendMessage(
       config.host,
       config.port,
-      config.SoM,
-      config.EoM,
-      config.CR,
+      config.path,
+      config.method,
       responseTimeout,
+      config.username,
+      config.password,
       stringify(msg),
       channelId,
       routeId,
       flowId,
+      context,
       direct,
     );
     return parse(ack);
   }
-  throw new Error('TCP client configuration is invalid');
+  throw new Error('HTTP client configuration is invalid');
 };

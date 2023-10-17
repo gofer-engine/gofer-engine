@@ -5,9 +5,11 @@ import { mapOptions } from './helpers';
 import { store } from './initStores';
 import { queue } from './queue';
 import { tcpClient } from './tcpClient';
-import { Connection, RunRouteFunc, RunRoutesFunc } from './types';
+import { HTTPConfig, RunRouteFunc, RunRoutesFunc, TcpConfig } from './types';
 import { getRouteVar, setRouteVar } from './variables';
 import { doFilterTransform } from './doFilterTransform';
+import { httpClient } from './httpClient';
+import { IMsg } from '@gofer-engine/hl7';
 
 export const runRoutes: RunRoutesFunc = async (
   channel,
@@ -147,12 +149,16 @@ export const runRoute: RunRouteFunc = async (
         msg = filterFlows.msg;
         continue;
       }
-      if (flow.kind === 'tcp') {
-        const { tcp: tcpConfig } = flow as Connection<'O'>;
+      const kind = flow.kind;
+      if (kind === 'http' || kind === 'tcp') {
+        let _config: HTTPConfig<'O'> | TcpConfig<'O'> | undefined;
+        if (flow.kind === 'http') _config = flow.http
+        if (flow.kind === 'tcp') _config = flow.tcp
+        const config = _config as HTTPConfig<'O'> | TcpConfig<'O'>
         handelse.go(
           `gofer:${channelId}.onLog`,
           {
-            log: `tcpConfig: ${JSON.stringify(tcpConfig)}`,
+            log: `${flow.kind}Config: ${JSON.stringify(config)}`,
             channel: channelId,
             route: routeId,
             flow: namedFlow.id,
@@ -170,10 +176,11 @@ export const runRoute: RunRouteFunc = async (
           flows.push(
             new Promise<boolean>((res) => {
               queue(
-                `${channelId}.${namedFlow.id}.tcp`,
+                `${channelId}.${namedFlow.id}.${flow.kind}`,
                 (msg) =>
-                  tcpClient(
-                    tcpConfig,
+                  runClient(
+                    kind,
+                    config,
                     msg,
                     undefined,
                     undefined,
@@ -199,8 +206,9 @@ export const runRoute: RunRouteFunc = async (
           );
           continue;
         }
-        msg = await tcpClient(
-          tcpConfig,
+        msg = await runClient(
+          kind,
+          config,
           msg,
           undefined,
           undefined,
@@ -254,3 +262,12 @@ export const runRoute: RunRouteFunc = async (
     return status;
   });
 };
+
+async function runClient(
+  type: 'tcp' | 'http',
+  ...args: Parameters<typeof httpClient> | Parameters<typeof tcpClient>
+): Promise<IMsg> {
+  if (type === 'tcp') return tcpClient(...args as Parameters<typeof tcpClient>)
+  if (type === 'http') return httpClient(...args as Parameters<typeof httpClient>)
+  throw new Error(`Unsupported connection type ${type}`)
+}

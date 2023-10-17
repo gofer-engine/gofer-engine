@@ -72,6 +72,17 @@ interface ITcpConfig<Functional extends boolean = false> {
   maxConnections?: number; // used only for server TCP connections
 }
 
+interface IHTTPConfig<Functional extends boolean = false> {
+  host: AllowFuncProp<Functional, string>;
+  port: AllowFuncProp<Functional, number>;
+  method?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'PATCH';
+  path?: string;
+  basicAuth?: {
+    username: AllowFuncProp<Functional, string>;
+    password: AllowFuncProp<Functional, string>;
+  }
+}
+
 export interface QueueConfig<T = IMsg> {
   kind: 'queue';
   // interval?: number // milliseconds between retries. Defaults to 10x1000 = 10 seconds
@@ -105,6 +116,12 @@ export interface QueueConfig<T = IMsg> {
 export type TcpConfig<T extends 'I' | 'O' = 'I'> = T extends 'I'
   ? ITcpConfig
   : ITcpConfig<true> & {
+      responseTimeout?: number | false;
+    };
+
+export type HTTPConfig<T extends 'I' | 'O' = 'I'> = T extends 'I'
+  ? IHTTPConfig
+  : IHTTPConfig<true> & {
       responseTimeout?: number | false;
     };
 
@@ -142,26 +159,28 @@ export type FileConfig = RequireOnlyOne<
 export type Connection<T extends 'I' | 'O'> = T extends 'I' // TODO: if after flushing the rest of these sources/destination, possibly merge these two
   ? (
       | { kind: 'tcp'; tcp: TcpConfig<T> }
+      | { kind: 'http'; http: HTTPConfig<T> }
       // TODO: implement file reader source
       // NOTE: file source is different than the `file` store, because it will support additional methods such as ftp/sftp
-      | (never & { kind: 'file'; file: FileConfig })
+      // | (never & { kind: 'file'; file: FileConfig })
       //  TODO: implement db query source
       // NOTE: db source should be different than the `StoreConfig` because it should support query conditions. TBD
       // | { kind: 'db'; file: StoreConfig }
-      | (never & { kind: 'query'; query: StoreConfig })
+      // | (never & { kind: 'query'; query: StoreConfig })
     ) & {
       // NOTE: by using a queue acks are positively sent when queued not when removed from queue
       queue?: QueueConfig;
     }
   :
       | { kind: 'tcp'; tcp: TcpConfig<T> }
+      | { kind: 'http'; http: HTTPConfig<T> }
       // TODO: implement file reader source
-      // NOTE: file source is different than the `file` store, because it will support additional methods such as ftp/sftp
-      | (never & { kind: 'file'; file: FileConfig })
+      // NOTE: file destination is different than the `file` store, because it will support additional methods such as ftp/sftp
+      // | (never & { kind: 'file'; file: FileConfig })
       //  TODO: implement db query source
-      // NOTE: db source should be different than the `StoreConfig` because it should support query conditions. TBD
+      // NOTE: db destination should be different than the `StoreConfig` because it should support query/mutation conditions. TBD
       // | { kind: 'db'; file: StoreConfig }
-      | (never & { kind: 'query'; query: StoreConfig });
+      // | (never & { kind: 'query'; query: StoreConfig });
 
 export type AckConfig = {
   // Value to use in ACK MSH.3
@@ -383,7 +402,8 @@ export type RunRouteFunc = <
 export interface OGofer {
   run: (channels: ChannelConfig) => string | number | undefined;
   configs: (channels: ChannelConfig[]) => void;
-  listen: (method: 'tcp', host: string, port: number) => OIngest;
+  listen(method: 'tcp', host: string, port: number): OIngest;
+  listen(method: 'http', options: IHTTPConfig): OIngest;
   // files: (config: FileConfig) => OIngest
   // msg: (msg: Msg) => OIngest
   messenger: Messenger;
@@ -456,7 +476,8 @@ export interface ORoute extends OBase<ORoute> {
   getVar: <V>(scope: varTypes, varName: string, getVal: WithVarDo<V>) => ORoute;
   setRouteVar: <V>(varName: string, varValue: MsgVar<V>) => ORoute;
   getRouteVar: <V>(varName: string, getVal: WithVarDo<V>) => ORoute;
-  send: (method: 'tcp', host: string, port: number) => ORoute;
+  send(method: 'tcp', host: FunctProp<string>, port: FunctProp<number>): ORoute
+  send(method: 'http', options: IHTTPConfig<true>): ORoute;
   export: () => RequiredProperties<Route<'F', 'F', 'S'>, 'id' | 'flows'>;
 }
 

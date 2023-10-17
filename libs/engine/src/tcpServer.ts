@@ -2,10 +2,12 @@ import net from 'net';
 import handelse from '@gofer-engine/handelse';
 import Msg, { IMsg } from '@gofer-engine/hl7';
 import {
-  ChannelConfig,
   IContext,
   IMessageContext,
   IngestMsgFunc,
+  QueueConfig,
+  TLogLevel,
+  TcpConfig,
 } from './types';
 import { queue } from './queue';
 import { doAck } from './doAck';
@@ -13,11 +15,11 @@ import { isLogging, logger, mapOptions } from './helpers';
 import { randomUUID } from 'crypto';
 import { setMsgVar, getMsgVar } from './variables';
 
-export const tcpServer = <
-  Filt extends 'O' | 'F' | 'B' = 'B',
-  Tran extends 'O' | 'F' | 'B' = 'B',
->(
-  channel: ChannelConfig<Filt, Tran, 'S'>,
+export const tcpServer = (
+  id: string | number,
+  tcpConfig: TcpConfig<'I'>,
+  queueConfig: QueueConfig<IMsg> | undefined,
+  logLevel: TLogLevel | undefined,
   ingestMessage: IngestMsgFunc,
   context: IContext,
   direct?: boolean,
@@ -29,16 +31,14 @@ export const tcpServer = <
     EoM = String.fromCharCode(0x1c),
     CR = String.fromCharCode(0x0d),
     maxConnections,
-  } = channel.source.tcp;
-  const id = channel.id;
-  const queueConfig = channel.source.queue;
+  } = tcpConfig;
   const server = net.createServer({ allowHalfOpen: false });
   if (maxConnections !== undefined) server.setMaxListeners(maxConnections);
   server.listen(port, host, () => {
     handelse.go(
       `gofer:${id}.onLog`,
       {
-        log: `Server listening on ${host}:${port}`,
+        log: `TCP Server listening on ${host}:${port}`,
         channel: id,
       },
       {
@@ -151,7 +151,7 @@ export const tcpServer = <
         handelse.go(
           `gofer:${id}.onAck`,
           {
-            channel: channel.id,
+            channel: id,
             msg: msg,
             ack: ack,
           },
@@ -168,7 +168,7 @@ export const tcpServer = <
             verbose:
               queueConfig !== undefined
                 ? queueConfig.verbose
-                : isLogging('debug', channel.logLevel),
+                : isLogging('debug', logLevel),
           }),
         );
       } else {
@@ -182,7 +182,7 @@ export const tcpServer = <
       }
     });
     socket.on('close', (data) => {
-      if (isLogging('debug', channel.logLevel))
+      if (isLogging('debug', logLevel))
         console.log(
           `Client ${clientAddress} disconnected`,
           `data: ${JSON.stringify(data)}`,

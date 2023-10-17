@@ -26,19 +26,13 @@ const quickServer = async (
   };
   return getPortPromise({ host, port }).then((openPort) => {
     const server = tcpServer(
+      channelId,
       {
-        id: channelId,
-        logLevel: 'error',
-        source: {
-          kind: 'tcp',
-          tcp: {
-            host,
-            port: openPort,
-          },
-        },
-        ingestion: [],
-        name: channelId,
+        host,
+        port: openPort,
       },
+      undefined,
+      undefined,
       cb,
       {
         getChannelVar: getChannelVar(channelId),

@@ -1,5 +1,7 @@
 import {
   FilterFunc,
+  FunctProp,
+  HTTPConfig,
   IMessageContext,
   MsgVar,
   ORoute,
@@ -238,19 +240,39 @@ export class RouteClass implements ORoute {
     });
     return this;
   };
-  public send = (method: 'tcp', host: string, port: number): ORoute => {
-    this.config.flows.push({
-      id: genId(),
-      kind: 'flow',
-      flow: {
-        kind: method,
-        [method]: {
-          host,
-          port,
+  public send(method: 'http', options: HTTPConfig<'O'>): ORoute;
+  public send(method: 'tcp', host: FunctProp<string>, port: FunctProp<number>): ORoute;
+  public send(
+    type: 'http' | 'tcp',
+    hostOrOptions: FunctProp<string> | HTTPConfig<'O'>,
+    port?: FunctProp<number>,
+  ): ORoute {
+    if (type === 'tcp') {   
+      this.config.flows.push({
+        id: genId(),
+        kind: 'flow',
+        flow: {
+          kind: 'tcp',
+          [type]: {
+            host: hostOrOptions as FunctProp<string>,
+            port: port as FunctProp<number>,
+          },
         },
-      },
-    });
-    return this;
+      });
+      return this;
+    }
+    if (type === 'http') {
+      this.config.flows.push({
+        id: genId(),
+        kind: 'flow',
+        flow: {
+          kind: 'http',
+          [type]: hostOrOptions as HTTPConfig<'O'>,
+        },
+      })
+      return this
+    }
+    throw new Error(`Unsupported connection type ${type}`)
   };
   public export = () => this.config;
 }

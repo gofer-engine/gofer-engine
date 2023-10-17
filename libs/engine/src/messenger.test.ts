@@ -58,7 +58,7 @@ test('messenger works', async () => {
       .set('EVN-5', '0507') // Operator ID needs to be set in Meditech in EVS Staff Dictionary. Path: Administrative > Registration > Dictionary (REG Registration) > EVS Staff
       .addSegment('NPU')
       .set('NPU-1', '1051') // Bed Location (aka Telephony Ext) needs to be set in Meditech in MIS Room Dictionary. Path: Info Systems > MIS > Dictionaries > Administrative > Room
-      .set('NPU-1', '1'); // Bed Status. Table 0116: 1=Cleaning in Process, 2=Clean. Any other value will be rejected.
+      .set('NPU-2', '1'); // Bed Status. Table 0116: 1=Cleaning in Process, 2=Clean. Any other value will be rejected.
     return msg;
   });
   expect(isMsg(ack)).toBeTruthy();
