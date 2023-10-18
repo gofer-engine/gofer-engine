@@ -5,6 +5,7 @@ import { events } from './events';
 import { runIngestFlows } from './runIngestFlows';
 import { runRoutes } from './runRoutes';
 import { httpServer } from './httpServer';
+import { httpsServer } from './httpsServer';
 import { tcpServer } from './tcpServer';
 import { IContext, IngestMsgFunc, InitServers } from './types';
 import { listeners } from './eventHandlers';
@@ -64,6 +65,15 @@ export const initServers: InitServers = (channels) => {
       servers[c.id] = httpServer(
         c.id,
         c.source.http,
+        c.source.queue,
+        c.logLevel,
+        ingestFunc,
+        context,
+      )
+    } else if (c.source.kind === 'https') {
+      servers[c.id] = httpsServer(
+        c.id,
+        c.source.https,
         c.source.queue,
         c.logLevel,
         ingestFunc,

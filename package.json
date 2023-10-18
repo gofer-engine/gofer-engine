@@ -11,7 +11,11 @@
     "test": "npx nx run-many -t test",
     "build": "npx nx run gofer-engine:build",
     "dev": "npx nx run gofer-engine:serve",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "gen-pem": "openssl genrsa -out ./certs/key.pem",
+    "gen-csr": "openssl req -new -key ./certs/key.pem -out ./certs/csr.pem -subj \"/C=US/ST=STATE/L=CITY/O=GOFER ENGINE/OU=ENGINE/CN=GOFER_ENGINE\"",
+    "gen-cert": "openssl x509 -req -days 365 -in ./certs/csr.pem -signkey ./certs/key.pem -out ./certs/cert.pem",
+    "generate-cert": "npm run gen-pem && npm run gen-csr && npm run gen-cert"
   },
   "private": true,
   "dependencies": {

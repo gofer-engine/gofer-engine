@@ -1,0 +1,9 @@
+*.pem
+*.crt
+*.ca-bundle
+*.p7b
+.p7s
+.der
+.cer
+.pfx
+.p12

@@ -6,6 +6,7 @@ import {
   ChannelConfig,
   Connection,
   HTTPConfig,
+  HTTPSConfig,
   OGofer,
   OIngest,
 } from './types';
@@ -33,11 +34,12 @@ class Gofer implements OGofer {
   constructor(channels?: ChannelConfig[]) {
     this.init(channels);
   }
+  public listen(type: 'https', options: HTTPSConfig<'I'>): OIngest;
   public listen(type: 'http', options: HTTPConfig<'I'>): OIngest;
   public listen(type: 'tcp', host: string, port: number): OIngest;
   public listen(
-    type: 'http' | 'tcp',
-    hostOrOptions: string | HTTPConfig<'I'>,
+    type: 'https' | 'http' | 'tcp',
+    hostOrOptions: string | HTTPConfig<'I'> | HTTPSConfig<'I'>,
     port?: number,
   ): OIngest {
     if (type === 'tcp') {
@@ -54,6 +56,13 @@ class Gofer implements OGofer {
       const source: Connection<'I'> = {
         kind: type,
         [type]: hostOrOptions as HTTPConfig<'I'>,
+      };
+      return new IngestionClass(source);
+    }
+    if (type === 'https') {
+      const source: Connection<'I'> = {
+        kind: type,
+        [type]: hostOrOptions as HTTPSConfig<'I'>,
       };
       return new IngestionClass(source);
     }

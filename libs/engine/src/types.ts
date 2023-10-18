@@ -75,12 +75,49 @@ interface ITcpConfig<Functional extends boolean = false> {
 interface IHTTPConfig<Functional extends boolean = false> {
   host: AllowFuncProp<Functional, string>;
   port: AllowFuncProp<Functional, number>;
-  method?: 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'PATCH';
+  method?:
+    | 'GET'
+    | 'HEAD'
+    | 'POST'
+    | 'PUT'
+    | 'DELETE'
+    | 'CONNECT'
+    | 'OPTIONS'
+    | 'TRACE'
+    | 'PATCH';
   path?: string;
   basicAuth?: {
     username: AllowFuncProp<Functional, string>;
     password: AllowFuncProp<Functional, string>;
-  }
+  };
+}
+
+interface IHTTPSConfig<Functional extends boolean = false>
+  extends IHTTPConfig<Functional> {
+  // props for cert/ssl support from tls.connect
+  ca?: AllowFuncProp<Functional, string | string[] | Buffer | Buffer[]>;
+  cert?: AllowFuncProp<Functional, string | string[] | Buffer | Buffer[]>;
+  ciphers?: AllowFuncProp<Functional, string>;
+  clientCertEngine?: AllowFuncProp<Functional, string>;
+  crl?: AllowFuncProp<Functional, string | string[] | Buffer | Buffer[]>;
+  dhparam?: AllowFuncProp<Functional, string | Buffer>;
+  ecdhCurve?: AllowFuncProp<Functional, string>;
+  honorCipherOrder?: AllowFuncProp<Functional, boolean>;
+  key?: AllowFuncProp<Functional, string | string[] | Buffer | Buffer[]>;
+  passphrase?: AllowFuncProp<Functional, string>;
+  pfx?: AllowFuncProp<
+    Functional,
+    | string
+    | string[]
+    | Buffer
+    | Buffer[]
+    | { buf: string | Buffer; passphrase?: string }[]
+  >;
+  secureOptions?: AllowFuncProp<Functional, number>;
+  secureProtocol?: AllowFuncProp<Functional, string>;
+  sessionIdContext?: AllowFuncProp<Functional, string>;
+  rejectUnauthorized?: AllowFuncProp<Functional, boolean>;
+  severname?: AllowFuncProp<Functional, string>;
 }
 
 export interface QueueConfig<T = IMsg> {
@@ -125,6 +162,12 @@ export type HTTPConfig<T extends 'I' | 'O' = 'I'> = T extends 'I'
       responseTimeout?: number | false;
     };
 
+export type HTTPSConfig<T extends 'I' | 'O' = 'I'> = T extends 'I'
+  ? IHTTPSConfig
+  : IHTTPSConfig<true> & {
+      responseTimeout?: number | false;
+    };
+
 interface IFileConfig {
   directory: string;
   ftp?: string;
@@ -160,27 +203,29 @@ export type Connection<T extends 'I' | 'O'> = T extends 'I' // TODO: if after fl
   ? (
       | { kind: 'tcp'; tcp: TcpConfig<T> }
       | { kind: 'http'; http: HTTPConfig<T> }
-      // TODO: implement file reader source
-      // NOTE: file source is different than the `file` store, because it will support additional methods such as ftp/sftp
-      // | (never & { kind: 'file'; file: FileConfig })
-      //  TODO: implement db query source
-      // NOTE: db source should be different than the `StoreConfig` because it should support query conditions. TBD
-      // | { kind: 'db'; file: StoreConfig }
-      // | (never & { kind: 'query'; query: StoreConfig })
-    ) & {
+      | { kind: 'https'; https: HTTPSConfig<T> }
+    ) & // TODO: implement file reader source
+    // NOTE: file source is different than the `file` store, because it will support additional methods such as ftp/sftp
+    // | (never & { kind: 'file'; file: FileConfig })
+    //  TODO: implement db query source
+    // NOTE: db source should be different than the `StoreConfig` because it should support query conditions. TBD
+    // | { kind: 'db'; file: StoreConfig }
+    // | (never & { kind: 'query'; query: StoreConfig })
+    {
       // NOTE: by using a queue acks are positively sent when queued not when removed from queue
       queue?: QueueConfig;
     }
   :
       | { kind: 'tcp'; tcp: TcpConfig<T> }
       | { kind: 'http'; http: HTTPConfig<T> }
-      // TODO: implement file reader source
-      // NOTE: file destination is different than the `file` store, because it will support additional methods such as ftp/sftp
-      // | (never & { kind: 'file'; file: FileConfig })
-      //  TODO: implement db query source
-      // NOTE: db destination should be different than the `StoreConfig` because it should support query/mutation conditions. TBD
-      // | { kind: 'db'; file: StoreConfig }
-      // | (never & { kind: 'query'; query: StoreConfig });
+      | { kind: 'https'; https: HTTPSConfig<T> };
+// TODO: implement file reader source
+// NOTE: file destination is different than the `file` store, because it will support additional methods such as ftp/sftp
+// | (never & { kind: 'file'; file: FileConfig })
+//  TODO: implement db query source
+// NOTE: db destination should be different than the `StoreConfig` because it should support query/mutation conditions. TBD
+// | { kind: 'db'; file: StoreConfig }
+// | (never & { kind: 'query'; query: StoreConfig });
 
 export type AckConfig = {
   // Value to use in ACK MSH.3
@@ -404,6 +449,7 @@ export interface OGofer {
   configs: (channels: ChannelConfig[]) => void;
   listen(method: 'tcp', host: string, port: number): OIngest;
   listen(method: 'http', options: IHTTPConfig): OIngest;
+  listen(method: 'https', options: IHTTPSConfig): OIngest;
   // files: (config: FileConfig) => OIngest
   // msg: (msg: Msg) => OIngest
   messenger: Messenger;
@@ -476,8 +522,9 @@ export interface ORoute extends OBase<ORoute> {
   getVar: <V>(scope: varTypes, varName: string, getVal: WithVarDo<V>) => ORoute;
   setRouteVar: <V>(varName: string, varValue: MsgVar<V>) => ORoute;
   getRouteVar: <V>(varName: string, getVal: WithVarDo<V>) => ORoute;
-  send(method: 'tcp', host: FunctProp<string>, port: FunctProp<number>): ORoute
+  send(method: 'tcp', host: FunctProp<string>, port: FunctProp<number>): ORoute;
   send(method: 'http', options: IHTTPConfig<true>): ORoute;
+  send(method: 'https', options: IHTTPSConfig<true>): ORoute;
   export: () => RequiredProperties<Route<'F', 'F', 'S'>, 'id' | 'flows'>;
 }
 

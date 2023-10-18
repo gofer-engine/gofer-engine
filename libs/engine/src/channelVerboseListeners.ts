@@ -44,7 +44,7 @@ export const verboseListeners = (
     handlers.onRouteEnd.do(({ channel, route, status }) =>
       logger(
         channel,
-        `Route Compled for Msg — ${JSON.stringify({ route, status })}`,
+        `Route Completed for Msg — ${JSON.stringify({ route, status })}`,
       ),
     );
     handlers.onComplete.do(({ channel, status }) =>

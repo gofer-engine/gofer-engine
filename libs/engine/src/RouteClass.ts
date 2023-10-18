@@ -2,6 +2,7 @@ import {
   FilterFunc,
   FunctProp,
   HTTPConfig,
+  HTTPSConfig,
   IMessageContext,
   MsgVar,
   ORoute,
@@ -240,14 +241,19 @@ export class RouteClass implements ORoute {
     });
     return this;
   };
+  public send(method: 'https', options: HTTPSConfig<'O'>): ORoute;
   public send(method: 'http', options: HTTPConfig<'O'>): ORoute;
-  public send(method: 'tcp', host: FunctProp<string>, port: FunctProp<number>): ORoute;
   public send(
-    type: 'http' | 'tcp',
-    hostOrOptions: FunctProp<string> | HTTPConfig<'O'>,
+    method: 'tcp',
+    host: FunctProp<string>,
+    port: FunctProp<number>,
+  ): ORoute;
+  public send(
+    type: 'http' | 'tcp' | 'https',
+    hostOrOptions: FunctProp<string> | HTTPConfig<'O'> | HTTPSConfig<'O'>,
     port?: FunctProp<number>,
   ): ORoute {
-    if (type === 'tcp') {   
+    if (type === 'tcp') {
       this.config.flows.push({
         id: genId(),
         kind: 'flow',
@@ -269,10 +275,21 @@ export class RouteClass implements ORoute {
           kind: 'http',
           [type]: hostOrOptions as HTTPConfig<'O'>,
         },
-      })
-      return this
+      });
+      return this;
     }
-    throw new Error(`Unsupported connection type ${type}`)
-  };
+    if (type === 'https') {
+      this.config.flows.push({
+        id: genId(),
+        kind: 'flow',
+        flow: {
+          kind: 'https',
+          [type]: hostOrOptions as HTTPSConfig<'O'>,
+        },
+      });
+      return this;
+    }
+    throw new Error(`Unsupported connection type ${type}`);
+  }
   public export = () => this.config;
 }

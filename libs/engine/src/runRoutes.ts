@@ -5,11 +5,18 @@ import { mapOptions } from './helpers';
 import { store } from './initStores';
 import { queue } from './queue';
 import { tcpClient } from './tcpClient';
-import { HTTPConfig, RunRouteFunc, RunRoutesFunc, TcpConfig } from './types';
+import {
+  HTTPConfig,
+  HTTPSConfig,
+  RunRouteFunc,
+  RunRoutesFunc,
+  TcpConfig,
+} from './types';
 import { getRouteVar, setRouteVar } from './variables';
 import { doFilterTransform } from './doFilterTransform';
 import { httpClient } from './httpClient';
 import { IMsg } from '@gofer-engine/hl7';
+import { httpsClient } from './httpsClient';
 
 export const runRoutes: RunRoutesFunc = async (
   channel,
@@ -150,11 +157,19 @@ export const runRoute: RunRouteFunc = async (
         continue;
       }
       const kind = flow.kind;
-      if (kind === 'http' || kind === 'tcp') {
-        let _config: HTTPConfig<'O'> | TcpConfig<'O'> | undefined;
-        if (flow.kind === 'http') _config = flow.http
-        if (flow.kind === 'tcp') _config = flow.tcp
-        const config = _config as HTTPConfig<'O'> | TcpConfig<'O'>
+      if (kind === 'https' || kind === 'http' || kind === 'tcp') {
+        let _config:
+          | HTTPSConfig<'O'>
+          | HTTPConfig<'O'>
+          | TcpConfig<'O'>
+          | undefined;
+        if (flow.kind === 'https') _config = flow.https;
+        if (flow.kind === 'http') _config = flow.http;
+        if (flow.kind === 'tcp') _config = flow.tcp;
+        const config = _config as
+          | HTTPSConfig<'O'>
+          | HTTPConfig<'O'>
+          | TcpConfig<'O'>;
         handelse.go(
           `gofer:${channelId}.onLog`,
           {
@@ -264,10 +279,14 @@ export const runRoute: RunRouteFunc = async (
 };
 
 async function runClient(
-  type: 'tcp' | 'http',
+  type: 'tcp' | 'http' | 'https',
   ...args: Parameters<typeof httpClient> | Parameters<typeof tcpClient>
 ): Promise<IMsg> {
-  if (type === 'tcp') return tcpClient(...args as Parameters<typeof tcpClient>)
-  if (type === 'http') return httpClient(...args as Parameters<typeof httpClient>)
-  throw new Error(`Unsupported connection type ${type}`)
+  if (type === 'tcp')
+    return tcpClient(...(args as Parameters<typeof tcpClient>));
+  if (type === 'http')
+    return httpClient(...(args as Parameters<typeof httpClient>));
+  if (type === 'https')
+    return httpsClient(...(args as Parameters<typeof httpsClient>));
+  throw new Error(`Unsupported connection type ${type}`);
 }

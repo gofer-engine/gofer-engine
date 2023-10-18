@@ -208,7 +208,9 @@ export const coerceStrictTypedChannels = (
     return stronglyTypedChannel;
   });
 };
-export const functionalVal = <T extends string | number | object | boolean>(
+export const functionalVal = <
+  T extends string | number | object | boolean | undefined,
+>(
   val: T | ((msg: IMsg, context: IMessageContext) => T),
   msg: IMsg,
   context: IMessageContext,
