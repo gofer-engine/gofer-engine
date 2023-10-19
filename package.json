@@ -15,7 +15,11 @@
     "gen-pem": "openssl genrsa -out ./certs/key.pem",
     "gen-csr": "openssl req -new -key ./certs/key.pem -out ./certs/csr.pem -subj \"/C=US/ST=STATE/L=CITY/O=GOFER ENGINE/OU=ENGINE/CN=GOFER_ENGINE\"",
     "gen-cert": "openssl x509 -req -days 365 -in ./certs/csr.pem -signkey ./certs/key.pem -out ./certs/cert.pem",
-    "generate-cert": "npm run gen-pem && npm run gen-csr && npm run gen-cert"
+    "generate-cert": "npm run gen-pem && npm run gen-csr && npm run gen-cert",
+    "version-major": "npx nx release v major -p=stores,queue,handelse,engine,hl7",
+    "version-minor": "npx nx release v minor -p=stores,queue,handelse,engine,hl7",
+    "version-patch": "npx nx release v patch -p=stores,queue,handelse,engine,hl7",
+    "publish": "nx release p -p=stores,queue,handelse,engine,hl7"
   },
   "private": true,
   "dependencies": {
