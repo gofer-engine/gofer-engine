@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // FIXME: find a way to implement strict typing instead of allowing any
 export type JSONValue =
+  | undefined
   | string
   | number
   | boolean
@@ -18,6 +19,18 @@ export interface IMsg {
   delete: (path: string) => IMsg;
   copy: (path: string, toPath: string) => IMsg;
   move: (fromPath: string, toPath: string) => IMsg;
+  map: (
+    path: string,
+    v: string | Record<string, string> | string[] | (<T>(v: T, i: number) => T),
+    options?: {
+      iteration?: boolean | undefined;
+    },
+  ) => IMsg;
+  setIteration: <Y>(
+    path: string,
+    map: Y[] | ((val: Y, i: number) => Y),
+    options?: { allowLoop: boolean },
+  ) => IMsg;
 }
 
 export const isMsg = (msg: unknown): msg is IMsg => {

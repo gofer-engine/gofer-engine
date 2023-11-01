@@ -18,6 +18,7 @@
       "@gofer-engine/engine": ["libs/engine/src/index.ts"],
       "@gofer-engine/handelse": ["libs/handelse/src/index.ts"],
       "@gofer-engine/hl7": ["libs/hl7/src/index.ts"],
+      "@gofer-engine/json": ["libs/json/src/index.ts"],
       "@gofer-engine/message-type": ["libs/message-type/src/index.ts"],
       "@gofer-engine/queue": ["libs/queue/src/index.ts"],
       "@gofer-engine/stores": ["libs/stores/src/index.ts"]
