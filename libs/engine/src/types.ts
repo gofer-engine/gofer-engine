@@ -1,5 +1,6 @@
 import { StoreConfig } from '@gofer-engine/stores';
-import { IMsg, Message, StrictMessage } from '@gofer-engine/hl7';
+import { HL7v2, Message, StrictMessage } from '@gofer-engine/hl7';
+import { IMsg } from '@gofer-engine/message-type';
 
 export type MaybePromise<T> = Promise<T> | T;
 
@@ -63,7 +64,7 @@ export type IAckContext = IMessageContext & {
 export type FunctProp<R> = ((msg: IMsg, context: IMessageContext) => R) | R;
 export type AllowFuncProp<Allow, R> = Allow extends true ? FunctProp<R> : R;
 
-interface ITcpConfig<Functional extends boolean = false> {
+export interface ITcpConfig<Functional extends boolean = false> {
   host: AllowFuncProp<Functional, string>;
   port: AllowFuncProp<Functional, number>;
   SoM?: AllowFuncProp<Functional, string>; // Start of Message: defaults to `Sting.fromCharCode(0x0b)`
@@ -72,7 +73,7 @@ interface ITcpConfig<Functional extends boolean = false> {
   maxConnections?: number; // used only for server TCP connections
 }
 
-interface IHTTPConfig<Functional extends boolean = false> {
+export interface IHTTPConfig<Functional extends boolean = false> {
   host: AllowFuncProp<Functional, string>;
   port: AllowFuncProp<Functional, number>;
   method?:
@@ -92,7 +93,7 @@ interface IHTTPConfig<Functional extends boolean = false> {
   };
 }
 
-interface IHTTPSConfig<Functional extends boolean = false>
+export interface IHTTPSConfig<Functional extends boolean = false>
   extends IHTTPConfig<Functional> {
   // props for cert/ssl support from tls.connect
   ca?: AllowFuncProp<Functional, string | string[] | Buffer | Buffer[]>;
@@ -120,7 +121,7 @@ interface IHTTPSConfig<Functional extends boolean = false>
   severname?: AllowFuncProp<Functional, string>;
 }
 
-export interface QueueConfig<T = IMsg> {
+export interface QueueConfig {
   kind: 'queue';
   // interval?: number // milliseconds between retries. Defaults to 10x1000 = 10 seconds
   // FIXME: better-queue does not currently support a queue limit.
@@ -129,7 +130,7 @@ export interface QueueConfig<T = IMsg> {
   retries?: number; // Defaults to Infinity
   // TODO: `id` function is limited to only root key of T, change this to take the data and return the exact id.
   // id?: keyof T | ((task: T, cb: (error: any, id: keyof T | { id: string }) => void) => void) |  ((task: T, cb: (error: any, id: keyof T) => void) => void) // used to uniquely identify the items in queue
-  id?: (msg: T) => string; // used to uniquely identify the items in queue
+  id?: (msg: IMsg) => string; // used to uniquely identify the items in queue
   // filterQueue?: (msg: T) => boolean | Promise<boolean> // Used to conditionally filter what messages are allowed to enter the queue. Return true to pass the message through to the queue, false to drop it. If undefined, then all messages are allowed.
   // precondition?: (cb: (error: unknown, passOrFail: boolean) => void) => void
   // preconditionRetryTimeout?: number // Number of milliseconds to delay before checking the precondition function again. Defaults to 10x1000 = 10 seconds.
@@ -146,8 +147,8 @@ export interface QueueConfig<T = IMsg> {
   rotate?: boolean; // Rotate the queue moving a failed message to the end of the queu. Defaults to false
   verbose?: boolean; // Log messages to console. Defaults to false
   store: 'file' | 'memory';
-  stringify?: (msg: T) => string;
-  parse?: (msg: string) => T;
+  stringify?: (msg: IMsg) => string;
+  parse?: (msg: string) => IMsg;
 }
 
 export type TcpConfig<T extends 'I' | 'O' = 'I'> = T extends 'I'
@@ -531,12 +532,10 @@ export interface ORoute extends OBase<ORoute> {
 export type MessengerRoute = (
   R: Exclude<ORoute, 'export'>,
 ) => Exclude<ORoute, 'export'>;
-export type MessengerInput =
-  | Message
-  | string
-  | StrictMessage
-  | IMsg
-  | ((msg: IMsg) => IMsg);
+export type MessengerInput = IMsg extends HL7v2
+  ? string | HL7v2 | ((msg: HL7v2) => HL7v2) | Message | StrictMessage
+  : string | IMsg | ((msg: IMsg) => IMsg);
+
 export type MessengerFunc = (msg: MessengerInput) => Promise<IMsg>;
 export type Messenger = (
   route: MessengerRoute,

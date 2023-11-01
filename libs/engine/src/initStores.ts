@@ -1,5 +1,5 @@
 import stores, { Store, StoreConfig } from '@gofer-engine/stores';
-import { IMsg } from '@gofer-engine/hl7';
+import { IMsg } from '@gofer-engine/message-type';
 import { hash } from './hash';
 import { ChannelConfig } from './types';
 
@@ -18,7 +18,7 @@ export const initStores = <
       if (typeof flow === 'object' && flow.kind === 'store') {
         const storeConfig = { ...flow } as { kind?: 'store' } & StoreConfig;
         delete storeConfig.kind;
-        routeStores.push(storeConfig as StoreConfig);
+        routeStores.push(storeConfig);
       }
     });
     channel.routes?.forEach((route) => {
@@ -27,7 +27,7 @@ export const initStores = <
         if (typeof config === 'object' && config.kind === 'store') {
           const storeConfig = { ...config } as { kind?: 'store' } & StoreConfig;
           delete storeConfig.kind;
-          routeStores.push(storeConfig as StoreConfig);
+          routeStores.push(storeConfig);
         }
       });
     });

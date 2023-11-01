@@ -1,4 +1,4 @@
-import { IMsg } from '@gofer-engine/hl7';
+import { IMsg } from '@gofer-engine/message-type';
 import { gofer } from './gofer';
 import { ChannelConfig, IMessageContext, OComplete } from './types';
 import { genId } from './genId';

@@ -1,3 +1,4 @@
+import { IMsg } from '@gofer-engine/message-type'
 import { IMsgLimiter } from '.';
 
 export type OneOrMany<T> = T | T[];
@@ -140,21 +141,22 @@ export interface ISegs {
   getFields: () => IFld[][];
 }
 
-export interface IMsg {
-  setMsg: (msg: Message) => IMsg;
+export interface HL7v2 extends IMsg {
+  kind: 'HL7v2';
+  setMsg: (msg: Message) => HL7v2;
   json: <S extends boolean | undefined = undefined>(
     strict?: S,
   ) => IfTrueElse<S, StrictMessage, Message>;
   addSegment: (
     segment: string | Segment | ISeg | ISegs,
     after?: number | string,
-  ) => IMsg;
+  ) => HL7v2;
   toString: () => string;
-  set: (path?: string | undefined, value?: string | null | undefined) => IMsg;
+  set: (path?: string | undefined, value?: string | null | undefined) => HL7v2;
   setJSON: (
     path: string | undefined,
     json: Message | Segments | Segment | FieldsOrReps | FieldRep | Field,
-  ) => IMsg;
+  ) => HL7v2;
   get: (path: string | undefined) =>
     | string
     | Message
@@ -182,28 +184,28 @@ export interface IMsg {
     // NOTE: if undefined, returns first segment
     iteration?: number | undefined,
   ) => ISeg | ISegs;
-  setId: (id: string) => IMsg;
+  setId: (id: string) => HL7v2;
   id: (id?: string | undefined) => string | undefined;
-  setVersion: (version: `${number}.${number}` | `${number}`) => IMsg;
+  setVersion: (version: `${number}.${number}` | `${number}`) => HL7v2;
   version: (
     version?: `${number}.${number}` | `${number}` | undefined,
   ) => string | undefined;
-  transform: (transformers: IMsgLimiter) => IMsg;
-  delete: (path: string) => IMsg;
-  copy: (path: string, toPath: string) => IMsg;
-  move: (fromPath: string, toPath: string) => IMsg;
+  transform: (transformers: IMsgLimiter) => HL7v2;
+  delete: (path: string) => HL7v2;
+  copy: (path: string, toPath: string) => HL7v2;
+  move: (fromPath: string, toPath: string) => HL7v2;
   map: (
     path: string,
     v: string | Record<string, string> | string[] | (<T>(v: T, i: number) => T),
     options?: {
       iteration?: boolean | undefined;
     },
-  ) => IMsg;
+  ) => HL7v2;
   setIteration: <Y>(
     path: string,
     map: Y[] | ((val: Y, i: number) => Y),
     options?: { allowLoop: boolean },
-  ) => IMsg;
+  ) => HL7v2;
 }
 
 export interface MessageMeta {

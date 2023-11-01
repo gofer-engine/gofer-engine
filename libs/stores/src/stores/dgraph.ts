@@ -16,6 +16,7 @@ import {
   StrictMessage,
   StrictSegment,
   StrictSubComponent,
+  msgIsHL7v2,
 } from '@gofer-engine/hl7';
 
 const schema = `
@@ -187,6 +188,8 @@ class DBStore implements IStoreClass {
     // this.updateSchema()
   }
   public store: StoreFunc = async (data) => {
+    // FIXME: implement for non-IMsg data
+    if (!msgIsHL7v2(data)) throw new Error(`Not yet implemented for non-IMsg data`)
     const id =
       this.id === 'UUID'
         ? randomUUID()

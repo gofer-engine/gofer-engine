@@ -1,4 +1,5 @@
-import Msg, { IMsg, isMsg } from '@gofer-engine/hl7';
+import { IMsg, isMsg } from '@gofer-engine/message-type';
+import Msg, { msgIsHL7v2 } from '@gofer-engine/hl7';
 import { MessengerFunc, MessengerRoute } from './types';
 import { RouteClass } from './RouteClass';
 import { runRoute } from './runRoutes';
@@ -30,7 +31,12 @@ export const messenger = (
           : isMsg(msg)
           ? msg
           : new Msg(msg);
-      const messageId = message.id() ?? genId('ID');
+      let messageId: string;
+      if (msgIsHL7v2(message)) {
+        messageId = message.id() ?? genId('ID');
+      } else {
+        messageId = genId('ID');
+      }
       return new Promise<IMsg>((res, rej) => {
         runRoute(
           id,

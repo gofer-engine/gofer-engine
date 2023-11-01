@@ -1,15 +1,16 @@
 import https from 'https';
 import handelse from '@gofer-engine/handelse';
-import Msg, { IMsg } from '@gofer-engine/hl7';
+import { IMsg } from '@gofer-engine/message-type';
+import Msg from '@gofer-engine/hl7';
 import { onLog } from './eventHandlers';
 import { HTTPSConfig, IMessageContext } from './types';
 import { functionalVal } from './helpers';
 
-export type HttpsClientFunc<T, R> = (
+export type HttpsClientFunc = (
   opt: HTTPSConfig<'O'>,
-  msg: T,
-  stringify: ((msg: T) => string) | undefined,
-  parse: ((data: string) => R) | undefined,
+  msg: IMsg,
+  stringify: ((msg: IMsg) => string) | undefined,
+  parse: ((data: string) => IMsg) | undefined,
   channelId: string | number | undefined,
   routeId: string | number | undefined,
   flowId: string | number | undefined,
@@ -131,7 +132,7 @@ export const sendMessage = async (
   });
 };
 
-export const httpsClient: HttpsClientFunc<IMsg, IMsg> = async (
+export const httpsClient: HttpsClientFunc = async (
   {
     host,
     port,

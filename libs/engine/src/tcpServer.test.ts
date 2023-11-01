@@ -21,19 +21,13 @@ beforeAll((done) => {
   getPortPromise({ host: HOST, port: 5503 })
     .then((openPort) => {
       server = tcpServer(
+        channelID,
         {
-          id: channelID,
-          logLevel: 'debug',
-          source: {
-            kind: 'tcp',
-            tcp: {
-              host: HOST,
-              port: openPort,
-            },
-          },
-          ingestion: [],
-          name: 'test',
+          host: HOST,
+          port: openPort,
         },
+        undefined,
+        'debug',
         cb,
         {
           getChannelVar: getChannelVar(channelID),

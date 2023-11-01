@@ -2,7 +2,7 @@ import {
   Component,
   Field,
   FieldRep,
-  IMsg,
+  HL7v2,
   Message,
   MsgValue,
   Paths,
@@ -24,7 +24,7 @@ import { setSegment } from './setSegment';
 import { setSubComponent } from './setSubComponent';
 
 export const setJSON = (
-  msg: IMsg,
+  msg: HL7v2,
   json: MsgValue,
   {
     segmentName,
@@ -34,7 +34,7 @@ export const setJSON = (
     componentPosition,
     subComponentPosition,
   }: Paths,
-): IMsg => {
+): HL7v2 => {
   if (segmentName === undefined) {
     if (isMessage(json)) {
       msg.setMsg(json as Message);

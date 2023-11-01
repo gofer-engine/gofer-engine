@@ -1,4 +1,4 @@
-import { IMsg } from '@gofer-engine/hl7';
+import { IMsg } from '@gofer-engine/message-type';
 import { isMsgVFunc } from './isMsgVFunc';
 import {
   ChannelConfig,

@@ -9,7 +9,7 @@ import {
   QueueConfig,
   TLogLevel,
 } from './types';
-import Msg, { IMsg } from '@gofer-engine/hl7';
+import Msg from '@gofer-engine/hl7';
 import { publishers } from './eventHandlers';
 import { getMsgVar, setMsgVar } from './variables';
 import { randomUUID } from 'crypto';
@@ -18,7 +18,7 @@ import { isLogging, logger } from './helpers';
 export const httpServer = (
   id: string | number,
   httpConfig: HTTPConfig<'I'>,
-  queueConfig: QueueConfig<IMsg> | undefined,
+  queueConfig: QueueConfig | undefined,
   logLevel: TLogLevel | undefined,
   ingestMessage: IngestMsgFunc,
   context: IContext,
@@ -166,8 +166,8 @@ export const httpServer = (
       chunks.push(packet);
     });
     req.on('end', () => {
-      const hl7 = Buffer.concat(chunks).toString();
-      const msg = new Msg(hl7);
+      const data = Buffer.concat(chunks).toString();
+      const msg = new Msg(data);
       const msgUUID = randomUUID();
       const msgContext: IMessageContext = {
         ...context,
@@ -191,7 +191,7 @@ export const httpServer = (
       res.setHeader('Content-Type', 'x-application/hl7-v2+er7');
       ingestMessage(
         msg,
-        (ack: IMsg) => {
+        (ack) => {
           res.end(ack.toString());
         },
         msgContext,

@@ -1,6 +1,6 @@
 import net from 'net';
 import handelse from '@gofer-engine/handelse';
-import Msg, { IMsg } from '@gofer-engine/hl7';
+import Msg, { msgIsHL7v2 } from '@gofer-engine/hl7';
 import {
   IContext,
   IMessageContext,
@@ -18,7 +18,7 @@ import { setMsgVar, getMsgVar } from './variables';
 export const tcpServer = (
   id: string | number,
   tcpConfig: TcpConfig<'I'>,
-  queueConfig: QueueConfig<IMsg> | undefined,
+  queueConfig: QueueConfig | undefined,
   logLevel: TLogLevel | undefined,
   ingestMessage: IngestMsgFunc,
   context: IContext,
@@ -147,7 +147,8 @@ export const tcpServer = (
           },
           context as IMessageContext,
         );
-        socket.write(SoM + ack.toString() + EoM + CR);
+        const ackStr = ack.toString();
+        socket.write(SoM + ackStr + EoM + CR);
         handelse.go(
           `gofer:${id}.onAck`,
           {
@@ -174,8 +175,9 @@ export const tcpServer = (
       } else {
         ingestMessage(
           msg,
-          (ack: IMsg) => {
-            socket.write(SoM + ack.toString() + EoM + CR);
+          (ack) => {
+            const ackStr = ack.toString();
+            socket.write(SoM + ackStr + EoM + CR);
           },
           context as IMessageContext,
         );

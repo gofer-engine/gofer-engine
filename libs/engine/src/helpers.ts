@@ -1,4 +1,5 @@
-import Msg, { IMsg } from '@gofer-engine/hl7';
+import { IMsg } from '@gofer-engine/message-type';
+import Msg from '@gofer-engine/hl7';
 import handelse from '@gofer-engine/handelse';
 import { IQueueOptions } from '@gofer-engine/queue';
 import { publishers } from './eventHandlers';

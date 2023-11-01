@@ -1,4 +1,5 @@
-import Msg, { IMsg } from '@gofer-engine/hl7';
+import { IMsg } from '@gofer-engine/message-type'
+import Msg from '@gofer-engine/hl7';
 import { AckConfig, IMessageContext } from './types';
 import { logger } from './helpers';
 

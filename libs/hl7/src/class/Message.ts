@@ -10,7 +10,7 @@ import {
   MsgValue,
   IfTrueElse,
   StrictMessage,
-  IMsg,
+  HL7v2,
   ISeg,
   ISegs,
 } from '../types';
@@ -27,7 +27,8 @@ import { fromStrictJSON } from '../encode/fromStrictJSON';
  *
  * @see http://www.hl7.eu/HL7v2x/v251/std251/ch02.html#Heading11
  */
-export class Msg implements IMsg {
+export class Msg implements HL7v2 {
+  public readonly kind = 'HL7v2'
   private _msg: Message = [
     {
       encodingCharacters: {
@@ -104,7 +105,7 @@ export class Msg implements IMsg {
    *  - If `undefined`, then it will be the end of the message.
    * @returns the transformed `Msg` class
    */
-  public addSegment: IMsg['addSegment'] = (segment, after) => {
+  public addSegment: HL7v2['addSegment'] = (segment, after) => {
     const transformedMsg = addSegment(segment, this.msg, after);
     if (transformedMsg === false) {
       throw new Error('Could not addSegment');
@@ -138,7 +139,7 @@ export class Msg implements IMsg {
     return this;
   };
 
-  public set: IMsg['set'] = (path, value) => {
+  public set: HL7v2['set'] = (path, value) => {
     if (typeof value !== 'string') value = '';
     this.msg = setValue(this.msg, this._paths(path), value);
     if (path?.startsWith('MSH')) {
@@ -147,7 +148,7 @@ export class Msg implements IMsg {
     return this;
   };
 
-  public setJSON: IMsg['setJSON'] = (path, json): IMsg => {
+  public setJSON: HL7v2['setJSON'] = (path, json): HL7v2 => {
     const msg = setJSON(this, json, this._paths(path));
     if (path?.startsWith('MSH')) {
       this.updateMeta();
@@ -155,7 +156,7 @@ export class Msg implements IMsg {
     return msg;
   };
 
-  public get: IMsg['get'] = (path: string | undefined) => {
+  public get: HL7v2['get'] = (path: string | undefined) => {
     if (path === undefined) return this.msg;
     const {
       segmentName,
@@ -214,10 +215,10 @@ export class Msg implements IMsg {
     return this;
   };
 
-  public getSegments: IMsg['getSegments'] = (segmentName) =>
+  public getSegments: HL7v2['getSegments'] = (segmentName) =>
     getSegments(this.msg, segmentName).map((s) => new Seg(s));
 
-  public getSegment: IMsg['getSegment'] = (
+  public getSegment: HL7v2['getSegment'] = (
     segmentName: string | undefined,
     iteration: number | undefined = undefined,
   ): ISeg | ISegs => {
@@ -246,20 +247,20 @@ export class Msg implements IMsg {
       subComponentPosition,
     );
 
-  public transform: IMsg['transform'] = (transformers) => {
+  public transform: HL7v2['transform'] = (transformers) => {
     this.msg = transform(this.msg, transformers);
     this.updateMeta();
     return this;
   };
 
-  public delete: IMsg['delete'] = (path) => {
+  public delete: HL7v2['delete'] = (path) => {
     return this.set(path, '');
   };
 
-  public copy: IMsg['copy'] = (fromPath, toPath) =>
+  public copy: HL7v2['copy'] = (fromPath, toPath) =>
     this.set(toPath, this.get(fromPath)?.toString());
 
-  public move: IMsg['move'] = (fromPath, toPath) =>
+  public move: HL7v2['move'] = (fromPath, toPath) =>
     this.set(toPath, this.get(fromPath)?.toString()).delete(fromPath);
 
   public map = <X>(
@@ -272,7 +273,7 @@ export class Msg implements IMsg {
     options: {
       iteration?: boolean | undefined;
     } = {},
-  ): IMsg => {
+  ): HL7v2 => {
     const { iteration } = options;
     if (typeof v === 'string') {
       this.set(path, v);

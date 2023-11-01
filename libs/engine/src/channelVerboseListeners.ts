@@ -1,4 +1,4 @@
-import { IMsg } from '@gofer-engine/hl7';
+import { IMsg } from '@gofer-engine/message-type';
 import { IChannelEvents } from './events';
 import { TLogLevel } from './types';
 import { isLogging } from './helpers';
