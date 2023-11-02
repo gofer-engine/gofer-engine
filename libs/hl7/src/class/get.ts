@@ -1,8 +1,8 @@
 import { Component, Field, FieldOrRep, FieldRep, ISeg } from '../types';
-import Msg from './Message';
+import HL7v2Msg from './Message';
 
 export const get = (
-  msg: Msg,
+  msg: HL7v2Msg,
   segmentName: string | undefined,
   segmentIteration?: number | undefined,
   fieldPosition?: number | undefined,

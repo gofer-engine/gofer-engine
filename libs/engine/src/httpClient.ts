@@ -1,7 +1,7 @@
 import http from 'http';
 import handelse from '@gofer-engine/handelse';
 import { IMsg } from '@gofer-engine/message-type';
-import Msg from '@gofer-engine/hl7';
+import HL7v2Msg from '@gofer-engine/hl7';
 import { onLog } from './eventHandlers';
 import { HTTPConfig, IMessageContext } from './types';
 import { functionalVal } from './helpers';
@@ -66,7 +66,6 @@ export const sendMessage = async (
       response.setEncoding('utf8');
       const chunks: string[] = [];
       response.on('data', (chunk) => {
-        console.log('data')
         chunks.push(chunk);
       });
       response.on('end', () => {
@@ -115,7 +114,7 @@ export const httpClient: HttpClientFunc = async (
   },
   msg,
   stringify = (msg) => msg.toString(),
-  parse = (data) => new Msg(data),
+  parse = (data) => new HL7v2Msg(data),
   channelId,
   routeId,
   flowId,

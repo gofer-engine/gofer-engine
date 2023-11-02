@@ -1,7 +1,6 @@
 import { IMsg } from '@gofer-engine/message-type'
-import Msg from '@gofer-engine/hl7';
 import { AckConfig, IMessageContext } from './types';
-import { logger } from './helpers';
+import { getMsgType, logger } from './helpers';
 
 export const doAck = (
   msg: IMsg,
@@ -19,6 +18,7 @@ export const doAck = (
   },
   context: IMessageContext,
 ) => {
+  const msgType = context.kind
   const app = ackConfig.application ?? 'gofer ENGINE';
   const org = ackConfig.organization ?? '';
   const res = ackConfig.responseCode ?? 'AA';
@@ -28,11 +28,30 @@ export const doAck = (
     .toUTCString()
     .replace(/[^0-9]/g, '')
     .slice(0, -3);
-  let ackMsg: IMsg = new Msg(
-    `MSH|^~\\&|${app}|${org}|||${now}||ACK|${id}|P|2.5.1|\nMSA|${res}|${id}${
-      txt ? `|${txt}` : ''
-    }`,
-  );
+  let ackMsg: IMsg
+  if (msgType === 'JSON') {
+    ackMsg = getMsgType(
+      msgType,
+      {
+        ...{
+          id,
+          org: org === '' ? undefined : org,
+          res: txt === '' || res === 'AE' ? undefined : txt,
+          error: res === 'AE' ? txt ?? 'Unknown Error' : undefined,
+        },
+        accepted: res === 'AA',
+        app,
+        datetime: new Date().toISOString(),
+      }
+    );
+  } else {
+    ackMsg = getMsgType(
+      msgType,
+      `MSH|^~\\&|${app}|${org}|||${now}||ACK|${id}|P|2.5.1|\nMSA|${res}|${id}${
+        txt ? `|${txt}` : ''
+      }`,
+    );
+  }
   if (typeof ackConfig.msg === 'function') {
     context.logger = logger({
       channelId,

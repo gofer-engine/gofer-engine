@@ -1,7 +1,7 @@
 import net from 'net';
 import { IMsg } from '@gofer-engine/message-type';
 import handelse from '@gofer-engine/handelse';
-import Msg from '@gofer-engine/hl7';
+import HL7v2Msg from '@gofer-engine/hl7';
 import { onLog } from './eventHandlers';
 import { IMessageContext, TcpConfig } from './types';
 import { functionalVal } from './helpers';
@@ -118,7 +118,7 @@ export const tcpClient: TcpClientFunc = async (
   },
   msg,
   stringify = (msg) => msg.toString(),
-  parse = (data: string) => new Msg(data),
+  parse = (data: string) => new HL7v2Msg(data),
   channelId,
   routeId,
   flowId,

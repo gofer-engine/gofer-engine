@@ -45,7 +45,6 @@ export const transform = (
   const processedSegs = segs
     .filter((seg) => {
       const segName = seg[0];
-      // console.log({ segName })
       const restrictSeg = restrict?.[segName];
       const removeSeg = remove?.[segName];
       // if restrict not undefined and segName not in restrict then delete segment

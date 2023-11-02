@@ -75,12 +75,14 @@ class DBStore implements IStoreClass {
             contents['_id'] = id;
             collection.insertOne(contents).then((created) => {
               if (created.acknowledged) {
+                // TODO: implement to pass in the logger instead of using console.log
                 if (this.verbose)
                   console.log(
                     `Created ID: ${created.insertedId} in ${database}:${collectionName}`,
                   );
                 return res(true);
               } else {
+                // TODO: implement to pass in the logger instead of using console.warn
                 if (this.warnOnError) {
                   console.warn(
                     `Failed to create ID: "${id}" in ${database}:${collectionName}`,
@@ -93,6 +95,7 @@ class DBStore implements IStoreClass {
         }
       } catch (error) {
         if (this.warnOnError) {
+          // TODO: implement to pass in the logger instead of using console.warn
           console.warn(error);
           res(false);
         } else {

@@ -33,7 +33,6 @@ export const decodeRepSep = <
       const [remaining, val] = callback(input, [sep, rep]);
       input = remaining;
       reps.push(val as unknown as RepType);
-      // console.log({ rep, input, val })
       if (noRep) break;
     }
     if (reps.length === 1) {

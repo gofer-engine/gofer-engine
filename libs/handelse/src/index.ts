@@ -169,6 +169,7 @@ Received: "${handler.eventType}"
       (options.eventType === undefined || handler.eventType === undefined) &&
       options.eventType !== handler.eventType
     ) {
+    // TODO: implement to pass in the logger instead of using console.warn
       console.warn(`
 Event type declared only on one side, so type checking was not possible
 Options set event type: "${options.eventType ?? 'undefined'}"

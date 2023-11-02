@@ -13,7 +13,7 @@ export interface IMsg {
   setMsg: (msg: any) => IMsg;
   json: (normalized?: boolean) => any;
   toString: () => string;
-  set: (path?: string | undefined, value?: string | null | undefined) => IMsg;
+  set: (path?: string | undefined, value?: any) => IMsg;
   setJSON: (path: string | undefined, json: any) => IMsg;
   get: (path: string | undefined) => any;
   delete: (path: string) => IMsg;
@@ -53,8 +53,8 @@ export const isMsg = (msg: unknown): msg is IMsg => {
       'delete',
       'copy',
       'move',
-      // 'map',
-      // 'setIteration',
+      'map',
+      'setIteration',
     ] as (keyof IMsg)[]
   ).every(
     (method) =>

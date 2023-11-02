@@ -1,4 +1,4 @@
-import Msg from './Message';
+import HL7v2Msg from './Message';
 
 export * from './addSegment';
 export * from './coerce';
@@ -26,4 +26,4 @@ export * from './setValue';
 export * from './SubComponent';
 export * from './transform';
 
-export default Msg;
+export default HL7v2Msg;

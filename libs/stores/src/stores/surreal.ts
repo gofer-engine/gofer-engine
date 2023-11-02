@@ -97,10 +97,12 @@ class DBStore implements IStoreClass {
           : { meta: data.json()[0], msg: data.json()?.[1] };
         const created = await this.db.create(identifier, contents);
         if (this.verbose)
+        // TODO: implement to pass in the logger instead of using console.log
           // @ts-expect-error the typing of created is currently wrong in the surrealdb.js package
           console.log(`Created ID: ${created.id} in ${namespace}:${database}`);
         res(true);
       } catch (error) {
+        // TODO: implement to pass in the logger instead of using console.warn
         if (this.warnOnError) {
           console.warn(error);
           res(false);

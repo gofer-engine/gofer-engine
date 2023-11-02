@@ -1,4 +1,4 @@
-import Msg from '@gofer-engine/hl7';
+import HL7v2Msg from '@gofer-engine/hl7';
 import { randomUUID } from 'crypto';
 import { ChannelConfig } from '../src/types';
 
@@ -17,7 +17,7 @@ const SampleA: ChannelConfig = {
       store: 'file',
       id: (msg) => (msg.get('MSH-10.1') as string | undefined) ?? randomUUID(),
       stringify: (msg) => msg.toString(),
-      parse: (msg) => new Msg(msg),
+      parse: (msg) => new HL7v2Msg(msg),
     },
   },
   ingestion: [

@@ -27,7 +27,7 @@ import { fromStrictJSON } from '../encode/fromStrictJSON';
  *
  * @see http://www.hl7.eu/HL7v2x/v251/std251/ch02.html#Heading11
  */
-export class Msg implements HL7v2 {
+export class HL7v2Msg implements HL7v2 {
   public readonly kind = 'HL7v2'
   private _msg: Message = [
     {
@@ -325,6 +325,7 @@ export class Msg implements HL7v2 {
     if (Array.isArray(v)) {
       const index = parseInt(original);
       if (isNaN(index)) {
+        // TODO: implement to pass in the logger instead of using console.warn
         console.warn(
           'Value at path was not a number, so could not use to index map array. Returning original message.',
         );
@@ -335,6 +336,7 @@ export class Msg implements HL7v2 {
       return this;
     }
     if (!Object.prototype.hasOwnProperty.call(v, original)) {
+      // TODO: implement to pass in the logger instead of using console.warn
       console.warn(
         'Value at path was not a key in the map object. Returning original message.',
       );
@@ -369,4 +371,4 @@ export class Msg implements HL7v2 {
   };
 }
 
-export default Msg;
+export default HL7v2Msg;

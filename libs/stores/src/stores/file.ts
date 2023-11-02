@@ -78,6 +78,7 @@ class DBStore implements IStoreClass {
       fs.mkdirSync(dirname, { recursive: true });
     }
     if (!this.overwrite && !this.append && fs.existsSync(fullPath)) {
+      // TODO: implement to pass in the logger instead of using console.warn
       if (this.warnOnError) {
         console.warn(
           `Options set to not overwrite and not append, but the file: ${fullPath} already exists`,
@@ -97,14 +98,17 @@ class DBStore implements IStoreClass {
         { flag: this.append ? 'a' : 'w' },
         (err) => {
           if (err) {
+            // TODO: implement to pass in the logger instead of using console.warn
             if (this.warnOnError) {
               console.warn(err);
               res(false);
             } else {
+              // TODO: implement to pass in the logger instead of using console.error
               console.error(err);
               rej(err);
             }
           } else {
+            // TODO: implement to pass in the logger instead of using console.log
             if (this.verbose) console.log(`file written to ${fullPath}`);
             res(true);
           }

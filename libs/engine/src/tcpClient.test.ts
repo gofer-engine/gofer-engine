@@ -1,5 +1,5 @@
 import net from 'net';
-import Msg, { isMsg } from '@gofer-engine/hl7';
+import HL7v2Msg, { isMsg } from '@gofer-engine/hl7';
 import { sendMessage } from './tcpClient';
 import quickServer from './quickServer';
 
@@ -20,7 +20,7 @@ beforeAll((done) => {
 });
 
 test('tcpClient', async () => {
-  const ack = new Msg(
+  const ack = new HL7v2Msg(
     await sendMessage(
       HOST,
       PORT,

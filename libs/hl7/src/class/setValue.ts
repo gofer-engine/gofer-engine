@@ -46,7 +46,7 @@ export const setValue = (
       msg[0].encodingCharacters.subComponentSep,
     ]);
     if (remaining !== '') {
-      // TODO: return more information, custom error/logging?
+      // TODO: implement to pass in the logger instead of using console.warn
       console.warn('Leftover hl7 after decoding SubComponent');
     }
     return setSubComponent(
@@ -71,7 +71,7 @@ export const setValue = (
       msg[0],
     );
     if (remaining !== '') {
-      // TODO: return more information, custom error/logging?
+      // TODO: implement to pass in the logger instead of using console.warn
       console.warn('Leftover hl7 after decoding Component');
     }
     return setComponent(
@@ -95,7 +95,7 @@ export const setValue = (
       msg[0],
     );
     if (remaining !== '') {
-      // TODO: return more information, custom error/logging?
+      // TODO: implement to pass in the logger instead of using console.warn
       console.warn('Leftover hl7 after decoding Field');
     }
     if (isFieldRep(field)) {

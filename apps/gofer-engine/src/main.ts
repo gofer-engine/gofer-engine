@@ -113,3 +113,52 @@ setTimeout(async () => {
   );
   console.log(`Message sent to HTTP Client ${httpsMessengerId}: ${sent}`);
 }, 3000);
+
+
+/************************************************************
+ * Examples of using HTTPS Listener and Messenger for JSON  *
+ ***********************************************************/
+// HTTPS Listener
+gofer
+  .listen('https', {
+    msgType: 'JSON',
+    host: '127.0.0.1',
+    port: 8102,
+    method: 'POST',
+    basicAuth: {
+      username: 'user',
+      password: 'pass',
+    },
+    key: fs.readFileSync(
+      path.join(process.env.NX_WORKSPACE_ROOT, 'certs', 'key.pem'),
+    ),
+    cert: fs.readFileSync(
+      path.join(process.env.NX_WORKSPACE_ROOT, 'certs', 'cert.pem'),
+    ),
+  })
+  .logLevel('debug')
+  .ack()
+  .route((r) => r.store({ file: {} }))
+  .run();
+
+// HTTP Messenger
+const [sendHttpsJSON, httpsJSONMessengerId] = gofer.messenger((route) =>
+  route.send('https', {
+    msgType: 'JSON',
+    host: '127.0.0.1',
+    port: 8102,
+    method: 'POST',
+    basicAuth: {
+      username: 'user',
+      password: 'pass',
+    },
+    // accept self-signed certs
+    rejectUnauthorized: false,
+  }),
+);
+
+// Example Use of HTTPS Messenger
+setTimeout(async () => {
+  const sent = await sendHttpsJSON('{"name": "John Doe"}');
+  console.log(`Message sent to HTTP JSON Client ${httpsJSONMessengerId}: ${sent}`);
+}, 3000);

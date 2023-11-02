@@ -196,6 +196,7 @@ class DBStore implements IStoreClass {
         : this.id.match(/^\$[A-Z][A-Z0-9]{2}/)
         ? (data.get(this.id.slice(1) ?? randomUUID()) as string)
         : this.id;
+    // TODO: implement to pass in the logger instead of using console.log
     if (this.verbose) console.log('id: ', id);
     // eslint-disable-next-line no-async-promise-executor
     return new Promise<boolean>(async (res, rej) => {
@@ -204,20 +205,26 @@ class DBStore implements IStoreClass {
           readOnly: false,
           bestEffort: false,
         });
+        // TODO: implement to pass in the logger instead of using console.log
         if (this.verbose) console.log('Txn Initiated');
         const content = this.typeMessage(data.json(true), id, data.toString());
+        // TODO: implement to pass in the logger instead of using console.log
         if (this.verbose) console.log('content: ', content);
         const mu = new Mutation();
+        // TODO: implement to pass in the logger instead of using console.log
         if (this.verbose) console.log('Mutation Initiated');
         mu.setSetJson(content);
         mu.setCommitNow(true);
         const response = await txn.mutate(mu);
+        // TODO: implement to pass in the logger instead of using console.log
         if (this.verbose) console.log('Mutation Committed');
+        // TODO: implement to pass in the logger instead of using console.log
         if (this.verbose)
           console.log('res.getMetrics: ', response.getMetrics());
         await txn.discard();
         res(true);
       } catch (err) {
+        // TODO: implement to pass in the logger instead of using console.warn
         if (this.warnOnError) {
           console.warn(err);
           res(false);
@@ -229,6 +236,7 @@ class DBStore implements IStoreClass {
   };
   public close = async () => {
     await Promise.all(this.stubs.map((stub) => stub.close()));
+    // TODO: implement to pass in the logger instead of using console.log
     if (this.verbose) console.log(`Closed Dgraph Client`);
   };
   public updateSchema = async () => {
@@ -321,6 +329,7 @@ class DBStore implements IStoreClass {
     try {
       response = await txn.doRequest(request);
     } catch (e) {
+      // TODO: implement to pass in the logger instead of using console.warn
       if (this.warnOnError) {
         console.warn(e);
       } else {

@@ -54,6 +54,7 @@ export class Queue<T> implements IQueue<T> {
   private id: string;
   public readonly process: IQueue<T>['process'];
   public readonly logger = (message: string, lvl?: logInfoLevel) => {
+    // TODO: implement to pass in the logger instead of using console.log?
     const log = () => console.log(`[queue:${this.id}] ${message}`);
     // verbose logs all, default only log warn and error
     if (this.options.verbose) {

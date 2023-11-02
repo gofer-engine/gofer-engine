@@ -40,6 +40,7 @@ export const setJSON = (
       msg.setMsg(json as Message);
       return msg;
     }
+    // TODO: implement to pass in the logger instead of using console.warn
     console.warn(
       'The json was not a valid HL7 JSON Message. Returning the original message.',
     );
@@ -64,6 +65,7 @@ export const setJSON = (
         ),
       );
     }
+    // TODO: implement to pass in the logger instead of using console.warn
     console.warn(
       'The json was not a valid HL7 JSON SubComponent. Returning the original message.',
     );
@@ -110,6 +112,7 @@ export const setJSON = (
         ),
       );
     }
+    // TODO: implement to pass in the logger instead of using console.warn
     console.warn(
       'The json was not a valid HL7 JSON Field or FieldRep. Returning the original message.',
     );

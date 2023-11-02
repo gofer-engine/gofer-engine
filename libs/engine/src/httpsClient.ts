@@ -1,7 +1,7 @@
 import https from 'https';
 import handelse from '@gofer-engine/handelse';
 import { IMsg } from '@gofer-engine/message-type';
-import Msg from '@gofer-engine/hl7';
+import HL7v2Msg from '@gofer-engine/hl7';
 import { onLog } from './eventHandlers';
 import { HTTPSConfig, IMessageContext } from './types';
 import { functionalVal } from './helpers';
@@ -96,7 +96,6 @@ export const sendMessage = async (
         response.setEncoding('utf8');
         const chunks: string[] = [];
         response.on('data', (chunk) => {
-          console.log('data');
           chunks.push(chunk);
         });
         response.on('end', () => {
@@ -159,7 +158,7 @@ export const httpsClient: HttpsClientFunc = async (
   },
   msg,
   stringify = (msg: IMsg) => msg.toString(),
-  parse = (data: string) => new Msg(data),
+  parse = (data: string) => new HL7v2Msg(data),
   channelId,
   routeId,
   flowId,

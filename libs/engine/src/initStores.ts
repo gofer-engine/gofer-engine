@@ -36,6 +36,8 @@ export const initStores = <
     const STORE = Object.keys(storeConfig)[0] as keyof typeof storeConfig;
     const hashed = hash(storeConfig);
     if (storeConfig[STORE]?.verbose) {
+      // NOTE: this uses console.log instead of the logger because the logger is not yet initialized for the channel
+      // FIXME: initialize the logger for the channel before initializing the stores?
       console.log(
         `Initializing ${String(STORE)} (${hashed}): ${JSON.stringify(
           storeConfig,
@@ -54,6 +56,8 @@ export const getStore = (config: StoreConfig): Store | undefined => {
   const hashed = hash(config);
   const store = hashedStores?.[hashed];
   if (config.file?.verbose || config.surreal?.verbose) {
+    // NOTE: this uses console.log instead of the logger because the logger is not yet initialized for the channel
+    // FIXME: initialize the logger for the channel before initializing the stores?
     console.log(`Retrieving store ${hashed}: ${JSON.stringify(store)}`);
   }
   return store;

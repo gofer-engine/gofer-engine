@@ -1,9 +1,9 @@
 import { IMsg, isMsg } from '@gofer-engine/message-type';
-import Msg, { msgIsHL7v2 } from '@gofer-engine/hl7';
+import { msgIsHL7v2 } from '@gofer-engine/hl7';
 import { MessengerFunc, MessengerRoute } from './types';
 import { RouteClass } from './RouteClass';
 import { runRoute } from './runRoutes';
-import { logger } from './helpers';
+import { getMsgType, logger } from './helpers';
 import {
   getChannelVar,
   getGlobalVar,
@@ -13,24 +13,32 @@ import {
   setMsgVar,
 } from './variables';
 import { genId } from './genId';
+import { getMsgTypeFromFlows } from './getMsgTypeFromFlows';
 
 const messengers = new Map<string, MessengerFunc>();
 
+/**
+ *
+ * @param route
+ * @returns `messenger` is a function that takes a message and sends it to the route. The message type is determined by the route's first connection flow.
+ * @returns `id` is the id of the messenger
+ */
 export const messenger = (
   route: MessengerRoute,
 ): [messenger: MessengerFunc, id: string] => {
   const config = route(new RouteClass()).export();
   const flows = config.flows;
   const id = typeof config.id === 'number' ? config.id.toString() : config.id;
+  const msgType = getMsgTypeFromFlows(flows);
   const func =
     messengers.get(id) ??
     ((msg) => {
       const message =
         typeof msg === 'function'
-          ? msg(new Msg())
+          ? msg(getMsgType(msgType))
           : isMsg(msg)
           ? msg
-          : new Msg(msg);
+          : getMsgType(msgType, msg);
       let messageId: string;
       if (msgIsHL7v2(message)) {
         messageId = message.id() ?? genId('ID');
@@ -44,6 +52,7 @@ export const messenger = (
           flows,
           message,
           {
+            kind: msgType,
             messageId: messageId,
             channelId: id,
             routeId: id,

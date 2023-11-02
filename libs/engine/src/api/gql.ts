@@ -19,7 +19,6 @@ const rootValue = (state: State) => {
               },
             ),
             routes: Object.entries(ch?.routes ?? []).map(([id, route]) => {
-              console.log(route);
               return {
                 id,
                 name: route.name,
