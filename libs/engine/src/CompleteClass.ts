@@ -1,6 +1,6 @@
-import { IMsg } from '@gofer-engine/message-type';
+import { IMessageContext, IMsg } from '@gofer-engine/message-type';
 import { gofer } from './gofer';
-import { ChannelConfig, IMessageContext, OComplete } from './types';
+import { ChannelConfig, OComplete } from './types';
 import { genId } from './genId';
 
 export class CompleteClass implements OComplete {

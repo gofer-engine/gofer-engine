@@ -1,10 +1,9 @@
 import http from 'http';
 import handelse from '@gofer-engine/handelse';
-import { IMsg } from '@gofer-engine/message-type';
-import HL7v2Msg from '@gofer-engine/hl7';
+import { IMessageContext, IMsg } from '@gofer-engine/message-type';
 import { onLog } from './eventHandlers';
-import { HTTPConfig, IMessageContext } from './types';
-import { functionalVal } from './helpers';
+import { HTTPConfig } from './types';
+import { functionalVal, getMsgType } from './helpers';
 
 export type HttpClientFunc = (
   opt: HTTPConfig<'O'>,
@@ -114,13 +113,16 @@ export const httpClient: HttpClientFunc = async (
   },
   msg,
   stringify = (msg) => msg.toString(),
-  parse = (data) => new HL7v2Msg(data),
+  parse,
   channelId,
   routeId,
   flowId,
   context,
   direct,
 ) => {
+  if (parse === undefined) {
+    parse = (data: string) => getMsgType(context.kind, data);
+  }
   const config: {
     host?: string;
     port?: number;

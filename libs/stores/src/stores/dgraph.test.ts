@@ -1,3 +1,4 @@
+import { exec } from '@gofer-engine/tools'
 import Msg from '@gofer-engine/hl7';
 import fs from 'fs';
 import stores from '..';
@@ -9,7 +10,7 @@ import {
   Response,
 } from 'dgraph-js';
 import { credentials } from '@grpc/grpc-js';
-import exec from 'tools/scripts/exec';
+import { testContext } from '../types';
 
 let stub: DgraphClientStub | undefined = undefined;
 let dgraph: DgraphClient | undefined = undefined;
@@ -51,7 +52,7 @@ const main = async () => {
   await dgraph.alter(op);
   const db = new stores.dgraph({ uri: '127.0.0.1:9080' });
   await db.updateSchema();
-  await db.store(msg);
+  await db.store(msg, testContext);
   const query = `{
     msgs(func: eq(id, "MSGID002")) @filter(type(Message)) {
       # uid

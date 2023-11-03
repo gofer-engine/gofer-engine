@@ -1,10 +1,9 @@
 import net from 'net';
-import { IMsg } from '@gofer-engine/message-type';
+import { IMessageContext, IMsg } from '@gofer-engine/message-type';
 import handelse from '@gofer-engine/handelse';
-import HL7v2Msg from '@gofer-engine/hl7';
 import { onLog } from './eventHandlers';
-import { IMessageContext, TcpConfig } from './types';
-import { functionalVal } from './helpers';
+import { TcpConfig } from './types';
+import { functionalVal, getMsgType } from './helpers';
 
 export type TcpClientFunc = (
   opt: TcpConfig<'O'>,
@@ -118,7 +117,7 @@ export const tcpClient: TcpClientFunc = async (
   },
   msg,
   stringify = (msg) => msg.toString(),
-  parse = (data: string) => new HL7v2Msg(data),
+  parse,
   channelId,
   routeId,
   flowId,
@@ -132,6 +131,9 @@ export const tcpClient: TcpClientFunc = async (
     EoM?: string;
     CR?: string;
   } = {};
+  if (parse === undefined) {
+    parse = (data: string) => getMsgType(context.kind, data);
+  }
   try {
     config.host = functionalVal(host, msg, context);
     config.port = functionalVal(port, msg, context);

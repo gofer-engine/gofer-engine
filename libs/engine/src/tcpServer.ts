@@ -1,11 +1,8 @@
 import net from 'net';
 import handelse from '@gofer-engine/handelse';
 import {
-  IContext,
-  IMessageContext,
   IngestMsgFunc,
   QueueConfig,
-  TLogLevel,
   TcpConfig,
 } from './types';
 import { queue } from './queue';
@@ -13,7 +10,7 @@ import { doAck } from './doAck';
 import { getMsgType, isLogging, logger, mapOptions } from './helpers';
 import { randomUUID } from 'crypto';
 import { setMsgVar, getMsgVar } from './variables';
-import { IMsg } from '@gofer-engine/message-type';
+import { IContext, IMessageContext, IMsg, TLogLevel } from '@gofer-engine/message-type';
 
 export const tcpServer = (
   id: string | number,

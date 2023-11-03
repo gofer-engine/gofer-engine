@@ -1,4 +1,4 @@
-import { IMsg } from '@gofer-engine/message-type';
+import { IMessageContext, IMsg, MsgTypes, TLogLevel } from '@gofer-engine/message-type';
 import HL7v2Msg from '@gofer-engine/hl7';
 import JSONMsg from '@gofer-engine/json';
 import handelse from '@gofer-engine/handelse';
@@ -7,17 +7,14 @@ import { publishers } from './eventHandlers';
 import { genId } from './genId';
 import {
   ChannelConfig,
-  IMessageContext,
   Ingestion,
   IngestionFlow,
-  MaybePromise,
-  MsgTypes,
   QueueConfig,
   Route,
   RouteFlow,
   RouteFlowNamed,
-  TLogLevel,
 } from './types';
+import { Promisable } from 'type-fest';
 
 export const isLogging = (logLevel: TLogLevel, logConfigLevel?: TLogLevel) => {
   if (logConfigLevel === undefined) return true;
@@ -228,7 +225,7 @@ export const lastInArray = <T>(arr: T[]): T => {
   return arr[l - 1];
 };
 
-export const promisify = <D>(data: MaybePromise<D>) =>
+export const promisify = <D>(data: Promisable<D>) =>
   new Promise<D>((res) => res(data));
 
 export const allPass = (res: Record<string, boolean>) =>
@@ -248,8 +245,9 @@ export const mapOptions = (opt: QueueConfig): IQueueOptions<IMsg> => {
     store: opt.store,
     id: opt.id,
     allowUndefined: false,
+    msgType: opt.msgType,
     storeStringify: (msg) => msg.toString(),
-    storeParse: (msg) => new HL7v2Msg(msg),
+    storeParse: (msg) => getMsgType(opt.msgType ?? 'HL7v2', msg),
     verbose: opt.verbose,
   };
 };

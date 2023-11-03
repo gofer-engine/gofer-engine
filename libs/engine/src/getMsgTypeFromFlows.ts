@@ -1,15 +1,15 @@
+import { SetRequired } from 'type-fest';
 import {
-  MsgTypes,
-  RequiredProperties,
   RouteFlowNamed,
   isConnectionFlow,
   isHTTPConnection,
   isHTTPSConnection,
   isTCPConnection,
 } from './types';
+import { MsgTypes } from '@gofer-engine/message-type';
 
 export const getMsgTypeFromFlows = (
-  flows: RequiredProperties<RouteFlowNamed<'F', 'F'>, 'id'>[],
+  flows: SetRequired<RouteFlowNamed<'F', 'F'>, 'id'>[],
 ): MsgTypes => {
   let msgType: MsgTypes | undefined;
   flows.some((namedFlow) => {

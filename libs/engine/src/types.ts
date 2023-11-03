@@ -1,70 +1,10 @@
+import { SetRequired, RequireAtLeastOne, RequireExactlyOne } from 'type-fest'
 import { StoreConfig } from '@gofer-engine/stores';
 import { HL7v2, Message, StrictMessage } from '@gofer-engine/hl7';
-import { IMsg, JSONValue } from '@gofer-engine/message-type';
+import { IAckContext, IMessageContext, IMsg, JSONValue, MsgTypes, TLogLevel } from '@gofer-engine/message-type';
 import JSONMsg from '@gofer-engine/json';
-import { Simplify } from 'type-fest';
-
-export type MaybePromise<T> = Promise<T> | T;
-
-type RequireOnlyOne<T, Keys extends keyof T = keyof T> = Pick<
-  T,
-  Exclude<keyof T, Keys>
-> &
-  {
-    [K in Keys]-?: Required<Pick<T, K>> &
-      Partial<Record<Exclude<Keys, K>, undefined>>;
-  }[Keys];
-
-type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<
-  T,
-  Exclude<keyof T, Keys>
-> &
-  {
-    [K in Keys]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<Keys, K>>>;
-  }[Keys];
-
-export type RequiredProperties<T, P extends keyof T> = Omit<T, P> &
-  Required<Pick<T, P>>;
-
-export type OnlyOptional<T> = {
-  [K in keyof T as T[K] extends Required<T>[K] ? never : K]: T[K];
-};
-
-export type OnlyRequired<T> = {
-  [K in keyof T as T[K] extends Required<T>[K] ? K : never]: T[K];
-};
 
 export type varTypes = 'Global' | 'Channel' | 'Route' | 'Msg';
-
-export type MsgTypes = 'HL7v2' | 'JSON';
-
-// helper generics only above this line
-export interface IContext {
-  kind?: MsgTypes;
-  // auto generated message uuid
-  messageId?: string;
-  channelId?: string | number;
-  routeId?: string | number;
-  // FIXME: add PII/PHI/Confidential flag to logger
-  logger: (log: string, logLevel?: TLogLevel) => void;
-  setGlobalVar: <V>(varName: string, varValue: V) => void;
-  getGlobalVar: <V>(varName: string) => V | undefined;
-  setChannelVar: <V>(varName: string, varValue: V) => void;
-  getChannelVar: <V>(varName: string) => V | undefined;
-  setRouteVar?: <V>(varName: string, varValue: V) => void;
-  getRouteVar?: <V>(varName: string) => V | undefined;
-  setMsgVar?: <V>(msgId: string, varName: string, varValue: V) => void;
-  getMsgVar?: <V>(msgId: string, varName: string) => V | undefined;
-}
-
-export type IMessageContext = RequiredProperties<
-  IContext,
-  'messageId' | 'channelId' | 'getMsgVar' | 'setMsgVar' | 'kind'
->;
-
-export type IAckContext = IMessageContext & {
-  filtered: boolean;
-};
 
 export type FunctProp<R> = ((msg: IMsg, context: IMessageContext) => R) | R;
 export type AllowFuncProp<Allow, R> = Allow extends true ? FunctProp<R> : R;
@@ -154,6 +94,7 @@ export interface QueueConfig {
   rotate?: boolean; // Rotate the queue moving a failed message to the end of the queu. Defaults to false
   verbose?: boolean; // Log messages to console. Defaults to false
   store: 'file' | 'memory';
+  msgType?: MsgTypes; // defaults to HL7v2
   stringify?: (msg: IMsg) => string;
   parse?: (msg: string) => IMsg;
 }
@@ -202,7 +143,7 @@ interface IFileConfig {
   }>;
 }
 
-export type FileConfig = RequireOnlyOne<
+export type FileConfig = RequireExactlyOne<
   IFileConfig,
   'ftp' | 'sftp' | 'directory'
 >;
@@ -259,7 +200,7 @@ export type AckConfig = {
   msg?: (ack: IMsg, msg: IMsg, context: IAckContext) => IMsg; // returns the ack message to send
 };
 
-interface Tag {
+export interface Tag {
   name: string;
   color?: string; // a valid hexidecimal color string or valid CSS color name
 }
@@ -441,12 +382,9 @@ export type Route<
   tags?: Tag[]; // Tags to help organize/identify route flows
   queue?: QueueConfig;
   flows: Stct extends 'S'
-    ? RequiredProperties<RouteFlowNamed<Filt, Tran>, 'id'>[]
+    ? SetRequired<RouteFlowNamed<Filt, Tran>, 'id'>[]
     : (RouteFlow<Filt, Tran> | RouteFlowNamed<Filt, Tran>)[];
 };
-
-// log levels in order of severity. If you show 'DEBUG' logs, you will also see 'INFO' logs, etc.
-export type TLogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 // Filt(er) & Tran(sformer)
 // O = require objectified filters/transformers
@@ -457,17 +395,17 @@ export type ChannelConfig<
   Filt extends 'O' | 'F' | 'B' = 'B',
   Tran extends 'O' | 'F' | 'B' = 'B',
   Stct extends 'S' | 'L' = 'L',
-> = RequiredProperties<
+> = SetRequired<
   {
     id?: string | number; // a unique id for this channel. If not provided will use UUID to generate. if not defined it may not be the same between deployments/reboots
     name: string; // a name, preferrably unique, to identify this channel later on
     tags?: Tag[]; // Tags to help organize/identify channels
     source: Connection<'I'>;
     ingestion: Stct extends 'S'
-      ? RequiredProperties<Ingestion<Filt, Tran>, 'id' | 'flow'>[]
+      ? SetRequired<Ingestion<Filt, Tran>, 'id' | 'flow'>[]
       : (IngestionFlow<Filt, Tran> | Ingestion<Filt, Tran>)[];
     routes?: Stct extends 'S'
-      ? RequiredProperties<Route<Filt, Tran, 'S'>, 'id' | 'flows'>[]
+      ? SetRequired<Route<Filt, Tran, 'S'>, 'id' | 'flows'>[]
       : (
           | (RouteFlow<Filt, Tran> | RouteFlowNamed<Filt, Tran>)[]
           | Route<Filt, Tran>
@@ -519,7 +457,7 @@ export type RunRouteFunc = <
 >(
   channelId: string | number,
   routeId: string | number,
-  route: RequiredProperties<RouteFlowNamed<Filt, Tran>, 'id'>[],
+  route: SetRequired<RouteFlowNamed<Filt, Tran>, 'id'>[],
   msg: IMsg,
   context: IMessageContext,
   // direct provides a way to bypass non-existent event handlers. This is used for direct calls to routes such as the messenger.
@@ -608,7 +546,7 @@ export interface ORoute extends OBase<ORoute> {
   send(method: 'tcp', host: FunctProp<string>, port: FunctProp<number>): ORoute;
   send(method: 'http', options: IHTTPConfig<true>): ORoute;
   send(method: 'https', options: IHTTPSConfig<true>): ORoute;
-  export: () => RequiredProperties<Route<'F', 'F', 'S'>, 'id' | 'flows'>;
+  export: () => SetRequired<Route<'F', 'F', 'S'>, 'id' | 'flows'>;
 }
 
 export type MessengerRoute = (

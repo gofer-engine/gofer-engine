@@ -36,7 +36,6 @@ class DBStore implements IStoreClass {
   private db: Surreal;
   private credentials: AnyAuth;
   private warnOnError: NonNullable<IDBStoreOptions['warnOnError']>;
-  private verbose: NonNullable<IDBStoreOptions['verbose']>;
   private namespace: NonNullable<IDBStoreOptions['namespace']>;
   private database: NonNullable<IDBStoreOptions['database']>;
   private table: NonNullable<IDBStoreOptions['table']>;
@@ -47,7 +46,6 @@ class DBStore implements IStoreClass {
     user,
     pass,
     warnOnError = false,
-    verbose = false,
     namespace = 'test',
     database = 'test',
     table = 'test',
@@ -55,7 +53,6 @@ class DBStore implements IStoreClass {
     normalized = false,
   }: IDBStoreOptions = {}) {
     this.warnOnError = warnOnError;
-    this.verbose = verbose;
     this.namespace = namespace;
     this.database = database;
     this.table = table;
@@ -67,7 +64,7 @@ class DBStore implements IStoreClass {
     this.db.connect(uri);
     this.normalized = normalized;
   }
-  public store: StoreFunc = async (data) => {
+  public store: StoreFunc = async (data, context) => {
     const namespace = this.namespace.match(/^\$[A-Z][A-Z0-9]{2}/)
       ? (data.get(this.namespace.slice(1) ?? this.namespace) as string)
       : this.namespace;
@@ -96,19 +93,12 @@ class DBStore implements IStoreClass {
           ? data.json(true)
           : { meta: data.json()[0], msg: data.json()?.[1] };
         const created = await this.db.create(identifier, contents);
-        if (this.verbose)
-        // TODO: implement to pass in the logger instead of using console.log
-          // @ts-expect-error the typing of created is currently wrong in the surrealdb.js package
-          console.log(`Created ID: ${created.id} in ${namespace}:${database}`);
+        // @ts-expect-error the typing of created is currently wrong in the surrealdb.js package
+        context.logger(`Created ID: ${created.id} in ${namespace}:${database}`, 'debug');
         res(true);
       } catch (error) {
-        // TODO: implement to pass in the logger instead of using console.warn
-        if (this.warnOnError) {
-          console.warn(error);
-          res(false);
-        } else {
-          rej(error);
-        }
+        context.logger(JSON.stringify(error), this.warnOnError ? 'warn' : 'error');
+        this.warnOnError ? res(false) : rej(error);
       }
     });
   };

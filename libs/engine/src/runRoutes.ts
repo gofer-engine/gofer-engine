@@ -239,7 +239,7 @@ export const runRoute: RunRouteFunc = async (
       if (flow.kind === 'store') {
         const storeConfig = { ...flow } as StoreConfig & { kind?: 'store' };
         delete storeConfig.kind;
-        flows.push(store(storeConfig as StoreConfig, msg) ?? false);
+        flows.push(store(storeConfig as StoreConfig, msg, context) ?? false);
         continue;
       }
     }

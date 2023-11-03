@@ -1,5 +1,6 @@
+import { SetRequired } from 'type-fest';
 import { RouteClass } from './RouteClass';
-import { RequiredProperties, Route } from './types';
+import { Route } from './types';
 
 const route = new RouteClass();
 
@@ -9,7 +10,7 @@ const router = (r: RouteClass) => {
   return r.id('test').send('tcp', 'localhost', 5500);
 };
 
-const expectedRouteConfig: RequiredProperties<
+const expectedRouteConfig: SetRequired<
   Route<'F', 'F', 'S'>,
   'id' | 'flows'
 > = {

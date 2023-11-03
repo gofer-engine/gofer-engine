@@ -1,12 +1,12 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 import * as fs from 'fs';
-import { ICmp, IFld, Msg } from '../src';
+import HL7v2, { ICmp, IFld } from '../src';
 import HL7Json from '../../../samples/sample.json';
 import { strictJSON } from '../../../samples/data';
 
 const HL7 = fs.readFileSync('./samples/sample.hl7', 'utf8');
 
-const msg = new Msg(HL7);
+const msg = new HL7v2(HL7);
 
 const tests: Record<string, { path: string; expected: unknown }> = {
   Source: {
@@ -302,13 +302,13 @@ test('Encode to HL7', () => {
 });
 
 test('New Empty Msg Class', () => {
-  const msg = new Msg();
+  const msg = new HL7v2();
   expect(msg.get('MSH-1')).toBe('|');
 });
 
 test('New Msg Class By Array', () => {
   const m = msg.json();
-  const m2 = new Msg(m);
+  const m2 = new HL7v2(m);
   expect(m2.toString()).toBe(HL7);
 });
 
@@ -317,7 +317,7 @@ test('Add Segment', () => {
   expect(msg.get('NTE-2')).toBe('This is a comment');
 });
 
-const msg2 = new Msg(
+const msg2 = new HL7v2(
   'MSH!@#$%^!HL7REG!UH!HL7LAB!CH!200702280700!!PMU@B01@PMU_B01!MSGID002!P!2.8!',
 );
 
@@ -344,11 +344,11 @@ test('Custom Encoding Stingify', () => {
 });
 
 test('getStrictJSON', () => {
-  expect(new Msg(HL7).json(true)).toStrictEqual(strictJSON);
+  expect(new HL7v2(HL7).json(true)).toStrictEqual(strictJSON);
 });
 
 test('fromStrictJSON', () => {
-  expect(new Msg(strictJSON).json()).toStrictEqual(new Msg(HL7).json());
+  expect(new HL7v2(strictJSON).json()).toStrictEqual(new HL7v2(HL7).json());
 });
 
 // write files for manual comparison and debugging
@@ -359,7 +359,7 @@ test('fromStrictJSON', () => {
 // fs.writeFileSync('./tests/StrictJSON_exp.json', sortify(strictJSON) ?? '')
 
 test('Deeply Nested LAN Values', () => {
-  const deepValues = new Msg(HL7)
+  const deepValues = new HL7v2(HL7)
     .getSegment('LAN')
     .getFields()
     .map((f: IFld | IFld[]) => {

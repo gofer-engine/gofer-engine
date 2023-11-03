@@ -1,4 +1,4 @@
-import { IMsg } from '@gofer-engine/message-type';
+import { IMessageContext, IMsg } from '@gofer-engine/message-type';
 
 export interface IStoreClass {
   store: StoreFunc;
@@ -6,17 +6,8 @@ export interface IStoreClass {
   query: (query: string) => Promise<unknown>;
 }
 
-export type RequireOnlyOne<T, Keys extends keyof T = keyof T> = Pick<
-  T,
-  Exclude<keyof T, Keys>
-> &
-  {
-    [K in Keys]-?: Required<Pick<T, K>> &
-      Partial<Record<Exclude<Keys, K>, undefined>>;
-  }[Keys];
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type StoreFunc = (data: IMsg, id?: string) => Promise<boolean>;
+export type StoreFunc = (data: IMsg, context: IMessageContext) => Promise<boolean>;
 
 /**
  * @param id - When defined in the Store Config, this id prop accepts a HL7 reference like `$MSH-10.1`. Or can also use `UUID` to generate a universally unique identifier.
@@ -25,5 +16,18 @@ export type StoreFunc = (data: IMsg, id?: string) => Promise<boolean>;
  */
 export interface StoreOption {
   id?: string;
-  verbose?: boolean;
 }
+
+export const testContext: IMessageContext = {
+  channelId: 'test',
+  getChannelVar: () => undefined,
+  logger: console.log,
+  getGlobalVar: () => undefined,
+  getMsgVar: () => undefined,
+  routeId: 'test',
+  kind: 'HL7v2',
+  messageId: 'test',
+  setChannelVar: () => undefined,
+  setGlobalVar: () => undefined,
+  setMsgVar: () => undefined,
+};

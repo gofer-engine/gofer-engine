@@ -1,5 +1,6 @@
+import { SetRequired } from 'type-fest'
 import { isLogging } from '../helpers';
-import { ChannelConfig, RequiredProperties } from '../types';
+import { ChannelConfig } from '../types';
 
 interface IFlowStat {
   name?: string;
@@ -74,7 +75,7 @@ class State {
     Filt extends 'O' | 'F' | 'B' = 'B',
     Tran extends 'O' | 'F' | 'B' = 'B',
   >(
-    channel: RequiredProperties<ChannelConfig<Filt, Tran, 'S'>, 'id'>,
+    channel: SetRequired<ChannelConfig<Filt, Tran, 'S'>, 'id'>,
   ) => {
     const channelId = channel.id;
     if (this.state?.[channelId] !== undefined) {

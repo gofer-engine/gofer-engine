@@ -1,5 +1,40 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // FIXME: find a way to implement strict typing instead of allowing any
+import { SetRequired } from 'type-fest';
+
+export type MsgTypes = 'HL7v2' | 'JSON';
+
+// log levels in order of severity. If you show 'DEBUG' logs, you will also see 'INFO' logs, etc.
+export type TLogLevel = 'debug' | 'info' | 'warn' | 'error';
+
+// helper generics only above this line
+export interface IContext {
+  kind?: MsgTypes;
+  // auto generated message uuid
+  messageId?: string;
+  channelId?: string | number;
+  routeId?: string | number;
+  // FIXME: add PII/PHI/Confidential flag to logger
+  logger: (log: string, logLevel?: TLogLevel) => void;
+  setGlobalVar: <V>(varName: string, varValue: V) => void;
+  getGlobalVar: <V>(varName: string) => V | undefined;
+  setChannelVar: <V>(varName: string, varValue: V) => void;
+  getChannelVar: <V>(varName: string) => V | undefined;
+  setRouteVar?: <V>(varName: string, varValue: V) => void;
+  getRouteVar?: <V>(varName: string) => V | undefined;
+  setMsgVar?: <V>(msgId: string, varName: string, varValue: V) => void;
+  getMsgVar?: <V>(msgId: string, varName: string) => V | undefined;
+}
+
+export type IMessageContext = SetRequired<
+IContext,
+'messageId' | 'channelId' | 'getMsgVar' | 'setMsgVar' | 'kind'
+>;
+
+export type IAckContext = IMessageContext & {
+  filtered: boolean;
+};
+
 export type JSONValue =
   | undefined
   | string

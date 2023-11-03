@@ -25,20 +25,18 @@ class DBStore implements IStoreClass {
   private append: NonNullable<IDBStoreOptions['append']>;
   private autoCreateDir: NonNullable<IDBStoreOptions['autoCreateDir']>;
   private warnOnError: NonNullable<IDBStoreOptions['warnOnError']>;
-  private filename: NonNullable<IDBStoreOptions['filename']>;
-  private extension: NonNullable<IDBStoreOptions['extension']>;
-  private format: NonNullable<IDBStoreOptions['format']>;
-  private verbose: NonNullable<IDBStoreOptions['verbose']>;
+  private filename: IDBStoreOptions['filename'];
+  private extension: IDBStoreOptions['extension'];
+  private format: IDBStoreOptions['format'];
   constructor({
     path = ['local'],
     overwrite = true,
     append = false,
     autoCreateDir = true,
     warnOnError = false,
-    extension = '.hl7',
-    format = 'string',
-    filename = '$MSH-10.1',
-    verbose = false,
+    extension,
+    format,
+    filename,
   }: IDBStoreOptions = {}) {
     this.overwrite = overwrite;
     this.append = append;
@@ -48,9 +46,28 @@ class DBStore implements IStoreClass {
     this.extension = extension;
     this.format = format;
     this.path = path;
-    this.verbose = verbose;
   }
-  public store: StoreFunc = async (data) => {
+  public store: StoreFunc = async (data, context) => {
+    const _format =
+      this.format === undefined
+        ? context.kind === 'HL7v2'
+          ? 'string'
+          : 'json'
+        : this.format;
+    const _extension =
+      this.extension === undefined
+        ? context.kind === 'HL7v2'
+          ? '.hl7'
+          : '.json'
+        : this.extension;
+    const _filename =
+      this.filename === undefined
+        ? context.kind === 'HL7v2'
+          ? ['$MSH-10.1']
+          : [context.messageId]
+        : typeof this.filename === 'string'
+        ? [this.filename]
+        : this.filename;
     const dirname = this.path
       .map((p) => {
         if (p.charAt(0) === '$') {
@@ -62,9 +79,9 @@ class DBStore implements IStoreClass {
       .join('/');
     if (typeof this.filename === 'string') this.filename = [this.filename];
     const filename =
-      typeof this.filename === 'function'
-        ? this.filename(data)
-        : this.filename
+      typeof _filename === 'function'
+        ? _filename(data)
+        : _filename
             .map((n) => {
               return n === 'UUID'
                 ? randomUUID()
@@ -73,24 +90,17 @@ class DBStore implements IStoreClass {
                 : n;
             })
             .join('');
-    const fullPath = `${dirname}/${filename}${this.extension}`;
+    const fullPath = `${dirname}/${filename}${_extension}`;
     if (this.autoCreateDir && !fs.existsSync(dirname)) {
       fs.mkdirSync(dirname, { recursive: true });
     }
     if (!this.overwrite && !this.append && fs.existsSync(fullPath)) {
-      // TODO: implement to pass in the logger instead of using console.warn
-      if (this.warnOnError) {
-        console.warn(
-          `Options set to not overwrite and not append, but the file: ${fullPath} already exists`,
-        );
-      } else {
-        throw new Error(
-          `Options set to not overwrite and not append, but the file: ${fullPath} already exists`,
-        );
-      }
+      context.logger(
+        `Options set to not overwrite and not append, but the file: ${fullPath} already exists`,
+        this.warnOnError ? 'warn' : 'error',
+      );
     }
-    const contents =
-      this.format === 'string' ? data.toString() : JSON.stringify(data.json());
+    const contents = _format === 'string' ? data.toString() : data.json();
     return new Promise<boolean>((res, rej) => {
       fs.writeFile(
         fullPath,
@@ -98,18 +108,13 @@ class DBStore implements IStoreClass {
         { flag: this.append ? 'a' : 'w' },
         (err) => {
           if (err) {
-            // TODO: implement to pass in the logger instead of using console.warn
-            if (this.warnOnError) {
-              console.warn(err);
-              res(false);
-            } else {
-              // TODO: implement to pass in the logger instead of using console.error
-              console.error(err);
-              rej(err);
-            }
+            context.logger(
+              JSON.stringify(err),
+              this.warnOnError ? 'warn' : 'error',
+            );
+            this.warnOnError ? res(false) : rej(err);
           } else {
-            // TODO: implement to pass in the logger instead of using console.log
-            if (this.verbose) console.log(`file written to ${fullPath}`);
+            context.logger(`file written to ${fullPath}`, 'debug');
             res(true);
           }
         },

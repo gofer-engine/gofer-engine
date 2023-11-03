@@ -3,16 +3,14 @@ import { IncomingMessage, ServerResponse, createServer } from 'http';
 import handelse from '@gofer-engine/handelse';
 import {
   HTTPConfig,
-  IContext,
-  IMessageContext,
   IngestMsgFunc,
   QueueConfig,
-  TLogLevel,
 } from './types';
 import { publishers } from './eventHandlers';
 import { getMsgVar, setMsgVar } from './variables';
 import { randomUUID } from 'crypto';
-import { getMsgType, isLogging, logger } from './helpers';
+import { getMsgType, logger } from './helpers';
+import { IContext, IMessageContext, TLogLevel } from '@gofer-engine/message-type';
 
 export const httpServer = (
   id: string | number,

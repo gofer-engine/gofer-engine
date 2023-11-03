@@ -38,6 +38,9 @@
       ],
       "@gofer-engine/stores": [
         "libs/stores/src/index.ts"
+      ],
+      "@gofer-engine/tools": [
+        "libs/tools/src/index.ts"
       ]
     },
     "resolveJsonModule": true,

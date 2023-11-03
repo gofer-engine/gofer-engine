@@ -4,6 +4,7 @@ import { FileStore } from './stores/fileStore';
 import { MemoryStore } from './stores/memoryStore';
 import { IWorkerEvents, TStatus, Worker } from './worker';
 import handelse, { IEventHandler, SubFunc } from '@gofer-engine/handelse';
+import { MsgTypes } from '@gofer-engine/message-type';
 
 interface IWStatus {
   status: TStatus;
@@ -23,6 +24,7 @@ export interface IQueueOptions<T> {
   id?: (task: T) => string;
   // allow undefined to be pushed to the queue
   allowUndefined?: boolean;
+  msgType?: MsgTypes;
   storeStringify?: (task: T) => string;
   storeParse?: (task: string) => T;
   verbose?: boolean;
@@ -73,6 +75,7 @@ export class Queue<T> implements IQueue<T> {
     store: 'memory',
     id: () => randomUUID(),
     allowUndefined: false,
+    msgType: 'HL7v2',
     storeStringify: (task) => JSON.stringify(task),
     storeParse: (task) => JSON.parse(task),
     verbose: false,

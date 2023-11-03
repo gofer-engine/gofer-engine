@@ -1,9 +1,10 @@
 import net from 'net';
-import { isMsg } from '@gofer-engine/hl7';
+import { msgIsHL7v2 } from '@gofer-engine/hl7';
 import { messenger } from './messenger';
 import { genId } from './genId';
 import quickServer from './quickServer';
 import { MessengerFunc } from './types';
+import { isMsg } from '@gofer-engine/message-type';
 
 const channelID = 'messengerTest';
 
@@ -42,6 +43,9 @@ test('messenger works', async () => {
   const msgDate = new Date().toISOString().replace(/-|:|T/g, '').slice(0, 12);
   const ack = await EMITTER?.((msg) => {
     const msgId = genId('ID');
+    if (!msgIsHL7v2(msg)) {
+      fail('Message is not HL7v2');
+    }
     msg
       .set('MSH-3', 'MRHC Apps')
       .set('MSH-4', 'MRHC')

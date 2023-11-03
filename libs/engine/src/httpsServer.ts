@@ -3,17 +3,15 @@ import { createServer } from 'https';
 import handelse from '@gofer-engine/handelse';
 import {
   HTTPSConfig,
-  IContext,
-  IMessageContext,
   IngestMsgFunc,
   QueueConfig,
-  TLogLevel,
 } from './types';
 import { publishers } from './eventHandlers';
 import { getMsgVar, setMsgVar } from './variables';
 import { randomUUID } from 'crypto';
-import { getMsgType, isLogging, logger } from './helpers';
+import { getMsgType, logger } from './helpers';
 import { IncomingMessage, ServerResponse } from 'http';
+import { IContext, IMessageContext, TLogLevel } from '@gofer-engine/message-type';
 
 export const httpsServer = (
   id: string | number,

@@ -1,5 +1,5 @@
-import { IMsg } from '@gofer-engine/message-type'
-import { AckConfig, IMessageContext } from './types';
+import { IMessageContext, IMsg } from '@gofer-engine/message-type'
+import { AckConfig } from './types';
 import { getMsgType, logger } from './helpers';
 
 export const doAck = (

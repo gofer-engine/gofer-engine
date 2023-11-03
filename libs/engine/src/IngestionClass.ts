@@ -1,9 +1,8 @@
-import { IMsg } from '@gofer-engine/message-type';
+import { IMessageContext, IMsg } from '@gofer-engine/message-type';
 import { isMsgVFunc } from './isMsgVFunc';
 import {
   ChannelConfig,
   Connection,
-  IMessageContext,
   OIngest,
   WithVarDo,
   varTypes,

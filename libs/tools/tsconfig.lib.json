@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "module": "commonjs",
+    "target": "es5",
+    "outDir": "../../dist/out-tsc/tools",
+    "declaration": true,
+    "types": ["node"],
+    "importHelpers": false
+  },
+  "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],
+  "include": ["src/**/*.ts"]
+}

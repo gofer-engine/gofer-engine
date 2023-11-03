@@ -1,6 +1,5 @@
-import { IMsg } from '@gofer-engine/message-type';
+import { IMessageContext, IMsg } from '@gofer-engine/message-type';
 import handelse from '@gofer-engine/handelse';
-import { IMessageContext } from './types';
 import { logger } from './helpers';
 
 export const filterOrTransform = <T = IMsg>(

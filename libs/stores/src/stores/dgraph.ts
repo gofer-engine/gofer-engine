@@ -171,33 +171,32 @@ class DBStore implements IStoreClass {
   private stubs: DgraphClientStub[];
   private db: DgraphClient;
   private warnOnError: NonNullable<IDBStoreOptions['warnOnError']>;
-  private verbose: NonNullable<IDBStoreOptions['verbose']>;
   private id: NonNullable<IDBStoreOptions['id']>;
   constructor({
     uri = '172.0.0.1:9080',
     warnOnError = false,
-    verbose = false,
     id = '$MSH-10.1',
   }) {
     this.stubs = [new DgraphClientStub(uri, credentials.createInsecure())];
     this.db = new DgraphClient(...this.stubs);
     this.warnOnError = warnOnError;
-    this.verbose = verbose;
     this.id = id;
     // TODO: Figure out where to call this...
     // this.updateSchema()
   }
-  public store: StoreFunc = async (data) => {
+  public store: StoreFunc = async (data, context) => {
     // FIXME: implement for non-IMsg data
-    if (!msgIsHL7v2(data)) throw new Error(`Not yet implemented for non-IMsg data`)
+    if (!msgIsHL7v2(data)) {
+      context.logger(`Not yet implemented for non-IMsg data`, 'error');
+      throw new Error(`Not yet implemented for non-IMsg data`)
+    }
     const id =
       this.id === 'UUID'
         ? randomUUID()
         : this.id.match(/^\$[A-Z][A-Z0-9]{2}/)
         ? (data.get(this.id.slice(1) ?? randomUUID()) as string)
         : this.id;
-    // TODO: implement to pass in the logger instead of using console.log
-    if (this.verbose) console.log('id: ', id);
+    context.logger(`id: ${id}`, 'debug');
     // eslint-disable-next-line no-async-promise-executor
     return new Promise<boolean>(async (res, rej) => {
       try {
@@ -205,30 +204,24 @@ class DBStore implements IStoreClass {
           readOnly: false,
           bestEffort: false,
         });
-        // TODO: implement to pass in the logger instead of using console.log
-        if (this.verbose) console.log('Txn Initiated');
+        context.logger('Txn Initiated', 'debug');
         const content = this.typeMessage(data.json(true), id, data.toString());
-        // TODO: implement to pass in the logger instead of using console.log
-        if (this.verbose) console.log('content: ', content);
+        context.logger(`content: ${JSON.stringify(content)}`, 'debug');
         const mu = new Mutation();
-        // TODO: implement to pass in the logger instead of using console.log
-        if (this.verbose) console.log('Mutation Initiated');
+        context.logger('Mutation Initiated', 'info');
         mu.setSetJson(content);
         mu.setCommitNow(true);
         const response = await txn.mutate(mu);
-        // TODO: implement to pass in the logger instead of using console.log
-        if (this.verbose) console.log('Mutation Committed');
-        // TODO: implement to pass in the logger instead of using console.log
-        if (this.verbose)
-          console.log('res.getMetrics: ', response.getMetrics());
+        context.logger('Mutation Committed', 'debug');
+        context.logger(`res.getMetrics: ${JSON.stringify(response.getMetrics())}`, 'debug');
         await txn.discard();
         res(true);
       } catch (err) {
-        // TODO: implement to pass in the logger instead of using console.warn
         if (this.warnOnError) {
-          console.warn(err);
+          context.logger(`${err}`, 'warn');
           res(false);
         } else {
+          context.logger(`${err}`, 'error');
           rej(err);
         }
       }
@@ -236,8 +229,7 @@ class DBStore implements IStoreClass {
   };
   public close = async () => {
     await Promise.all(this.stubs.map((stub) => stub.close()));
-    // TODO: implement to pass in the logger instead of using console.log
-    if (this.verbose) console.log(`Closed Dgraph Client`);
+
   };
   public updateSchema = async () => {
     const op = new Operation();

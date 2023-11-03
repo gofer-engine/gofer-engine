@@ -75,7 +75,7 @@ export const runIngestFlows: IngestFunc = (channel, msg, ack, context) => {
         filtered = f;
       } else if (step.kind === 'store') {
         const storeConfig = { ...step };
-        store(storeConfig as StoreConfig, msg)
+        store(storeConfig as StoreConfig, msg, context)
           ?.then((res) => {
             if (res)
               return handelse.go(`gofer:${channel.id}.onLog`, {
