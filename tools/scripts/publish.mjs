@@ -8,7 +8,6 @@
  */
 
 import { execSync } from 'child_process';
-import { readFileSync, writeFileSync } from 'fs';
 import chalk from 'chalk';
 
 import devkit from '@nx/devkit';

@@ -1,9 +1,8 @@
-import { IMsg } from '@gofer-engine/hl7';
+import { IMessageContext, IMsg } from '@gofer-engine/message-type';
 import { isMsgVFunc } from './isMsgVFunc';
 import {
   ChannelConfig,
   Connection,
-  IMessageContext,
   OIngest,
   WithVarDo,
   varTypes,
@@ -16,7 +15,7 @@ import {
   colors,
   animals,
 } from 'unique-names-generator';
-import { genId } from './genId';
+import { genId } from '@gofer-engine/tools';
 import { gofer } from './gofer';
 
 export class IngestionClass implements OIngest {

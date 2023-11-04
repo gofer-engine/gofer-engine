@@ -1,4 +1,4 @@
-import { IMsg } from '@gofer-engine/hl7';
+import { IMsg } from '@gofer-engine/message-type';
 import handelse, { SubFunc, SubscriberID } from '@gofer-engine/handelse';
 import { ChannelConfig } from './types';
 import { IChannelEvents } from './events';

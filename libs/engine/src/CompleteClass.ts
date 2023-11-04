@@ -1,7 +1,7 @@
-import { IMsg } from '@gofer-engine/hl7';
+import { IMessageContext, IMsg } from '@gofer-engine/message-type';
 import { gofer } from './gofer';
-import { ChannelConfig, IMessageContext, OComplete } from './types';
-import { genId } from './genId';
+import { ChannelConfig, OComplete } from './types';
+import { genId } from '@gofer-engine/tools';
 
 export class CompleteClass implements OComplete {
   private config: ChannelConfig<'B', 'B', 'S'>;

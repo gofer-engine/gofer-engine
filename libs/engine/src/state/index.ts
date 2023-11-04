@@ -1,5 +1,6 @@
+import { SetRequired } from 'type-fest'
 import { isLogging } from '../helpers';
-import { ChannelConfig, RequiredProperties } from '../types';
+import { ChannelConfig } from '../types';
 
 interface IFlowStat {
   name?: string;
@@ -38,6 +39,7 @@ class State {
   }
   public setChannel = (channelId: string, active: boolean) => {
     if (this.state?.[channelId] === undefined) {
+      // TODO: implement to pass in the logger instead of using console.warn
       console.warn(`Channel "${channelId}" not found in state`);
       return this;
     }
@@ -58,6 +60,7 @@ class State {
     flowIndex: number,
     routeIndex?: number,
   ) => {
+    // TODO: implement to pass in the logger instead of using console.log
     console.log(
       `TODO: implement setFlow! Tried to call with: ${{
         channelId,
@@ -72,11 +75,12 @@ class State {
     Filt extends 'O' | 'F' | 'B' = 'B',
     Tran extends 'O' | 'F' | 'B' = 'B',
   >(
-    channel: RequiredProperties<ChannelConfig<Filt, Tran, 'S'>, 'id'>,
+    channel: SetRequired<ChannelConfig<Filt, Tran, 'S'>, 'id'>,
   ) => {
     const channelId = channel.id;
     if (this.state?.[channelId] !== undefined) {
       if (isLogging('error', channel.logLevel))
+      // TODO: implement to pass in the logger instead of using console.log
         console.warn(
           `Channel "${channelId}" already exists in state. Not overwriting.`,
         );

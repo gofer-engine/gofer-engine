@@ -1,15 +1,15 @@
 import http from 'http';
 import handelse from '@gofer-engine/handelse';
-import Msg, { IMsg } from '@gofer-engine/hl7';
+import { IMessageContext, IMsg } from '@gofer-engine/message-type';
 import { onLog } from './eventHandlers';
-import { HTTPConfig, IMessageContext } from './types';
-import { functionalVal } from './helpers';
+import { HTTPConfig } from './types';
+import { functionalVal, getMsgType } from './helpers';
 
-export type HttpClientFunc<T, R> = (
+export type HttpClientFunc = (
   opt: HTTPConfig<'O'>,
-  msg: T,
-  stringify: ((msg: T) => string) | undefined,
-  parse: ((data: string) => R) | undefined,
+  msg: IMsg,
+  stringify: ((msg: IMsg) => string) | undefined,
+  parse: ((data: string) => IMsg) | undefined,
   channelId: string | number | undefined,
   routeId: string | number | undefined,
   flowId: string | number | undefined,
@@ -65,7 +65,6 @@ export const sendMessage = async (
       response.setEncoding('utf8');
       const chunks: string[] = [];
       response.on('data', (chunk) => {
-        console.log('data')
         chunks.push(chunk);
       });
       response.on('end', () => {
@@ -100,7 +99,7 @@ export const sendMessage = async (
   });
 };
 
-export const httpClient: HttpClientFunc<IMsg, IMsg> = async (
+export const httpClient: HttpClientFunc = async (
   {
     host,
     port,
@@ -113,14 +112,17 @@ export const httpClient: HttpClientFunc<IMsg, IMsg> = async (
     responseTimeout,
   },
   msg,
-  stringify = (msg: IMsg) => msg.toString(),
-  parse = (data: string) => new Msg(data),
+  stringify = (msg) => msg.toString(),
+  parse,
   channelId,
   routeId,
   flowId,
   context,
   direct,
 ) => {
+  if (parse === undefined) {
+    parse = (data: string) => getMsgType(context.kind, data);
+  }
   const config: {
     host?: string;
     port?: number;

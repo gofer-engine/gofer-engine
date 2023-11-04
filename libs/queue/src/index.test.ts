@@ -52,9 +52,10 @@ beforeAll(async () => {
       if (fileQ_A.workerStatus().every((s) => s.status === 'idle')) {
         res(true);
         clearInterval(checking);
-      } else {
-        console.log('still running...');
       }
+      // else {
+      //   console.log('still running...');
+      // }
     };
 
     tasksB.forEach((t, i) => {

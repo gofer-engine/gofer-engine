@@ -1,8 +1,9 @@
+import { exec } from '@gofer-engine/tools';
 import Msg, { MessageMeta, Segments } from '@gofer-engine/hl7';
 import fs from 'fs';
 import stores from '..';
 import Surreal from 'surrealdb.js';
-import exec from 'tools/scripts/exec';
+import { testContext } from '../types';
 
 let sdb: Surreal = new Surreal();
 
@@ -36,7 +37,7 @@ test('surreal-store', async () => {
     sdb.delete(id);
   }
   const db = new stores.surreal();
-  const stored = await db.store(msg);
+  const stored = await db.store(msg, testContext);
   expect(stored).toBe(true);
   const storedRecord = await sdb.query<
     { meta: MessageMeta; segs: Segments }[][]

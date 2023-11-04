@@ -3,23 +3,20 @@ import { createServer } from 'https';
 import handelse from '@gofer-engine/handelse';
 import {
   HTTPSConfig,
-  IContext,
-  IMessageContext,
   IngestMsgFunc,
   QueueConfig,
-  TLogLevel,
 } from './types';
-import Msg, { IMsg } from '@gofer-engine/hl7';
 import { publishers } from './eventHandlers';
 import { getMsgVar, setMsgVar } from './variables';
 import { randomUUID } from 'crypto';
-import { isLogging, logger } from './helpers';
+import { getMsgType, logger } from './helpers';
 import { IncomingMessage, ServerResponse } from 'http';
+import { IContext, IMessageContext, TLogLevel } from '@gofer-engine/message-type';
 
 export const httpsServer = (
   id: string | number,
   httpsConfig: HTTPSConfig<'I'>,
-  queueConfig: QueueConfig<IMsg> | undefined,
+  queueConfig: QueueConfig | undefined,
   logLevel: TLogLevel | undefined,
   ingestMessage: IngestMsgFunc,
   context: IContext,
@@ -38,6 +35,7 @@ export const httpsServer = (
     method = 'POST',
     path,
     basicAuth: { username, password } = {},
+    msgType = 'HL7v2',
     ...options
   } = httpsConfig;
   const server = createServer(
@@ -52,11 +50,7 @@ export const httpsServer = (
       // TODO: add support for regex in the path
       // TODO: add support to move query string into global variables
       if (path && req.url !== path) {
-        if (logLevel === 'debug') {
-          console.log(
-            `IGNORED: Request path ${req.url} does not match configured path ${path}`,
-          );
-        }
+        context.logger(`IGNORED: Request path ${req.url} does not match configured path ${path}`, 'debug');
         return;
       }
       handelse.go(
@@ -139,12 +133,6 @@ export const httpsServer = (
           'ascii',
         );
         const [reqUsername, reqPassword] = credentials.split(':');
-        console.log({
-          reqUsername,
-          reqPassword,
-          username,
-          password,
-        });
         if (reqUsername !== username || reqPassword !== password) {
           handelse.go(
             `gofer:${id}.onLog`,
@@ -177,10 +165,11 @@ export const httpsServer = (
       });
       req.on('end', () => {
         const hl7 = Buffer.concat(chunks).toString();
-        const msg = new Msg(hl7);
+        const msg = getMsgType(msgType, hl7, true);
         const msgUUID = randomUUID();
         const msgContext: IMessageContext = {
           ...context,
+          kind: msgType,
           setMsgVar: setMsgVar(msgUUID),
           getMsgVar: getMsgVar(msgUUID),
           messageId: msgUUID,
@@ -201,18 +190,14 @@ export const httpsServer = (
         res.setHeader('Content-Type', 'x-application/hl7-v2+er7');
         ingestMessage(
           msg,
-          (ack: IMsg) => {
+          (ack) => {
             res.end(ack.toString());
           },
           msgContext,
         );
       });
       req.on('close', () => {
-        if (isLogging('debug', logLevel)) {
-          console.log(
-            `Client ${req.socket.remoteAddress}:${req.socket.remotePort} closed connection.`,
-          );
-        }
+        context.logger(`Client ${req.socket.remoteAddress}:${req.socket.remotePort} closed connection.`, 'debug');
       });
     },
   );

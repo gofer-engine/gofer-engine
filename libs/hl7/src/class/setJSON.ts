@@ -2,7 +2,7 @@ import {
   Component,
   Field,
   FieldRep,
-  IMsg,
+  HL7v2,
   Message,
   MsgValue,
   Paths,
@@ -24,7 +24,7 @@ import { setSegment } from './setSegment';
 import { setSubComponent } from './setSubComponent';
 
 export const setJSON = (
-  msg: IMsg,
+  msg: HL7v2,
   json: MsgValue,
   {
     segmentName,
@@ -34,12 +34,13 @@ export const setJSON = (
     componentPosition,
     subComponentPosition,
   }: Paths,
-): IMsg => {
+): HL7v2 => {
   if (segmentName === undefined) {
     if (isMessage(json)) {
       msg.setMsg(json as Message);
       return msg;
     }
+    // TODO: implement to pass in the logger instead of using console.warn
     console.warn(
       'The json was not a valid HL7 JSON Message. Returning the original message.',
     );
@@ -64,6 +65,7 @@ export const setJSON = (
         ),
       );
     }
+    // TODO: implement to pass in the logger instead of using console.warn
     console.warn(
       'The json was not a valid HL7 JSON SubComponent. Returning the original message.',
     );
@@ -110,6 +112,7 @@ export const setJSON = (
         ),
       );
     }
+    // TODO: implement to pass in the logger instead of using console.warn
     console.warn(
       'The json was not a valid HL7 JSON Field or FieldRep. Returning the original message.',
     );

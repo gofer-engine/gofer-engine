@@ -1,5 +1,5 @@
 import net from 'net';
-import { IMsg } from '@gofer-engine/hl7';
+import { IContext, IMsg } from '@gofer-engine/message-type';
 import { verboseListeners } from './channelVerboseListeners';
 import { events } from './events';
 import { runIngestFlows } from './runIngestFlows';
@@ -7,7 +7,7 @@ import { runRoutes } from './runRoutes';
 import { httpServer } from './httpServer';
 import { httpsServer } from './httpsServer';
 import { tcpServer } from './tcpServer';
-import { IContext, IngestMsgFunc, InitServers } from './types';
+import { IngestMsgFunc, InitServers } from './types';
 import { listeners } from './eventHandlers';
 import { logger } from './helpers';
 import {

@@ -1,7 +1,12 @@
 import handelse from '@gofer-engine/handelse';
-import { IMsg } from '@gofer-engine/hl7';
-import { IMessageContext } from './types';
+import { IMessageContext, IMsg } from '@gofer-engine/message-type';
 import { logger } from './helpers';
+
+export type DoFilterTransformRes = {
+  filtered: boolean;
+  flows: (boolean | Promise<boolean>)[];
+  msg: IMsg
+}
 
 export const doFilterTransform = (
   msg: IMsg,
@@ -11,11 +16,7 @@ export const doFilterTransform = (
   flows: (boolean | Promise<boolean>)[],
   filtered: boolean,
   direct?: boolean,
-): {
-  filtered: boolean;
-  flows: (boolean | Promise<boolean>)[];
-  msg: IMsg;
-} => {
+): DoFilterTransformRes => {
   const { channelId, routeId } = context;
   context.logger = logger({
     channelId,

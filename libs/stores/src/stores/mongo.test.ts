@@ -1,8 +1,9 @@
 import Msg, { StrictMessage } from '@gofer-engine/hl7';
 import fs from 'fs';
 import stores from '..';
+import { exec } from '@gofer-engine/tools'
 import { MongoClient, Document, ObjectId } from 'mongodb';
-import exec from 'tools/scripts/exec';
+import { testContext } from '../types';
 
 // const mongo = new MongoClient('mongodb://127.0.0.1:27017')
 let mongo: MongoClient | undefined = undefined;
@@ -31,7 +32,7 @@ const main = async () => {
     await collection.drop();
   }
   const db = new stores.mongo({ database: 'test', id: '$MSH-10.1' });
-  return db.store(msg).then(async () => {
+  return db.store(msg, testContext).then(async () => {
     const storedRecord = await collection.findOne({ _id: 'MSGID002' });
     const { meta = undefined, segments = undefined } =
       storedRecord === null ? {} : storedRecord;

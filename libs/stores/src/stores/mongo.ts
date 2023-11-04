@@ -19,7 +19,6 @@ export interface IDBStoreOptions extends StoreOption {
 class DBStore implements IStoreClass {
   private db: MongoClient;
   private warnOnError: NonNullable<IDBStoreOptions['warnOnError']>;
-  private verbose: NonNullable<IDBStoreOptions['verbose']>;
   private database: IDBStoreOptions['database'];
   private collection: NonNullable<IDBStoreOptions['collection']>;
   private id: IDBStoreOptions['id'];
@@ -29,21 +28,19 @@ class DBStore implements IStoreClass {
     uri = 'mongodb://127.0.0.1:27017',
     options,
     warnOnError = false,
-    verbose = false,
     database,
     collection = 'test',
     id,
     normalized = true,
   }: IDBStoreOptions = {}) {
     this.warnOnError = warnOnError;
-    this.verbose = verbose;
     this.collection = collection;
     this.id = id;
     this.db = new MongoClient(uri, options);
     this.database = database;
     this.normalized = normalized;
   }
-  public store: StoreFunc = async (data) => {
+  public store: StoreFunc = async (data, context) => {
     const collectionName = this.collection.match(/^\$[A-Z][A-Z0-9]{2}/)
       ? (data.get(this.collection.slice(1) ?? this.collection) as string)
       : this.collection;
@@ -75,29 +72,18 @@ class DBStore implements IStoreClass {
             contents['_id'] = id;
             collection.insertOne(contents).then((created) => {
               if (created.acknowledged) {
-                if (this.verbose)
-                  console.log(
-                    `Created ID: ${created.insertedId} in ${database}:${collectionName}`,
-                  );
+                context.logger(`Created ID: ${created.insertedId} in ${database}:${collectionName}`, 'debug');
                 return res(true);
               } else {
-                if (this.warnOnError) {
-                  console.warn(
-                    `Failed to create ID: "${id}" in ${database}:${collectionName}`,
-                  );
-                  res(false);
-                }
+                context.logger(`Failed to create ID: "${id}" in ${database}:${collectionName}`, this.warnOnError ? 'warn' : 'error');
+                return this.warnOnError ? res(false) : rej(false);
               }
             });
           });
         }
       } catch (error) {
-        if (this.warnOnError) {
-          console.warn(error);
-          res(false);
-        } else {
-          rej(error);
-        }
+        context.logger(JSON.stringify(error), this.warnOnError ? 'warn' : 'error');
+        this.warnOnError ? res(false) : rej(error);
       }
     });
   };

@@ -1,20 +1,20 @@
-import Msg, { IMsg } from '@gofer-engine/hl7';
+import { IMessageContext, IMsg, MsgTypes, TLogLevel } from '@gofer-engine/message-type';
+import HL7v2Msg from '@gofer-engine/hl7';
+import JSONMsg from '@gofer-engine/json';
 import handelse from '@gofer-engine/handelse';
 import { IQueueOptions } from '@gofer-engine/queue';
 import { publishers } from './eventHandlers';
-import { genId } from './genId';
+import { genId } from '@gofer-engine/tools';
 import {
   ChannelConfig,
-  IMessageContext,
   Ingestion,
   IngestionFlow,
-  MaybePromise,
   QueueConfig,
   Route,
   RouteFlow,
   RouteFlowNamed,
-  TLogLevel,
 } from './types';
+import { Promisable } from 'type-fest';
 
 export const isLogging = (logLevel: TLogLevel, logConfigLevel?: TLogLevel) => {
   if (logConfigLevel === undefined) return true;
@@ -225,7 +225,7 @@ export const lastInArray = <T>(arr: T[]): T => {
   return arr[l - 1];
 };
 
-export const promisify = <D>(data: MaybePromise<D>) =>
+export const promisify = <D>(data: Promisable<D>) =>
   new Promise<D>((res) => res(data));
 
 export const allPass = (res: Record<string, boolean>) =>
@@ -245,8 +245,28 @@ export const mapOptions = (opt: QueueConfig): IQueueOptions<IMsg> => {
     store: opt.store,
     id: opt.id,
     allowUndefined: false,
+    msgType: opt.msgType,
     storeStringify: (msg) => msg.toString(),
-    storeParse: (msg) => new Msg(msg),
+    storeParse: (msg) => getMsgType(opt.msgType ?? 'HL7v2', msg),
     verbose: opt.verbose,
   };
+};
+
+type MsgProps<T extends MsgTypes> = T extends 'HL7v2' 
+  ?  ConstructorParameters<typeof HL7v2Msg>
+  : T extends 'JSON'
+    ? ConstructorParameters<typeof JSONMsg>
+    : never;
+
+export const getMsgType = <T extends MsgTypes>(
+  msg: T, ...props: MsgProps<T>
+): IMsg => {
+  switch (msg) {
+    case 'JSON':
+      return new JSONMsg(...props as ConstructorParameters<typeof JSONMsg>);
+    case 'HL7v2':
+      return new HL7v2Msg(...props as ConstructorParameters<typeof HL7v2Msg>);
+    default:
+      throw new Error(`Unknown message type ${msg}`);
+  }
 };

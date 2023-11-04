@@ -84,7 +84,7 @@ class DBStore implements IStoreClass {
     }
   };
 
-  public store: StoreFunc = async (data) => {
+  public store: StoreFunc = async (data, context) => {
     const id = this.id === 'UUID'
       ? randomUUID()
       : this.id?.match(/^\$[A-Z][A-Z0-9]{2}/)
@@ -103,7 +103,7 @@ class DBStore implements IStoreClass {
     );
     const insert = await statement.execute({ params });
     if (insert.rowsAffected !== 1) {
-      console.error(`Failed to insert record into "${table}".`);
+      context.logger(`Failed to insert record into "${table}".`, 'error');
       return false;
     }
     return true;

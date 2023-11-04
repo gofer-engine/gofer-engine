@@ -1,69 +1,16 @@
+import { SetRequired, RequireAtLeastOne, RequireExactlyOne } from 'type-fest'
 import { StoreConfig } from '@gofer-engine/stores';
-import { IMsg, Message, StrictMessage } from '@gofer-engine/hl7';
-
-export type MaybePromise<T> = Promise<T> | T;
-
-type RequireOnlyOne<T, Keys extends keyof T = keyof T> = Pick<
-  T,
-  Exclude<keyof T, Keys>
-> &
-  {
-    [K in Keys]-?: Required<Pick<T, K>> &
-      Partial<Record<Exclude<Keys, K>, undefined>>;
-  }[Keys];
-
-type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<
-  T,
-  Exclude<keyof T, Keys>
-> &
-  {
-    [K in Keys]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<Keys, K>>>;
-  }[Keys];
-
-export type RequiredProperties<T, P extends keyof T> = Omit<T, P> &
-  Required<Pick<T, P>>;
-
-export type OnlyOptional<T> = {
-  [K in keyof T as T[K] extends Required<T>[K] ? never : K]: T[K];
-};
-
-export type OnlyRequired<T> = {
-  [K in keyof T as T[K] extends Required<T>[K] ? K : never]: T[K];
-};
+import { HL7v2, Message, StrictMessage } from '@gofer-engine/hl7';
+import { IAckContext, IMessageContext, IMsg, JSONValue, MsgTypes, TLogLevel } from '@gofer-engine/message-type';
+import JSONMsg, { IJSONMsg } from '@gofer-engine/json';
 
 export type varTypes = 'Global' | 'Channel' | 'Route' | 'Msg';
-
-// helper generics only above this line
-export interface IContext {
-  // auto generated message uuid
-  messageId?: string;
-  channelId?: string | number;
-  routeId?: string | number;
-  // FIXME: add PII/PHI/Confidential flag to logger
-  logger: (log: string, logLevel?: TLogLevel) => void;
-  setGlobalVar: <V>(varName: string, varValue: V) => void;
-  getGlobalVar: <V>(varName: string) => V | undefined;
-  setChannelVar: <V>(varName: string, varValue: V) => void;
-  getChannelVar: <V>(varName: string) => V | undefined;
-  setRouteVar?: <V>(varName: string, varValue: V) => void;
-  getRouteVar?: <V>(varName: string) => V | undefined;
-  setMsgVar?: <V>(msgId: string, varName: string, varValue: V) => void;
-  getMsgVar?: <V>(msgId: string, varName: string) => V | undefined;
-}
-
-export type IMessageContext = RequiredProperties<
-  IContext,
-  'messageId' | 'channelId' | 'getMsgVar' | 'setMsgVar'
->;
-
-export type IAckContext = IMessageContext & {
-  filtered: boolean;
-};
 
 export type FunctProp<R> = ((msg: IMsg, context: IMessageContext) => R) | R;
 export type AllowFuncProp<Allow, R> = Allow extends true ? FunctProp<R> : R;
 
-interface ITcpConfig<Functional extends boolean = false> {
+export interface ITcpConfig<Functional extends boolean = false> {
+  msgType?: MsgTypes; // defaults to HL7v2
   host: AllowFuncProp<Functional, string>;
   port: AllowFuncProp<Functional, number>;
   SoM?: AllowFuncProp<Functional, string>; // Start of Message: defaults to `Sting.fromCharCode(0x0b)`
@@ -72,7 +19,8 @@ interface ITcpConfig<Functional extends boolean = false> {
   maxConnections?: number; // used only for server TCP connections
 }
 
-interface IHTTPConfig<Functional extends boolean = false> {
+export interface IHTTPConfig<Functional extends boolean = false> {
+  msgType?: MsgTypes; // defaults to HL7v2
   host: AllowFuncProp<Functional, string>;
   port: AllowFuncProp<Functional, number>;
   method?:
@@ -92,7 +40,7 @@ interface IHTTPConfig<Functional extends boolean = false> {
   };
 }
 
-interface IHTTPSConfig<Functional extends boolean = false>
+export interface IHTTPSConfig<Functional extends boolean = false>
   extends IHTTPConfig<Functional> {
   // props for cert/ssl support from tls.connect
   ca?: AllowFuncProp<Functional, string | string[] | Buffer | Buffer[]>;
@@ -120,7 +68,7 @@ interface IHTTPSConfig<Functional extends boolean = false>
   severname?: AllowFuncProp<Functional, string>;
 }
 
-export interface QueueConfig<T = IMsg> {
+export interface QueueConfig {
   kind: 'queue';
   // interval?: number // milliseconds between retries. Defaults to 10x1000 = 10 seconds
   // FIXME: better-queue does not currently support a queue limit.
@@ -129,7 +77,7 @@ export interface QueueConfig<T = IMsg> {
   retries?: number; // Defaults to Infinity
   // TODO: `id` function is limited to only root key of T, change this to take the data and return the exact id.
   // id?: keyof T | ((task: T, cb: (error: any, id: keyof T | { id: string }) => void) => void) |  ((task: T, cb: (error: any, id: keyof T) => void) => void) // used to uniquely identify the items in queue
-  id?: (msg: T) => string; // used to uniquely identify the items in queue
+  id?: (msg: IMsg) => string; // used to uniquely identify the items in queue
   // filterQueue?: (msg: T) => boolean | Promise<boolean> // Used to conditionally filter what messages are allowed to enter the queue. Return true to pass the message through to the queue, false to drop it. If undefined, then all messages are allowed.
   // precondition?: (cb: (error: unknown, passOrFail: boolean) => void) => void
   // preconditionRetryTimeout?: number // Number of milliseconds to delay before checking the precondition function again. Defaults to 10x1000 = 10 seconds.
@@ -146,8 +94,9 @@ export interface QueueConfig<T = IMsg> {
   rotate?: boolean; // Rotate the queue moving a failed message to the end of the queu. Defaults to false
   verbose?: boolean; // Log messages to console. Defaults to false
   store: 'file' | 'memory';
-  stringify?: (msg: T) => string;
-  parse?: (msg: string) => T;
+  msgType?: MsgTypes; // defaults to HL7v2
+  stringify?: (msg: IMsg) => string;
+  parse?: (msg: string) => IMsg;
 }
 
 export type TcpConfig<T extends 'I' | 'O' = 'I'> = T extends 'I'
@@ -194,38 +143,48 @@ interface IFileConfig {
   }>;
 }
 
-export type FileConfig = RequireOnlyOne<
+export type FileConfig = RequireExactlyOne<
   IFileConfig,
   'ftp' | 'sftp' | 'directory'
 >;
 
-export type Connection<T extends 'I' | 'O'> = T extends 'I' // TODO: if after flushing the rest of these sources/destination, possibly merge these two
-  ? (
-      | { kind: 'tcp'; tcp: TcpConfig<T> }
-      | { kind: 'http'; http: HTTPConfig<T> }
-      | { kind: 'https'; https: HTTPSConfig<T> }
-    ) & // TODO: implement file reader source
-    // NOTE: file source is different than the `file` store, because it will support additional methods such as ftp/sftp
-    // | (never & { kind: 'file'; file: FileConfig })
-    //  TODO: implement db query source
-    // NOTE: db source should be different than the `StoreConfig` because it should support query conditions. TBD
-    // | { kind: 'db'; file: StoreConfig }
-    // | (never & { kind: 'query'; query: StoreConfig })
-    {
-      // NOTE: by using a queue acks are positively sent when queued not when removed from queue
-      queue?: QueueConfig;
-    }
-  :
-      | { kind: 'tcp'; tcp: TcpConfig<T> }
-      | { kind: 'http'; http: HTTPConfig<T> }
-      | { kind: 'https'; https: HTTPSConfig<T> };
+export type TCPConnection<T extends 'I' | 'O'> = T extends 'I'
+  ? { queue?: QueueConfig; kind: 'tcp'; tcp: TcpConfig<T> }
+  : { kind: 'tcp'; tcp: TcpConfig<T> };
+
+export type HTTPConnection<T extends 'I' | 'O'> = T extends 'I'
+  ? { queue?: QueueConfig; kind: 'http'; http: HTTPConfig<T> }
+  : { kind: 'http'; http: HTTPConfig<T> };
+
+export type HTTPSConnection<T extends 'I' | 'O'> = T extends 'I'
+  ? { queue?: QueueConfig; kind: 'https'; https: HTTPSConfig<T> }
+  : { kind: 'https'; https: HTTPSConfig<T> };
+
+// NOTE: if new kind is added, adjust the isConnectionFlow type guard
+export type Connection<T extends 'I' | 'O'> =
+  | TCPConnection<T>
+  | HTTPConnection<T>
+  | HTTPSConnection<T>;
 // TODO: implement file reader source
-// NOTE: file destination is different than the `file` store, because it will support additional methods such as ftp/sftp
-// | (never & { kind: 'file'; file: FileConfig })
+// NOTE: file source is different than the `file` store, because it will support additional methods such as ftp/sftp
+// | FileConnection<T>
+// | FTPConnection<T>
+// | SFTPConnection<T>
 //  TODO: implement db query source
-// NOTE: db destination should be different than the `StoreConfig` because it should support query/mutation conditions. TBD
-// | { kind: 'db'; file: StoreConfig }
-// | (never & { kind: 'query'; query: StoreConfig });
+// NOTE: db source should be different than the `StoreConfig` because it should support query conditions. TBD
+// | DBConnection<T>
+
+export const isTCPConnection = <T extends 'I' | 'O'>(
+  conn: Connection<T>,
+): conn is TCPConnection<T> => conn.kind === 'tcp';
+
+export const isHTTPConnection = <T extends 'I' | 'O'>(
+  conn: Connection<T>,
+): conn is HTTPConnection<T> => conn.kind === 'http';
+
+export const isHTTPSConnection = <T extends 'I' | 'O'>(
+  conn: Connection<T>,
+): conn is HTTPSConnection<T> => conn.kind === 'https';
 
 export type AckConfig = {
   // Value to use in ACK MSH.3
@@ -241,7 +200,7 @@ export type AckConfig = {
   msg?: (ack: IMsg, msg: IMsg, context: IAckContext) => IMsg; // returns the ack message to send
 };
 
-interface Tag {
+export interface Tag {
   name: string;
   color?: string; // a valid hexidecimal color string or valid CSS color name
 }
@@ -315,6 +274,8 @@ export type Ingestion<
   flow: IngestionFlow<Filt, Tran>;
 };
 
+export type StoreConfigFlow = { kind: 'store' } & StoreConfig;
+
 // O = require objectified filters/transformers
 // F = require raw function filters/transformers
 // B = allow either objectified or raw function filters/transformers
@@ -325,8 +286,71 @@ export type RouteFlow<
   | FilterFlow<Filt>
   | TransformFlow<Tran>
   | TransformOrFilterFlow<Tran>
-  | ({ kind: 'store' } & StoreConfig)
+  | StoreConfigFlow
   | Connection<'O'>;
+
+export const isFilterFlow = <
+  Filt extends 'O' | 'F' | 'B' = 'B',
+  Tran extends 'O' | 'F' | 'B' = 'B',
+>(
+  flow: RouteFlow<Filt, Tran>,
+): flow is FilterFlow<Filt> => {
+  if (typeof flow === 'object') {
+    return flow.kind === 'filter';
+  }
+  return false;
+};
+
+export const isTransformFlow = <
+  Filt extends 'O' | 'F' | 'B' = 'B',
+  Tran extends 'O' | 'F' | 'B' = 'B',
+>(
+  flow: RouteFlow<Filt, Tran>,
+): flow is TransformFlow<Tran> => {
+  if (typeof flow === 'object') {
+    return flow.kind === 'transform';
+  }
+  return false;
+};
+
+export const isStoreConfigFlow = <
+  Filt extends 'O' | 'F' | 'B' = 'B',
+  Tran extends 'O' | 'F' | 'B' = 'B',
+>(
+  flow: RouteFlow<Filt, Tran>,
+): flow is StoreConfigFlow => {
+  if (typeof flow === 'object') {
+    return flow.kind === 'store';
+  }
+  return false;
+};
+
+export const isConnectionFlow = <
+  Filt extends 'O' | 'F' | 'B' = 'B',
+  Tran extends 'O' | 'F' | 'B' = 'B',
+>(
+  flow: RouteFlow<Filt, Tran>,
+): flow is Connection<'O'> => {
+  if (typeof flow === 'object') {
+    return flow.kind === 'tcp' || flow.kind === 'http' || flow.kind === 'https';
+  }
+  return false;
+};
+
+export const isTransformOrFilterFlow = <
+  Filt extends 'O' | 'F' | 'B' = 'B',
+  Tran extends 'O' | 'F' | 'B' = 'B',
+>(
+  flow: RouteFlow<Filt, Tran>,
+): flow is TransformOrFilterFlow<Tran> => {
+  if (typeof flow === 'function') {
+    return true;
+  }
+  if (typeof flow === 'object') {
+    return flow.kind === 'transformFilter';
+  }
+  return false;
+};
 
 // O = require objectified filters/transformers
 // F = require raw function filters/transformers
@@ -358,12 +382,9 @@ export type Route<
   tags?: Tag[]; // Tags to help organize/identify route flows
   queue?: QueueConfig;
   flows: Stct extends 'S'
-    ? RequiredProperties<RouteFlowNamed<Filt, Tran>, 'id'>[]
+    ? SetRequired<RouteFlowNamed<Filt, Tran>, 'id'>[]
     : (RouteFlow<Filt, Tran> | RouteFlowNamed<Filt, Tran>)[];
 };
-
-// log levels in order of severity. If you show 'DEBUG' logs, you will also see 'INFO' logs, etc.
-export type TLogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 // Filt(er) & Tran(sformer)
 // O = require objectified filters/transformers
@@ -374,17 +395,17 @@ export type ChannelConfig<
   Filt extends 'O' | 'F' | 'B' = 'B',
   Tran extends 'O' | 'F' | 'B' = 'B',
   Stct extends 'S' | 'L' = 'L',
-> = RequiredProperties<
+> = SetRequired<
   {
     id?: string | number; // a unique id for this channel. If not provided will use UUID to generate. if not defined it may not be the same between deployments/reboots
     name: string; // a name, preferrably unique, to identify this channel later on
     tags?: Tag[]; // Tags to help organize/identify channels
     source: Connection<'I'>;
     ingestion: Stct extends 'S'
-      ? RequiredProperties<Ingestion<Filt, Tran>, 'id' | 'flow'>[]
+      ? SetRequired<Ingestion<Filt, Tran>, 'id' | 'flow'>[]
       : (IngestionFlow<Filt, Tran> | Ingestion<Filt, Tran>)[];
     routes?: Stct extends 'S'
-      ? RequiredProperties<Route<Filt, Tran, 'S'>, 'id' | 'flows'>[]
+      ? SetRequired<Route<Filt, Tran, 'S'>, 'id' | 'flows'>[]
       : (
           | (RouteFlow<Filt, Tran> | RouteFlowNamed<Filt, Tran>)[]
           | Route<Filt, Tran>
@@ -436,7 +457,7 @@ export type RunRouteFunc = <
 >(
   channelId: string | number,
   routeId: string | number,
-  route: RequiredProperties<RouteFlowNamed<Filt, Tran>, 'id'>[],
+  route: SetRequired<RouteFlowNamed<Filt, Tran>, 'id'>[],
   msg: IMsg,
   context: IMessageContext,
   // direct provides a way to bypass non-existent event handlers. This is used for direct calls to routes such as the messenger.
@@ -525,19 +546,19 @@ export interface ORoute extends OBase<ORoute> {
   send(method: 'tcp', host: FunctProp<string>, port: FunctProp<number>): ORoute;
   send(method: 'http', options: IHTTPConfig<true>): ORoute;
   send(method: 'https', options: IHTTPSConfig<true>): ORoute;
-  export: () => RequiredProperties<Route<'F', 'F', 'S'>, 'id' | 'flows'>;
+  export: () => SetRequired<Route<'F', 'F', 'S'>, 'id' | 'flows'>;
 }
 
 export type MessengerRoute = (
   R: Exclude<ORoute, 'export'>,
 ) => Exclude<ORoute, 'export'>;
-export type MessengerInput =
-  | Message
-  | string
-  | StrictMessage
-  | IMsg
-  | ((msg: IMsg) => IMsg);
-export type MessengerFunc = (msg: MessengerInput) => Promise<IMsg>;
-export type Messenger = (
+export type MessengerInput<T> = T extends HL7v2
+  ? string | HL7v2 | ((msg: T) => T) | Message | StrictMessage
+  : T extends IJSONMsg
+    ? string | JSONValue | T | ((msg: T) => T)
+    : string | T | ((msg: T) => T);
+
+export type MessengerFunc<T extends IMsg = IMsg> = (msg: MessengerInput<T>) => Promise<T>;
+export type Messenger = <T extends IMsg = IMsg>(
   route: MessengerRoute,
-) => [messenger: MessengerFunc, messengerId: string];
+) => [messenger: MessengerFunc<T>, messengerId: string];

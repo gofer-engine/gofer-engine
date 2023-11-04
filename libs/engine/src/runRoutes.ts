@@ -9,13 +9,13 @@ import {
   HTTPConfig,
   HTTPSConfig,
   RunRouteFunc,
-  RunRoutesFunc,
+    RunRoutesFunc,
   TcpConfig,
 } from './types';
 import { getRouteVar, setRouteVar } from './variables';
 import { doFilterTransform } from './doFilterTransform';
 import { httpClient } from './httpClient';
-import { IMsg } from '@gofer-engine/hl7';
+import { IMsg } from '@gofer-engine/message-type';
 import { httpsClient } from './httpsClient';
 
 export const runRoutes: RunRoutesFunc = async (
@@ -239,7 +239,7 @@ export const runRoute: RunRouteFunc = async (
       if (flow.kind === 'store') {
         const storeConfig = { ...flow } as StoreConfig & { kind?: 'store' };
         delete storeConfig.kind;
-        flows.push(store(storeConfig as StoreConfig, msg) ?? false);
+        flows.push(store(storeConfig as StoreConfig, msg, context) ?? false);
         continue;
       }
     }

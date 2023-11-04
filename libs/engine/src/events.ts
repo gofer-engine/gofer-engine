@@ -1,6 +1,6 @@
 import handelse from '@gofer-engine/handelse';
 import { IEventHandler } from '@gofer-engine/handelse';
-import { TLogLevel } from './types';
+import { TLogLevel } from '@gofer-engine/message-type';
 
 export interface IChannelEvents<T> {
   onReceive: IEventHandler<{ msg: T; channel: string | number }>;

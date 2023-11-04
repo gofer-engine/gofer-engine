@@ -75,7 +75,7 @@ class Gofer implements OGofer {
   // public msg: OGofer['msg'] = (msg) => {
   //    RouteClass()
   // }
-  public messenger: OGofer['messenger'] = messenger;
+  public messenger = messenger;
 }
 
 export const gofer = new Gofer();

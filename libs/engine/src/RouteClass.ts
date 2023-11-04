@@ -3,21 +3,20 @@ import {
   FunctProp,
   HTTPConfig,
   HTTPSConfig,
-  IMessageContext,
   MsgVar,
   ORoute,
-  RequiredProperties,
   Route,
   WithVarDo,
   varTypes,
 } from './types';
 import { StoreConfig } from '@gofer-engine/stores';
-import { IMsg } from '@gofer-engine/hl7';
-import { genId } from './genId';
+import { IMessageContext, IMsg } from '@gofer-engine/message-type';
+import { genId } from '@gofer-engine/tools';
 import { isMsgVFunc } from './isMsgVFunc';
+import { SetRequired } from 'type-fest';
 
 export class RouteClass implements ORoute {
-  private config: RequiredProperties<Route<'F', 'F', 'S'>, 'id' | 'flows'>;
+  private config: SetRequired<Route<'F', 'F', 'S'>, 'id' | 'flows'>;
   constructor() {
     const id = genId();
     this.config = {

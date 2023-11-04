@@ -1,15 +1,15 @@
 import net from 'net';
+import { IMessageContext, IMsg } from '@gofer-engine/message-type';
 import handelse from '@gofer-engine/handelse';
-import Msg, { IMsg } from '@gofer-engine/hl7';
 import { onLog } from './eventHandlers';
-import { IMessageContext, TcpConfig } from './types';
-import { functionalVal } from './helpers';
+import { TcpConfig } from './types';
+import { functionalVal, getMsgType } from './helpers';
 
-export type TcpClientFunc<T, R> = (
+export type TcpClientFunc = (
   opt: TcpConfig<'O'>,
-  msg: T,
-  stringify: ((msg: T) => string) | undefined,
-  parse: ((data: string) => R) | undefined,
+  msg: IMsg,
+  stringify: ((msg: IMsg) => string) | undefined,
+  parse: ((data: string) => IMsg) | undefined,
   channelId: string | number | undefined,
   routeId: string | number | undefined,
   flowId: string | number | undefined,
@@ -106,7 +106,7 @@ export const sendMessage = async (
   });
 };
 
-export const tcpClient: TcpClientFunc<IMsg, IMsg> = async (
+export const tcpClient: TcpClientFunc = async (
   {
     host,
     port,
@@ -116,8 +116,8 @@ export const tcpClient: TcpClientFunc<IMsg, IMsg> = async (
     responseTimeout,
   },
   msg,
-  stringify = (msg: IMsg) => msg.toString(),
-  parse = (data: string) => new Msg(data),
+  stringify = (msg) => msg.toString(),
+  parse,
   channelId,
   routeId,
   flowId,
@@ -131,6 +131,9 @@ export const tcpClient: TcpClientFunc<IMsg, IMsg> = async (
     EoM?: string;
     CR?: string;
   } = {};
+  if (parse === undefined) {
+    parse = (data: string) => getMsgType(context.kind, data);
+  }
   try {
     config.host = functionalVal(host, msg, context);
     config.port = functionalVal(port, msg, context);

@@ -1,8 +1,9 @@
+import { exec } from '@gofer-engine/tools'
 import Msg from '@gofer-engine/hl7';
 import fs from 'fs';
-import exec from 'tools/scripts/exec';
 
 import stores from '..';
+import { testContext } from '../types';
 
 const hl7 = fs.readFileSync('./samples/sample.hl7', 'utf8');
 const msg = new Msg(hl7);
@@ -23,7 +24,7 @@ test('postgres-store', async () => {
     id: '$MSH-10.1',
   });
   await db.query(`DROP TABLE IF EXISTS public."test";`)
-  const stored = await db.store(msg);
+  const stored = await db.store(msg, testContext);
   expect(stored).toBe(true);
   const storedRecord = await db.query(query);
   expect(storedRecord.rows?.length).toBe(1);

@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import cache from './cache';
+import cache from '@gofer-engine/cache';
 
 const uuids = new cache({
   base: `${__dirname}/../.cache`,
@@ -23,7 +23,20 @@ export const genUUID = () => {
   return newId;
 };
 
+/**
+ * __*NOT PRODUCTION READY!*__
+ * 
+ * Generated a unique ID but consistent cacheable IDs for testing.
+ * To make this work in production, IDs and UIDS last used must be
+ * stored in a cache and retrieved on startup to continue the sequence.
+ * 
+ * UUIDs in production should be generated using randomUUID() from
+ * the crypto module and not cached.
+ */
 export const genId = (type: 'UUID' | 'ID' | 'UID' = 'UUID') => {
+  if (process.env['NODE_ENV'] === 'production') {
+    throw new Error('ERROR: genId() is not production ready!');
+  }
   switch (type) {
     case 'UUID':
       return genUUID();
