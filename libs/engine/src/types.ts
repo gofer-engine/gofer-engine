@@ -2,7 +2,7 @@ import { SetRequired, RequireAtLeastOne, RequireExactlyOne } from 'type-fest'
 import { StoreConfig } from '@gofer-engine/stores';
 import { HL7v2, Message, StrictMessage } from '@gofer-engine/hl7';
 import { IAckContext, IMessageContext, IMsg, JSONValue, MsgTypes, TLogLevel } from '@gofer-engine/message-type';
-import JSONMsg from '@gofer-engine/json';
+import JSONMsg, { IJSONMsg } from '@gofer-engine/json';
 
 export type varTypes = 'Global' | 'Channel' | 'Route' | 'Msg';
 
@@ -552,13 +552,13 @@ export interface ORoute extends OBase<ORoute> {
 export type MessengerRoute = (
   R: Exclude<ORoute, 'export'>,
 ) => Exclude<ORoute, 'export'>;
-export type MessengerInput = IMsg extends HL7v2
-  ? string | HL7v2 | ((msg: HL7v2) => HL7v2) | Message | StrictMessage
-  : IMsg extends JSONMsg
-  ? string | JSONValue
-  : string | IMsg | ((msg: IMsg) => IMsg);
+export type MessengerInput<T> = T extends HL7v2
+  ? string | HL7v2 | ((msg: T) => T) | Message | StrictMessage
+  : T extends IJSONMsg
+    ? string | JSONValue | T | ((msg: T) => T)
+    : string | T | ((msg: T) => T);
 
-export type MessengerFunc = (msg: MessengerInput) => Promise<IMsg>;
-export type Messenger = (
+export type MessengerFunc<T extends IMsg = IMsg> = (msg: MessengerInput<T>) => Promise<T>;
+export type Messenger = <T extends IMsg = IMsg>(
   route: MessengerRoute,
-) => [messenger: MessengerFunc, messengerId: string];
+) => [messenger: MessengerFunc<T>, messengerId: string];

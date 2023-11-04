@@ -11,7 +11,7 @@ import {
 } from './types';
 import { StoreConfig } from '@gofer-engine/stores';
 import { IMessageContext, IMsg } from '@gofer-engine/message-type';
-import { genId } from './genId';
+import { genId } from '@gofer-engine/tools';
 import { isMsgVFunc } from './isMsgVFunc';
 import { SetRequired } from 'type-fest';
 

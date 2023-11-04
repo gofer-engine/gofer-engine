@@ -15,7 +15,7 @@ import {
   colors,
   animals,
 } from 'unique-names-generator';
-import { genId } from './genId';
+import { genId } from '@gofer-engine/tools';
 import { gofer } from './gofer';
 
 export class IngestionClass implements OIngest {

@@ -1,7 +1,7 @@
 import net from 'net';
 import { msgIsHL7v2 } from '@gofer-engine/hl7';
 import { messenger } from './messenger';
-import { genId } from './genId';
+import { genId } from '@gofer-engine/tools';
 import quickServer from './quickServer';
 import { MessengerFunc } from './types';
 import { isMsg } from '@gofer-engine/message-type';

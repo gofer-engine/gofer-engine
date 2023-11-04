@@ -12,7 +12,7 @@ import {
   setGlobalVar,
   setMsgVar,
 } from './variables';
-import { genId } from './genId';
+import { genId } from '@gofer-engine/tools';
 import { getMsgTypeFromFlows } from './getMsgTypeFromFlows';
 
 const messengers = new Map<string, MessengerFunc>();
@@ -23,15 +23,15 @@ const messengers = new Map<string, MessengerFunc>();
  * @returns `messenger` is a function that takes a message and sends it to the route. The message type is determined by the route's first connection flow.
  * @returns `id` is the id of the messenger
  */
-export const messenger = (
+export const messenger = <T extends IMsg = IMsg>(
   route: MessengerRoute,
-): [messenger: MessengerFunc, id: string] => {
+): [messenger: MessengerFunc<T>, id: string] => {
   const config = route(new RouteClass()).export();
   const flows = config.flows;
   const id = typeof config.id === 'number' ? config.id.toString() : config.id;
   const msgType = getMsgTypeFromFlows(flows);
-  const func =
-    messengers.get(id) ??
+  const func: MessengerFunc<T> =
+    messengers.get(id) as unknown as MessengerFunc<T> ??
     ((msg) => {
       const message =
         typeof msg === 'function'
@@ -45,7 +45,7 @@ export const messenger = (
       } else {
         messageId = genId('ID');
       }
-      return new Promise<IMsg>((res, rej) => {
+      return new Promise<T>((res, rej) => {
         runRoute(
           id,
           id,
@@ -65,14 +65,14 @@ export const messenger = (
             getMsgVar: getMsgVar(messageId),
           },
           true, // NOTE: this is a direct call to the route, the event handlers are not already initialized. This is a way to get around that.
-          res,
+          res as (msg: IMsg) => void,
         ).then((done) => {
           if (!done) rej(`Message ${id} was filtered`);
         });
       });
     });
   if (!messengers.has(id)) {
-    messengers.set(id, func);
+    messengers.set(id, func as unknown as MessengerFunc);
   }
   return [func, id];
 };

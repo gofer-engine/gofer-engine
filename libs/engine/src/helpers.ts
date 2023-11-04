@@ -4,7 +4,7 @@ import JSONMsg from '@gofer-engine/json';
 import handelse from '@gofer-engine/handelse';
 import { IQueueOptions } from '@gofer-engine/queue';
 import { publishers } from './eventHandlers';
-import { genId } from './genId';
+import { genId } from '@gofer-engine/tools';
 import {
   ChannelConfig,
   Ingestion,

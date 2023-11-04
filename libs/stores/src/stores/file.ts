@@ -1,7 +1,7 @@
-import { randomUUID } from 'crypto';
 import fs from 'fs';
 import { IMsg } from '@gofer-engine/message-type';
 import { IStoreClass, StoreFunc, StoreOption } from '../types';
+import { genId } from '@gofer-engine/tools';
 
 /**
  * @param path - Accepts HL7 references like `['$PID-5[1].1', 'test', '$PID-3[1].1']`. Each element in array is a directory. Empty strings will be filtered out.
@@ -64,7 +64,7 @@ class DBStore implements IStoreClass {
       this.filename === undefined
         ? context.kind === 'HL7v2'
           ? ['$MSH-10.1']
-          : [context.messageId]
+          : ['$id']
         : typeof this.filename === 'string'
         ? [this.filename]
         : this.filename;
@@ -78,18 +78,47 @@ class DBStore implements IStoreClass {
       .filter((p) => p !== '')
       .join('/');
     if (typeof this.filename === 'string') this.filename = [this.filename];
-    const filename =
+    let filename =
       typeof _filename === 'function'
         ? _filename(data)
         : _filename
             .map((n) => {
-              return n === 'UUID'
-                ? randomUUID()
-                : n.match(/^\$[A-Z][A-Z0-9]{2}/)
-                ? ((data.get(n.slice(1)) ?? '') as string)
-                : n;
+              if (n === 'UUID' || n === 'ID' || n === 'UID') {
+                return genId(n);
+              }
+              if (context.kind === 'HL7v2') {
+                if (n.match(/^\$[A-Z][A-Z0-9]{2}/)) {
+                  const id = data.get(n.slice(1))
+                  if (typeof id === 'number' && id !== 0 && !isNaN(id)) {
+                    return id.toString();
+                  }
+                  if (typeof id === 'string' && id !== '') {
+                    return id;
+                  }
+                  context.logger(`The HL7v2 path ${n} does not exist in the message, using UUID instead`, 'warn')
+                  return genId('UUID');
+                }
+              }
+              if (context.kind === 'JSON') {
+                if (n.startsWith('$')) {
+                  const id = data.get(n.slice(1))
+                  if (typeof id === 'number' && id !== 0 && !isNaN(id)) {
+                    return id.toString();
+                  }
+                  if (typeof id === 'string' && id !== '') {
+                    return id;
+                  }
+                  context.logger(`The JSON path ${n} does not exist in the message, using UUID instead`, 'warn')
+                  return genId('UUID');
+                }
+              }
+              return n;
             })
             .join('');
+    if (filename === '') {
+      context.logger(`Compiled filename is empty, using UUID instead`, 'warn')
+      filename = genId('UUID');
+    }
     const fullPath = `${dirname}/${filename}${_extension}`;
     if (this.autoCreateDir && !fs.existsSync(dirname)) {
       fs.mkdirSync(dirname, { recursive: true });
@@ -104,7 +133,7 @@ class DBStore implements IStoreClass {
     return new Promise<boolean>((res, rej) => {
       fs.writeFile(
         fullPath,
-        contents,
+        typeof contents !== 'string' ? JSON.stringify(contents, undefined, 2) : contents,
         { flag: this.append ? 'a' : 'w' },
         (err) => {
           if (err) {
