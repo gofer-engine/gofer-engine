@@ -15,15 +15,23 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@gofer-engine/ack": ["libs/ack/src/index.ts"],
       "@gofer-engine/cache": ["libs/cache/src/index.ts"],
       "@gofer-engine/engine": ["libs/engine/src/index.ts"],
+      "@gofer-engine/events": ["libs/events/src/index.ts"],
       "@gofer-engine/handelse": ["libs/handelse/src/index.ts"],
       "@gofer-engine/hl7": ["libs/hl7/src/index.ts"],
+      "@gofer-engine/http": ["libs/http/src/index.ts"],
+      "@gofer-engine/https": ["libs/https/src/index.ts"],
       "@gofer-engine/json": ["libs/json/src/index.ts"],
+      "@gofer-engine/logger": ["libs/logger/src/index.ts"],
       "@gofer-engine/message-type": ["libs/message-type/src/index.ts"],
       "@gofer-engine/queue": ["libs/queue/src/index.ts"],
+      "@gofer-engine/queue-message": ["libs/queue-message/src/index.ts"],
       "@gofer-engine/stores": ["libs/stores/src/index.ts"],
-      "@gofer-engine/tools": ["libs/tools/src/index.ts"]
+      "@gofer-engine/tcp": ["libs/tcp/src/index.ts"],
+      "@gofer-engine/tools": ["libs/tools/src/index.ts"],
+      "@gofer-engine/variables": ["libs/variables/src/index.ts"]
     },
     "resolveJsonModule": true,
     "esModuleInterop": true

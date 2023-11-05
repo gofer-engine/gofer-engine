@@ -1,8 +1,5 @@
 import {
   FilterFunc,
-  FunctProp,
-  HTTPConfig,
-  HTTPSConfig,
   MsgVar,
   ORoute,
   Route,
@@ -10,10 +7,12 @@ import {
   varTypes,
 } from './types';
 import { StoreConfig } from '@gofer-engine/stores';
-import { IMessageContext, IMsg } from '@gofer-engine/message-type';
+import { FunctProp, IMessageContext, IMsg } from '@gofer-engine/message-type';
 import { genId } from '@gofer-engine/tools';
 import { isMsgVFunc } from './isMsgVFunc';
 import { SetRequired } from 'type-fest';
+import { HTTPSConfig } from "@gofer-engine/https";
+import { HTTPConfig } from "@gofer-engine/http";
 
 export class RouteClass implements ORoute {
   private config: SetRequired<Route<'F', 'F', 'S'>, 'id' | 'flows'>;

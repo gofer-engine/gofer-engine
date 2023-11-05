@@ -1,121 +1,15 @@
 import { SetRequired, RequireAtLeastOne, RequireExactlyOne } from 'type-fest'
-import { StoreConfig } from '@gofer-engine/stores';
+
 import { HL7v2, Message, StrictMessage } from '@gofer-engine/hl7';
-import { IAckContext, IMessageContext, IMsg, JSONValue, MsgTypes, TLogLevel } from '@gofer-engine/message-type';
-import JSONMsg, { IJSONMsg } from '@gofer-engine/json';
+import { IJSONMsg } from '@gofer-engine/json';
+import { AckConfig, AckFunc, FunctProp, IMessageContext, IMsg, JSONValue, TLogLevel } from '@gofer-engine/message-type';
+import { StoreConfig } from '@gofer-engine/stores';
+import { TCPConnection } from "@gofer-engine/tcp";
+import { QueueConfig } from "@gofer-engine/queue";
+import { HTTPConfig, IHTTPConfig } from "@gofer-engine/http";
+import { HTTPSConfig, IHTTPSConfig } from "@gofer-engine/https";
 
 export type varTypes = 'Global' | 'Channel' | 'Route' | 'Msg';
-
-export type FunctProp<R> = ((msg: IMsg, context: IMessageContext) => R) | R;
-export type AllowFuncProp<Allow, R> = Allow extends true ? FunctProp<R> : R;
-
-export interface ITcpConfig<Functional extends boolean = false> {
-  msgType?: MsgTypes; // defaults to HL7v2
-  host: AllowFuncProp<Functional, string>;
-  port: AllowFuncProp<Functional, number>;
-  SoM?: AllowFuncProp<Functional, string>; // Start of Message: defaults to `Sting.fromCharCode(0x0b)`
-  EoM?: AllowFuncProp<Functional, string>; // End of Message: defaults to `String.fromCharCode(0x1c)`
-  CR?: AllowFuncProp<Functional, string>; // Carriage Return: defaults to `String.fromCharCode(0x0d)`
-  maxConnections?: number; // used only for server TCP connections
-}
-
-export interface IHTTPConfig<Functional extends boolean = false> {
-  msgType?: MsgTypes; // defaults to HL7v2
-  host: AllowFuncProp<Functional, string>;
-  port: AllowFuncProp<Functional, number>;
-  method?:
-    | 'GET'
-    | 'HEAD'
-    | 'POST'
-    | 'PUT'
-    | 'DELETE'
-    | 'CONNECT'
-    | 'OPTIONS'
-    | 'TRACE'
-    | 'PATCH';
-  path?: string;
-  basicAuth?: {
-    username: AllowFuncProp<Functional, string>;
-    password: AllowFuncProp<Functional, string>;
-  };
-}
-
-export interface IHTTPSConfig<Functional extends boolean = false>
-  extends IHTTPConfig<Functional> {
-  // props for cert/ssl support from tls.connect
-  ca?: AllowFuncProp<Functional, string | string[] | Buffer | Buffer[]>;
-  cert?: AllowFuncProp<Functional, string | string[] | Buffer | Buffer[]>;
-  ciphers?: AllowFuncProp<Functional, string>;
-  clientCertEngine?: AllowFuncProp<Functional, string>;
-  crl?: AllowFuncProp<Functional, string | string[] | Buffer | Buffer[]>;
-  dhparam?: AllowFuncProp<Functional, string | Buffer>;
-  ecdhCurve?: AllowFuncProp<Functional, string>;
-  honorCipherOrder?: AllowFuncProp<Functional, boolean>;
-  key?: AllowFuncProp<Functional, string | string[] | Buffer | Buffer[]>;
-  passphrase?: AllowFuncProp<Functional, string>;
-  pfx?: AllowFuncProp<
-    Functional,
-    | string
-    | string[]
-    | Buffer
-    | Buffer[]
-    | { buf: string | Buffer; passphrase?: string }[]
-  >;
-  secureOptions?: AllowFuncProp<Functional, number>;
-  secureProtocol?: AllowFuncProp<Functional, string>;
-  sessionIdContext?: AllowFuncProp<Functional, string>;
-  rejectUnauthorized?: AllowFuncProp<Functional, boolean>;
-  severname?: AllowFuncProp<Functional, string>;
-}
-
-export interface QueueConfig {
-  kind: 'queue';
-  // interval?: number // milliseconds between retries. Defaults to 10x1000 = 10 seconds
-  // FIXME: better-queue does not currently support a queue limit.
-  // limit?: number // Limit the number of messages that can be queued. Defaults to Infinity
-  filo?: boolean; // First In Last Out. Defaults to false
-  retries?: number; // Defaults to Infinity
-  // TODO: `id` function is limited to only root key of T, change this to take the data and return the exact id.
-  // id?: keyof T | ((task: T, cb: (error: any, id: keyof T | { id: string }) => void) => void) |  ((task: T, cb: (error: any, id: keyof T) => void) => void) // used to uniquely identify the items in queue
-  id?: (msg: IMsg) => string; // used to uniquely identify the items in queue
-  // filterQueue?: (msg: T) => boolean | Promise<boolean> // Used to conditionally filter what messages are allowed to enter the queue. Return true to pass the message through to the queue, false to drop it. If undefined, then all messages are allowed.
-  // precondition?: (cb: (error: unknown, passOrFail: boolean) => void) => void
-  // preconditionRetryTimeout?: number // Number of milliseconds to delay before checking the precondition function again. Defaults to 10x1000 = 10 seconds.
-  // onEvents?: [
-  //   event: QueueEvents,
-  //   listener: (id: string, queueId: string | number, error?: string) => void
-  // ][]
-  // TODO: implement store config for the queue
-  // storage?: StoreConfig
-  concurrent?: number; // Allows more than one message to be processed assynchronously if > 1. Defaults to 1.
-  maxTimeout?: number; // Number of milliseconds before a task is considered timed out. Defaults to 10x1000 = 10 seconds
-  // TODO: implement another delay option for after the process is complete before the next message is processed
-  afterProcessDelay?: number; // Number of ms to to interval loop the worker checking for completion of process to begin next. Defaults to 1x1000 = 1 second.
-  rotate?: boolean; // Rotate the queue moving a failed message to the end of the queu. Defaults to false
-  verbose?: boolean; // Log messages to console. Defaults to false
-  store: 'file' | 'memory';
-  msgType?: MsgTypes; // defaults to HL7v2
-  stringify?: (msg: IMsg) => string;
-  parse?: (msg: string) => IMsg;
-}
-
-export type TcpConfig<T extends 'I' | 'O' = 'I'> = T extends 'I'
-  ? ITcpConfig
-  : ITcpConfig<true> & {
-      responseTimeout?: number | false;
-    };
-
-export type HTTPConfig<T extends 'I' | 'O' = 'I'> = T extends 'I'
-  ? IHTTPConfig
-  : IHTTPConfig<true> & {
-      responseTimeout?: number | false;
-    };
-
-export type HTTPSConfig<T extends 'I' | 'O' = 'I'> = T extends 'I'
-  ? IHTTPSConfig
-  : IHTTPSConfig<true> & {
-      responseTimeout?: number | false;
-    };
 
 interface IFileConfig {
   directory: string;
@@ -147,10 +41,6 @@ export type FileConfig = RequireExactlyOne<
   IFileConfig,
   'ftp' | 'sftp' | 'directory'
 >;
-
-export type TCPConnection<T extends 'I' | 'O'> = T extends 'I'
-  ? { queue?: QueueConfig; kind: 'tcp'; tcp: TcpConfig<T> }
-  : { kind: 'tcp'; tcp: TcpConfig<T> };
 
 export type HTTPConnection<T extends 'I' | 'O'> = T extends 'I'
   ? { queue?: QueueConfig; kind: 'http'; http: HTTPConfig<T> }
@@ -185,20 +75,6 @@ export const isHTTPConnection = <T extends 'I' | 'O'>(
 export const isHTTPSConnection = <T extends 'I' | 'O'>(
   conn: Connection<T>,
 ): conn is HTTPSConnection<T> => conn.kind === 'https';
-
-export type AckConfig = {
-  // Value to use in ACK MSH.3
-  application?: string; // defaults to "gofor Engine"
-  // Value to use in ACK MSH.4
-  organization?: string; // defaults to empty string ""
-  responseCode?:
-    | 'AA' // Application Accept. Default
-    | 'AE' // Application Error
-    | 'AR'; // Application Reject
-  // A Store configuration to save persistent messages
-  text?: string; // Text to use in ACK MSA.3
-  msg?: (ack: IMsg, msg: IMsg, context: IAckContext) => IMsg; // returns the ack message to send
-};
 
 export interface Tag {
   name: string;
@@ -422,8 +298,6 @@ export type InitServers = <
   channels: ChannelConfig<Filt, Tran, 'S'>[],
 ) => void;
 
-export type AckFunc = (ack: IMsg, context: IMessageContext) => void;
-
 export type IngestFunc = <
   Filt extends 'O' | 'F' | 'B' = 'B',
   Tran extends 'O' | 'F' | 'B' = 'B',
@@ -433,12 +307,6 @@ export type IngestFunc = <
   ack: AckFunc | undefined,
   context: IMessageContext,
 ) => IMsg | false;
-
-export type IngestMsgFunc = (
-  msg: IMsg,
-  ack: AckFunc | undefined,
-  context: IMessageContext,
-) => Promise<boolean>;
 
 export type RunRoutesFunc = <
   Filt extends 'O' | 'F' | 'B' = 'B',

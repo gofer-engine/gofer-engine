@@ -1,5 +1,4 @@
-import { IMsg, TLogLevel } from '@gofer-engine/message-type';
-import { IChannelEvents } from './events'
+import { IChannelEvents, IMsg, TLogLevel } from '@gofer-engine/message-type';
 import { isLogging } from './helpers';
 
 export const verboseListeners = (
