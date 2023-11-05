@@ -17,7 +17,9 @@ export const queue = <T>(
 
 export * from './stores';
 export * from './helpers';
+export * from './mapOptions';
 export * from './queue';
+export * from './types';
 export * from './worker';
 
 export default queue;

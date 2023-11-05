@@ -1,10 +1,12 @@
-import { StoreConfig } from '@gofer-engine/stores';
 import handelse from '@gofer-engine/handelse';
-import { doAck } from './doAck';
+import { logger } from "@gofer-engine/logger";
+import { StoreConfig } from '@gofer-engine/stores';
+
 import { filterOrTransform } from './filterOrTransform';
 import { store } from './initStores';
 import { IngestFunc } from './types';
-import { logger } from './helpers';
+import { getMsgType } from ".";
+import { doAck } from "@gofer-engine/ack";
 
 export const runIngestFlows: IngestFunc = (channel, msg, ack, context) => {
   let filtered = false;
@@ -22,6 +24,7 @@ export const runIngestFlows: IngestFunc = (channel, msg, ack, context) => {
             flowId: flow.id,
           },
           context,
+          getMsgType,
         );
         if (typeof ack === 'function') {
           context.logger = logger({

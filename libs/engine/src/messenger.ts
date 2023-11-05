@@ -1,9 +1,7 @@
-import { IMsg, isMsg } from '@gofer-engine/message-type';
 import { msgIsHL7v2 } from '@gofer-engine/hl7';
-import { MessengerFunc, MessengerRoute } from './types';
-import { RouteClass } from './RouteClass';
-import { runRoute } from './runRoutes';
-import { getMsgType, logger } from './helpers';
+import { logger } from '@gofer-engine/logger';
+import { IMsg, isMsg } from '@gofer-engine/message-type';
+import { genId } from '@gofer-engine/tools';
 import {
   getChannelVar,
   getGlobalVar,
@@ -11,9 +9,13 @@ import {
   setChannelVar,
   setGlobalVar,
   setMsgVar,
-} from './variables';
-import { genId } from '@gofer-engine/tools';
+} from '@gofer-engine/variables';
+
 import { getMsgTypeFromFlows } from './getMsgTypeFromFlows';
+import { getMsgType } from './helpers';
+import { RouteClass } from './RouteClass';
+import { runRoute } from './runRoutes';
+import { MessengerFunc, MessengerRoute } from './types';
 
 const messengers = new Map<string, MessengerFunc>();
 
@@ -31,7 +33,7 @@ export const messenger = <T extends IMsg = IMsg>(
   const id = typeof config.id === 'number' ? config.id.toString() : config.id;
   const msgType = getMsgTypeFromFlows(flows);
   const func: MessengerFunc<T> =
-    messengers.get(id) as unknown as MessengerFunc<T> ??
+    (messengers.get(id) as unknown as MessengerFunc<T>) ??
     ((msg) => {
       const message =
         typeof msg === 'function'

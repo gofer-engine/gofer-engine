@@ -1,6 +1,6 @@
 import handelse from '@gofer-engine/handelse';
+import { logger } from "@gofer-engine/logger";
 import { IMessageContext, IMsg } from '@gofer-engine/message-type';
-import { logger } from './helpers';
 
 export type DoFilterTransformRes = {
   filtered: boolean;

@@ -1,5 +1,5 @@
+import { onError, onLog } from "@gofer-engine/events";
 import net from 'net';
-import { onError, onLog } from '../eventHandlers';
 
 const PORT = parseInt(process.env?.['API_PORT'] ?? '8080');
 const HOST = '0.0.0.0';

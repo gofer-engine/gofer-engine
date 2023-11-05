@@ -1,21 +1,18 @@
 import net from 'net';
-import { IContext, IMsg } from '@gofer-engine/message-type';
+
+import { logger } from "@gofer-engine/logger";
+import { IContext, IMsg, IngestMsgFunc } from '@gofer-engine/message-type';
+import { tcpServer } from "@gofer-engine/tcp";
+
 import { verboseListeners } from './channelVerboseListeners';
-import { events } from './events';
 import { runIngestFlows } from './runIngestFlows';
 import { runRoutes } from './runRoutes';
-import { httpServer } from './httpServer';
-import { httpsServer } from './httpsServer';
-import { tcpServer } from './tcpServer';
-import { IngestMsgFunc, InitServers } from './types';
-import { listeners } from './eventHandlers';
-import { logger } from './helpers';
-import {
-  getGlobalVar,
-  setGlobalVar,
-  getChannelVar,
-  setChannelVar,
-} from './variables';
+import { InitServers } from './types';
+import { getMsgType } from ".";
+import { getChannelVar, getGlobalVar, setChannelVar, setGlobalVar } from "@gofer-engine/variables";
+import { httpsServer } from "@gofer-engine/https";
+import { httpServer } from "@gofer-engine/http";
+import { events, listeners } from "@gofer-engine/events";
 
 export const servers: Record<string | number, net.Server> = {};
 
@@ -60,6 +57,7 @@ export const initServers: InitServers = (channels) => {
         c.logLevel,
         ingestFunc,
         context,
+        getMsgType,
       );
     } else if (c.source.kind === 'http') {
       servers[c.id] = httpServer(
@@ -69,6 +67,7 @@ export const initServers: InitServers = (channels) => {
         c.logLevel,
         ingestFunc,
         context,
+        getMsgType,
       )
     } else if (c.source.kind === 'https') {
       servers[c.id] = httpsServer(
@@ -78,6 +77,7 @@ export const initServers: InitServers = (channels) => {
         c.logLevel,
         ingestFunc,
         context,
+        getMsgType,
       )
     }
   });

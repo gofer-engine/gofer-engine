@@ -5,13 +5,13 @@ import { initStores } from './initStores';
 import {
   ChannelConfig,
   Connection,
-  HTTPConfig,
-  HTTPSConfig,
   OGofer,
   OIngest,
 } from './types';
 import { IngestionClass } from './IngestionClass';
 import { messenger } from './messenger';
+import { HTTPSConfig } from "@gofer-engine/https";
+import { HTTPConfig } from "@gofer-engine/http";
 
 class Gofer implements OGofer {
   private init = (channels?: ChannelConfig[]) => {
