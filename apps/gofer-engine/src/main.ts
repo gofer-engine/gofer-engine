@@ -161,7 +161,7 @@ gofer
           firstName,
           middleName,
           lastName,
-          dateOfBirth: msg.get('birthdate'),
+          dateOfBirth: msg.get('birthDate'),
         },
         gender: msg.get('gender'),
       })
