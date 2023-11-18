@@ -117,17 +117,34 @@ Received: "${typeof event}"
   public deafen = this.remove;
 }
 
+// a global event handler that can be used to listen to all events
+const _ALL_ = new EventHandler<unknown>({ global: true });
+
+// a set of reserved event handler names that cannot be used
+const RESERVED_HANDLES: readonly string[] = ['_ALL_'];
+
 class EventSystemManager implements IEventSystemManager {
   private eventHandlers: Map<string, IEventHandler> = new Map();
+  constructor() {
+    this.eventHandlers.set('_ALL_', _ALL_);
+  }
   public createGlobal = <T = unknown>(
     handle: string,
     options: IEventHandlerConfig = {},
   ) => {
+    if (RESERVED_HANDLES.includes(handle)) {
+      throw new Error(`Cannot use reserved event handler name: ${handle}`);
+    }
     if (this.eventHandlers.has(handle)) {
       throw new Error('Event handler already exists');
     }
     const handler = new EventHandler<T>({ ...options, global: true });
     this.eventHandlers.set(handle, handler as IEventHandler);
+    handler.sub((event) => {
+      return _ALL_.pub(event as unknown).then((publishers) => {
+        return Object.values(publishers).every((result) => result);
+      });
+    })
     return handler as IEventHandler<T>;
   };
   public create = this.createGlobal;
@@ -135,10 +152,16 @@ class EventSystemManager implements IEventSystemManager {
   public createInstance = <T = unknown>(
     options: Omit<IEventHandlerConfig, 'eventType'> = {},
   ) => {
-    return new EventHandler<T>({
+    const handler = new EventHandler<T>({
       ...options,
       global: false,
-    }) as IEventHandler<T>;
+    });
+    handler.sub((event) => {
+      return _ALL_.pub(event as unknown).then((publishers) => {
+        return Object.values(publishers).every((result) => result);
+      });
+    })
+    return handler as IEventHandler<T>;
   };
   public instance = this.createInstance;
   public local = this.createInstance;
@@ -169,7 +192,6 @@ Received: "${handler.eventType}"
       (options.eventType === undefined || handler.eventType === undefined) &&
       options.eventType !== handler.eventType
     ) {
-    // TODO: implement to pass in the logger instead of using console.warn
       console.warn(`
 Event type declared only on one side, so type checking was not possible
 Options set event type: "${options.eventType ?? 'undefined'}"
@@ -178,12 +200,22 @@ Handler set event type: "${handler.eventType ?? 'undefined'}"
     }
     return handler as IEventHandler<T>;
   };
-  public delete = (handle: string) => this.eventHandlers.delete(handle);
+  public delete = (handle: string) => {
+    if (handle === '_ALL_') {
+      throw new Error('Cannot delete reserved event handler name: _ALL_');
+    }
+    return this.eventHandlers.delete(handle);
+  }
   public pub = <T = unknown>(
     handle: string,
     event: T,
     options?: TEventGetHandlerOptions,
-  ) => this.get<T>(handle, options).pub(event);
+  ) => {
+    if (handle === '_ALL_') {
+      throw new Error('Cannot publish directly to reserved event handler name: _ALL_');
+    }
+    return this.get<T>(handle, options).pub(event);
+  }
   public publish = this.pub;
   public go = this.pub;
   public emit = this.pub;
