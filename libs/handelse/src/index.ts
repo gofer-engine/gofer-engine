@@ -59,12 +59,17 @@ class EventServer<T> implements IEventServer<T> {
   }
 }
 
+let INSTANCE_ID = 0;
+
 class EventHandler<T> implements IEventHandler<T> {
+  public id: number;
   private quitEarly: boolean;
   public eventType: string | undefined;
   private global: boolean;
   private subscribers: Map<SubscriberID, SubFunc<T>> = new Map();
   constructor(options: IEventHandlerConfig & { global: boolean }) {
+    INSTANCE_ID++;
+    this.id = INSTANCE_ID;
     this.quitEarly = options.quitEarly ?? false;
     this.global = options.global;
     this.eventType = options.eventType;
@@ -141,7 +146,7 @@ class EventSystemManager implements IEventSystemManager {
     const handler = new EventHandler<T>({ ...options, global: true });
     this.eventHandlers.set(handle, handler as IEventHandler);
     handler.sub((event) => {
-      return _ALL_.pub(event as unknown).then((publishers) => {
+      return _ALL_.pub([handle, event] as unknown).then((publishers) => {
         return Object.values(publishers).every((result) => result);
       });
     })
@@ -157,7 +162,7 @@ class EventSystemManager implements IEventSystemManager {
       global: false,
     });
     handler.sub((event) => {
-      return _ALL_.pub(event as unknown).then((publishers) => {
+      return _ALL_.pub([handler.id, event] as unknown).then((publishers) => {
         return Object.values(publishers).every((result) => result);
       });
     })
