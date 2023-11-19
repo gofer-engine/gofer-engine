@@ -26,7 +26,7 @@ const host = '127.0.0.1';
 // if port is used, the next available port will be used
 const port = 5500;
 
-const quickServer = async (
+export const quickTCPServer = async (
   channelId: string,
   listening: undefined | (() => void),
 ): Promise<[net.Server, string, number]> => {
@@ -67,5 +67,3 @@ const quickServer = async (
     return [server, host, openPort];
   });
 };
-
-export default quickServer;

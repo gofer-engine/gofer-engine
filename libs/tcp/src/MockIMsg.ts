@@ -4,10 +4,10 @@ export const MockIMsg: IMsg = {
   copy: () => MockIMsg,
   get: () => undefined,
   delete: () => MockIMsg,
-  json: () => undefined,
-  kind: 'HL7v2', // FIXME: should this be 'MOCK'?
+  json: () => '"MockIMsg"',
+  kind: 'MOCK',
   set: () => MockIMsg,
-  toString: () => '',
+  toString: () => 'MockIMsg',
   map: () => MockIMsg,
   move: () => MockIMsg,
   setIteration: () => MockIMsg,
