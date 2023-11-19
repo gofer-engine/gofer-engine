@@ -1,5 +1,6 @@
 import { onError, onLog } from "@gofer-engine/events";
 import net from 'net';
+import { getPortPromise } from "portfinder";
 
 const PORT = parseInt(process.env?.['API_PORT'] ?? '8080');
 const HOST = '0.0.0.0';
@@ -55,36 +56,44 @@ export const apiServer = (
   handler?: (request: IHttpRequest) => Promise<IHttpResponse>,
   { verbose }: IApiOptions = {},
 ) => {
-  const server = net
-    .createServer()
-    .listen(PORT, HOST)
-    .on('connection', (socket) => {
-      if (verbose)
-        onLog.go(
-          `New Management API connection from ${socket.remoteAddress}:${socket.remotePort}`,
-        );
-      socket.on('data', async (buffer) => {
-        const request = parseRequest(buffer.toString());
-        const resp =
-          typeof handler === 'function'
-            ? await handler(request)
-            : {
-                protocol: request.protocol,
-                headers: new Map([['Content-Type', 'application/json']]),
-                status: 'Missing Handler',
-                statusCode: 400,
-                body: '',
-              };
-        socket.write(compileResponse(resp));
-        socket.end();
+  // if PORT is not available, try to find an available port
+  getPortPromise({ port: PORT }).then(port => {
+    if (port !== PORT) {
+      onLog.go(`gofer Engine Management API port ${PORT} is not available, using ${port} instead`);
+    }
+    const server = net
+      .createServer()
+      .listen(port, HOST)
+      .on('connection', (socket) => {
+        if (verbose)
+          onLog.go(
+            `New Management API connection from ${socket.remoteAddress}:${socket.remotePort}`,
+          );
+        socket.on('data', async (buffer) => {
+          const request = parseRequest(buffer.toString());
+          const resp =
+            typeof handler === 'function'
+              ? await handler(request)
+              : {
+                  protocol: request.protocol,
+                  headers: new Map([['Content-Type', 'application/json']]),
+                  status: 'Missing Handler',
+                  statusCode: 400,
+                  body: '',
+                };
+          socket.write(compileResponse(resp));
+          socket.end();
+        });
+      })
+      .on('error', (err) => {
+        onError.go(err);
+      })
+      .on('listening', () => {
+        onLog.go(`gofer Engine Management API listening on ${HOST}:${port}`);
+        return () => {
+          server.close();
+          server.unref();
+        };
       });
-    })
-    .on('error', (err) => {
-      onError.go(err);
-    });
-  onLog.go(`gofer Engine Management API listening on ${HOST}:${PORT}`);
-  return () => {
-    server.close();
-    server.unref();
-  };
+  });
 };
