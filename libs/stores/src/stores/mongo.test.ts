@@ -5,6 +5,9 @@ import { exec } from '@gofer-engine/tools'
 import { MongoClient, Document, ObjectId } from 'mongodb';
 import { testContext } from '../types';
 
+// this does a lazy check if the test is running inside the docker compose environment
+const USE_DOCKER = process.env['container'] !== 'docker';
+
 // const mongo = new MongoClient('mongodb://127.0.0.1:27017')
 let mongo: MongoClient | undefined = undefined;
 
@@ -16,7 +19,7 @@ interface DocAllowCustomId extends Document {
   _id?: string | ObjectId;
 }
 
-beforeAll(async () => {
+if (USE_DOCKER) beforeAll(async () => {
   await exec('sh ./libs/stores/src/stores/mongo.test.sh');
   mongo = new MongoClient('mongodb://127.0.0.1:27017');
 });
@@ -49,9 +52,11 @@ const main = async () => {
   });
 };
 
-test('mongo-store', main, 15000);
+const tester: jest.It = USE_DOCKER ? test : test.skip;
 
-afterAll(async () => {
+tester('mongo-store', main, 15000);
+
+if (USE_DOCKER) afterAll(async () => {
   if (mongo) mongo.close();
   await exec('docker stop jest-mongodb');
 });

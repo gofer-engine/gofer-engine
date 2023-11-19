@@ -5,24 +5,29 @@ import stores from '..';
 import Surreal from 'surrealdb.js';
 import { testContext } from '../types';
 
+// this does a lazy check if the test is running inside the docker compose environment
+const USE_DOCKER = process.env['container'] !== 'docker';
+
 let sdb: Surreal = new Surreal();
 
 const hl7 = fs.readFileSync('./samples/sample.hl7', 'utf8');
 
 const msg = new Msg(hl7);
 
-beforeAll(async () => {
+if (USE_DOCKER) beforeAll(async () => {
   await exec('sh ./libs/stores/src/stores/surreal.test.sh');
   sdb = new Surreal();
   sdb.connect('http://127.0.0.1:8000/rpc');
 }, 15000);
 
-afterAll(async () => {
+if (USE_DOCKER) afterAll(async () => {
   await sdb.close();
   await exec('docker stop jest-surrealdb');
 }, 60000);
 
-test('surreal-store', async () => {
+const tester: jest.It = USE_DOCKER ? test : test.skip;
+
+tester('surreal-store', async () => {
   expect(sdb.status).toBe(1);
   await sdb.signin({ user: 'root', pass: 'root' });
   await sdb.use({

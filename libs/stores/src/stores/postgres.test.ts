@@ -5,20 +5,25 @@ import fs from 'fs';
 import stores from '..';
 import { testContext } from '../types';
 
+// this does a lazy check if the test is running inside the docker compose environment
+const USE_DOCKER = process.env['container'] !== 'docker';
+
 const hl7 = fs.readFileSync('./samples/sample.hl7', 'utf8');
 const msg = new Msg(hl7);
 
 const query = `SELECT id, guid, data FROM public."test" WHERE guid='MSGID002'`
 
-beforeAll(async () => {
+if (USE_DOCKER) beforeAll(async () => {
   await exec('sh ./libs/stores/src/stores/postgres.test.sh');
 });
 
-afterAll(async () => {
+if (USE_DOCKER) afterAll(async () => {
   await exec('docker stop jest-postgres')
 });
 
-test('postgres-store', async () => {
+const tester: jest.It = USE_DOCKER ? test : test.skip;
+
+tester('postgres-store', async () => {
   const db = new stores.postgres({
     password: 'password',
     id: '$MSH-10.1',
