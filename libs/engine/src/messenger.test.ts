@@ -1,10 +1,13 @@
 import net from 'net';
+
 import { msgIsHL7v2 } from '@gofer-engine/hl7';
-import { messenger } from './messenger';
-import { genId } from '@gofer-engine/tools';
-import { quickTCPServer } from '@gofer-engine/tcp'
-import { MessengerFunc } from './types';
 import { isMsg } from '@gofer-engine/message-type';
+import { quickTCPServer } from '@gofer-engine/tcp';
+import { genId } from '@gofer-engine/tools';
+
+import { messenger } from './messenger';
+import { MessengerFunc } from './types';
+import { getMsgType } from "./helpers/getMsgType";
 
 const channelID = 'messengerTest';
 
@@ -15,7 +18,7 @@ let EMITTER: MessengerFunc | undefined;
 let messengerId: string | undefined;
 
 beforeAll((done) => {
-  quickTCPServer(channelID, done)
+  quickTCPServer(channelID, done, getMsgType)
     .then(([server, host, port]) => {
       SERVER = server;
       HOST = host;

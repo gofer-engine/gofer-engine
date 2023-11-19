@@ -2,7 +2,7 @@ import net from 'net';
 import { getPortPromise } from 'portfinder';
 
 import { logger } from '@gofer-engine/logger';
-import { IngestMsgFunc } from '@gofer-engine/message-type';
+import { GetMsgType, IngestMsgFunc } from '@gofer-engine/message-type';
 import { tcpServer } from './tcpServer';
 import {
   getChannelVar,
@@ -13,15 +13,6 @@ import {
 import { MockIMsg } from './MockIMsg';
 import { doAck } from '@gofer-engine/ack';
 
-// import { doAck } from '../../engine/src/doAck';
-// import { tcpServer } from './tcpServer';
-// import {
-// getChannelVar,
-// getGlobalVar,
-// setChannelVar,
-// setGlobalVar,
-// } from '../../engine/src/variables';
-
 const host = '127.0.0.1';
 // if port is used, the next available port will be used
 const port = 5500;
@@ -29,6 +20,7 @@ const port = 5500;
 export const quickTCPServer = async (
   channelId: string,
   listening: undefined | (() => void),
+  getMsgType: GetMsgType = () => MockIMsg,
 ): Promise<[net.Server, string, number]> => {
   const cb: IngestMsgFunc = async (msg, ack, context) => {
     const ackMsg = doAck(
@@ -36,7 +28,7 @@ export const quickTCPServer = async (
       undefined,
       { channelId },
       context,
-      () => MockIMsg,
+      getMsgType,
     );
     ack?.(ackMsg, context);
     return true;
@@ -58,7 +50,7 @@ export const quickTCPServer = async (
         setChannelVar: setChannelVar(channelId),
         setGlobalVar: setGlobalVar,
       },
-      () => MockIMsg,
+      getMsgType,
       true,
     );
     server?.on('listening', () => {

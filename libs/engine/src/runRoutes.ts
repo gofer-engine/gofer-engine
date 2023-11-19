@@ -1,21 +1,18 @@
+import { doAck } from '@gofer-engine/ack';
 import handelse from '@gofer-engine/handelse';
+import { HTTPConfig, httpClient } from '@gofer-engine/http';
+import { HTTPSConfig, httpsClient } from '@gofer-engine/https';
 import { IMsg } from '@gofer-engine/message-type';
-import { mapOptions } from "@gofer-engine/queue";
+import { mapOptions } from '@gofer-engine/queue';
+import { queueMessage } from '@gofer-engine/queue-message';
 import { StoreConfig } from '@gofer-engine/stores';
-import { TcpConfig, tcpClient } from "@gofer-engine/tcp";
+import { TcpConfig, tcpClient } from '@gofer-engine/tcp';
+import { getRouteVar, setRouteVar } from '@gofer-engine/variables';
 
 import { store } from './initStores';
-import {
-  RunRouteFunc,
-  RunRoutesFunc,
-} from './types';
+import { RunRouteFunc, RunRoutesFunc } from './types';
 import { doFilterTransform } from './doFilterTransform';
-import { getRouteVar, setRouteVar } from "@gofer-engine/variables";
-import { getMsgType } from ".";
-import { HTTPSConfig, httpsClient } from "@gofer-engine/https";
-import { HTTPConfig, httpClient } from "@gofer-engine/http";
-import { queueMessage } from "@gofer-engine/queue-message";
-import { doAck } from "@gofer-engine/ack";
+import { getMsgType } from './helpers/getMsgType';
 
 export const runRoutes: RunRoutesFunc = async (
   channel,
