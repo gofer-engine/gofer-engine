@@ -2,7 +2,7 @@ import net from 'net';
 import { msgIsHL7v2 } from '@gofer-engine/hl7';
 import { messenger } from './messenger';
 import { genId } from '@gofer-engine/tools';
-import quickServer from './quickServer';
+import { quickTCPServer } from '@gofer-engine/tcp'
 import { MessengerFunc } from './types';
 import { isMsg } from '@gofer-engine/message-type';
 
@@ -15,7 +15,7 @@ let EMITTER: MessengerFunc | undefined;
 let messengerId: string | undefined;
 
 beforeAll((done) => {
-  quickServer(channelID, done)
+  quickTCPServer(channelID, done)
     .then(([server, host, port]) => {
       SERVER = server;
       HOST = host;
