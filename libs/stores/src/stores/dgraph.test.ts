@@ -12,6 +12,9 @@ import {
 import { credentials } from '@grpc/grpc-js';
 import { testContext } from '../types';
 
+// this does a lazy check if the test is running inside the docker compose environment
+const USE_DOCKER = process.env['container'] !== 'docker';
+
 let stub: DgraphClientStub | undefined = undefined;
 let dgraph: DgraphClient | undefined = undefined;
 
@@ -133,16 +136,18 @@ const main = async () => {
   expect(storedMsg).toStrictEqual(expected);
 };
 
-beforeAll(async () => {
-  await exec('sh ./libs/stores/src/stores/dgraph.test.sh')
+if (USE_DOCKER) beforeAll(async () => {
+  await exec('sh ./libs/stores/src/stores/dgraph.test.sh', true);
   await new Promise((resolve) => setTimeout(resolve, 10000));
   stub = new DgraphClientStub('127.0.0.1:9080', credentials.createInsecure());
   dgraph = new DgraphClient(stub);
 }, 60000);
 
-test('dgraph-store', main, 30000);
+const tester: jest.It = USE_DOCKER ? test : test.skip;
 
-afterAll(async () => {
+tester('dgraph-store', main, 30000);
+
+if (USE_DOCKER) afterAll(async () => {
   if (stub) stub.close();
   await exec('docker stop jest-dgraph');
 }, 60000);

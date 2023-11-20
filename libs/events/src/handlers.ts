@@ -6,7 +6,7 @@ import { ILoggingConfig } from './interfaces';
 
 const _config: { config: Required<ILoggingConfig> } = {
   config: {
-    console: true,
+    console: process.env['NODE_ENV'] === 'development',
   },
 };
 

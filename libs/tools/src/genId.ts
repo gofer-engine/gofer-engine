@@ -2,7 +2,8 @@ import { randomUUID } from 'crypto';
 import cache from '@gofer-engine/cache';
 
 const uuids = new cache({
-  base: `${__dirname}/../.cache`,
+  // FIXME: is there a better way to get to the cache lib dir using nx?
+  base: `${__dirname}/../../cache/.cache`,
   name: 'uuids',
 });
 let uuidIndex = 0;

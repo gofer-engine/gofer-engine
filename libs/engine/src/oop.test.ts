@@ -1,4 +1,4 @@
-import { setLoggingConfig } from './eventHandlers';
+import { setLoggingConfig } from "@gofer-engine/events";
 setLoggingConfig({ console: false });
 
 import { gofer } from './gofer';

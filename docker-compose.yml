@@ -10,3 +10,5 @@ services:
     working_dir: /usr/src/app
     command: bash
     user: node
+    environment:
+      - container=docker

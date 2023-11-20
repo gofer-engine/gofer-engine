@@ -1,3 +1,4 @@
+import { deepCopy } from "@gofer-engine/hl7";
 import { IMsg, JSONValue, isMsg } from '@gofer-engine/message-type';
 import { cloneDeep, get, set, unset } from 'lodash';
 
@@ -121,6 +122,9 @@ export class JSONMsg implements IJSONMsg {
   };
   setJSON = this.set;
   get = (path?: string): JSONValue => {
+    // TODO: decide if we want to return undefined instead of the entire
+    // message when no path is provided. How do we handle this with HL7v2?
+    if (path === undefined) return deepCopy(this._msg);
     return get(this._msg, path);
   };
   delete = (path: string): IJSONMsg => {
