@@ -1,17 +1,16 @@
-import { Element, xml2js, js2xml, json2xml, xml2json, ElementCompact } from 'xml-js';
-
+import { Element, xml2js, js2xml, ElementCompact } from 'xml-js';
 import { cloneDeep, get, set, unset } from 'lodash';
 
-// FIXME: move deepCopy to @gofer-engine/tools ???
-import { deepCopy } from "@gofer-engine/hl7";
 import { IMsg, JSONValue, isMsg } from '@gofer-engine/message-type';
 
 export interface IXMLMsg extends IMsg {
   kind: 'XML';
   setMsg: (msg: Element) => IXMLMsg;
-  json: <N extends boolean>(_normalized?: N) => N extends true ? Element : ElementCompact;
+  json: <N extends boolean>(
+    _normalized?: N,
+  ) => N extends true ? Element : ElementCompact;
   set: (path?: string | undefined, value?: JSONValue) => IXMLMsg;
-  get: (path: string | undefined) => JSONValue;
+  get: (path: string | undefined) => string | ElementCompact;
   delete: (path: string) => IXMLMsg;
   copy: (path: string, toPath: string) => IXMLMsg;
   move: (fromPath: string, toPath: string) => IXMLMsg;
@@ -36,7 +35,15 @@ export const isXMLMsg = (msg: unknown): msg is IXMLMsg => {
 export class XMLMsg implements IXMLMsg {
   readonly kind = 'XML';
   private _msg: Element = undefined;
-  constructor(msg?: string | Element, parse?: boolean) {
+  private compact = () =>
+    xml2js(js2xml(this._msg), { compact: true }) as ElementCompact;
+  private uncompact = (msg: ElementCompact) => {
+    this._msg = xml2js(js2xml(msg, { compact: true })) as Element;
+  };
+  private process = (fn: (msg: ElementCompact) => ElementCompact) => {
+    this.uncompact(fn(this.compact()));
+  };
+  constructor(msg?: string | Element, parse = true) {
     if (parse) {
       if (typeof msg === 'string') {
         try {
@@ -45,11 +52,11 @@ export class XMLMsg implements IXMLMsg {
           throw new Error(`Cannot parse string with xml2js: ${err}`);
         }
       } else {
-        throw new Error(`Cannot parse ${typeof msg} with xml2js`)
+        throw new Error(`Cannot parse ${typeof msg} with xml2js`);
       }
     } else {
       if (typeof msg === 'string') {
-        throw new Error(`Cannot create XMLMsg from string without parse`)
+        throw new Error(`Cannot create XMLMsg from string without parse`);
       }
       if (msg !== undefined) {
         this._msg = cloneDeep(msg);
@@ -60,40 +67,70 @@ export class XMLMsg implements IXMLMsg {
     this._msg = cloneDeep(msg);
     return this;
   };
-  json = <N extends boolean>(normalized?: N): N extends true ? Element : ElementCompact => {
+  json = <N extends boolean>(
+    normalized?: N,
+  ): N extends true ? Element : ElementCompact => {
     const msg = cloneDeep(this._msg);
-    return (normalized ? msg : xml2js(js2xml(msg), { compact: true })) as N extends true ? Element : ElementCompact;
+    return (normalized ? msg : this.compact()) as N extends true
+      ? Element
+      : ElementCompact;
   };
-  toString = () => JSON.stringify(this._msg);
-  set = (path?: string, value?: JSONValue): IXMLMsg => {
+  toString = () => js2xml(this._msg, { spaces: 2 });
+  set = (
+    path?: string,
+    value?: string | ElementCompact,
+    parse = false,
+  ): IXMLMsg => {
     value = cloneDeep(value);
     if (path === undefined) {
-      this._msg = value;
+      throw new Error('Cannot set path on undefined');
     } else if (typeof this._msg === 'object') {
-      set(this._msg, path, value);
+      if (parse) {
+        value = xml2js(value as string, { compact: true });
+      }
+      this.process((msg) => set(msg, path, value));
     } else {
       throw new Error('Cannot set path on non-object');
     }
     return this;
   };
   setJSON = this.set;
-  get = (path?: string): JSONValue => {
+  get = <R>(path?: string): R => {
     // TODO: decide if we want to return undefined instead of the entire
     // message when no path is provided. How do we handle this with HL7v2?
-    if (path === undefined) return deepCopy(this._msg);
-    return get(this._msg, path);
+    // FIXME: Is there a better way than to cast to R?
+    if (path === undefined) return this.json() as R;
+    const valueObject = get(this.json(), path);
+    if (
+      typeof valueObject === 'object' &&
+      '_attributes' in valueObject &&
+      Object.keys(valueObject).length === 1
+    ) {
+      const attributes = valueObject._attributes;
+      if (typeof attributes === 'object' && 'value' in attributes) {
+        return attributes.value as R;
+      }
+    }
+    return js2xml(valueObject, { compact: true, spaces: 2 }) as R;
   };
   delete = (path: string): IXMLMsg => {
-    unset(this._msg, path);
+    this.process((msg) => {
+      unset(msg, path);
+      return msg;
+    });
     return this;
   };
   copy = (path: string, toPath: string): IXMLMsg => {
-    const value = this.get(path);
+    // TODO: add type checking that the destination path type can accept the source path type.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const value = this.get<any>(path);
     this.set(toPath, value);
     return this;
   };
   move = (fromPath: string, toPath: string): IXMLMsg => {
-    const value = this.get(fromPath);
+    // TODO: add type checking that the destination path type can accept the source path type.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const value = this.get<any>(fromPath);
     this.set(toPath, value);
     this.delete(fromPath);
     return this;

@@ -1,0 +1,1068 @@
+{
+  "declaration": {
+    "attributes": {
+      "version": "1.0",
+      "encoding": "UTF-8"
+    }
+  },
+  "elements": [
+    {
+      "type": "element",
+      "name": "Patient",
+      "attributes": {
+        "xmlns": "http://hl7.org/fhir"
+      },
+      "elements": [
+        {
+          "type": "element",
+          "name": "id",
+          "attributes": {
+            "value": "example"
+          }
+        },
+        {
+          "type": "comment",
+          "comment": "     MRN assigned by ACME healthcare on 6-May 2001     "
+        },
+        {
+          "type": "element",
+          "name": "text",
+          "elements": [
+            {
+              "type": "element",
+              "name": "status",
+              "attributes": {
+                "value": "generated"
+              }
+            },
+            {
+              "type": "element",
+              "name": "div",
+              "attributes": {
+                "xmlns": "http://www.w3.org/1999/xhtml"
+              },
+              "elements": [
+                {
+                  "type": "element",
+                  "name": "p",
+                  "attributes": {
+                    "style": "border: 1px #661aff solid; background-color: #e6e6ff; padding: 10px;"
+                  },
+                  "elements": [
+                    {
+                      "type": "element",
+                      "name": "b",
+                      "elements": [
+                        {
+                          "type": "text",
+                          "text": " Jim "
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "text": " male, DoB: 1974-12-25 ( Medical record number: 12345 (use: USUAL, period:\n  2001-05-06 --> (ongoing)))\n      "
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "name": "hr"
+                },
+                {
+                  "type": "element",
+                  "name": "table",
+                  "attributes": {
+                    "class": "grid"
+                  },
+                  "elements": [
+                    {
+                      "type": "element",
+                      "name": "tr",
+                      "elements": [
+                        {
+                          "type": "element",
+                          "name": "td",
+                          "attributes": {
+                            "style": "background-color: #f3f5da",
+                            "title": "Record is active"
+                          },
+                          "elements": [
+                            {
+                              "type": "text",
+                              "text": "Active:"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "name": "td",
+                          "elements": [
+                            {
+                              "type": "text",
+                              "text": " true"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "name": "td",
+                          "attributes": {
+                            "style": "background-color: #f3f5da",
+                            "title": "Known status of Patient"
+                          },
+                          "elements": [
+                            {
+                              "type": "text",
+                              "text": "Deceased:"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "name": "td",
+                          "attributes": {
+                            "colspan": "3"
+                          },
+                          "elements": [
+                            {
+                              "type": "text",
+                              "text": "false"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "name": "tr",
+                      "elements": [
+                        {
+                          "type": "element",
+                          "name": "td",
+                          "attributes": {
+                            "style": "background-color: #f3f5da",
+                            "title": "Alternate names (see the one above)"
+                          },
+                          "elements": [
+                            {
+                              "type": "text",
+                              "text": "Alt\n      Names:"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "name": "td",
+                          "attributes": {
+                            "colspan": "3"
+                          },
+                          "elements": [
+                            {
+                              "type": "element",
+                              "name": "ul",
+                              "elements": [
+                                {
+                                  "type": "element",
+                                  "name": "li",
+                                  "elements": [
+                                    {
+                                      "type": "text",
+                                      "text": " Peter James Chalmers (OFFICIAL)"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "name": "li",
+                                  "elements": [
+                                    {
+                                      "type": "text",
+                                      "text": " Peter James Windsor (MAIDEN)"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "name": "tr",
+                      "elements": [
+                        {
+                          "type": "element",
+                          "name": "td",
+                          "attributes": {
+                            "style": "background-color: #f3f5da",
+                            "title": "Ways to contact the Patient"
+                          },
+                          "elements": [
+                            {
+                              "type": "text",
+                              "text": "Contact Details:"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "name": "td",
+                          "attributes": {
+                            "colspan": "3"
+                          },
+                          "elements": [
+                            {
+                              "type": "element",
+                              "name": "ul",
+                              "elements": [
+                                {
+                                  "type": "element",
+                                  "name": "li",
+                                  "elements": [
+                                    {
+                                      "type": "text",
+                                      "text": " -unknown-(HOME)"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "name": "li",
+                                  "elements": [
+                                    {
+                                      "type": "text",
+                                      "text": " ph: (03) 5555 6473(WORK)"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "name": "li",
+                                  "elements": [
+                                    {
+                                      "type": "text",
+                                      "text": " ph: (03) 3410 5613(MOBILE)"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "name": "li",
+                                  "elements": [
+                                    {
+                                      "type": "text",
+                                      "text": " ph: (03) 5555 8834(OLD)"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "name": "li",
+                                  "elements": [
+                                    {
+                                      "type": "text",
+                                      "text": " 534 Erewhon St PeasantVille, Rainbow, Vic 3999(HOME)"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "name": "tr",
+                      "elements": [
+                        {
+                          "type": "element",
+                          "name": "td",
+                          "attributes": {
+                            "style": "background-color: #f3f5da",
+                            "title": "Nominated Contact: Next-of-Kin"
+                          },
+                          "elements": [
+                            {
+                              "type": "text",
+                              "text": "Next-of-Kin:"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "name": "td",
+                          "attributes": {
+                            "colspan": "3"
+                          },
+                          "elements": [
+                            {
+                              "type": "element",
+                              "name": "ul",
+                              "elements": [
+                                {
+                                  "type": "element",
+                                  "name": "li",
+                                  "elements": [
+                                    {
+                                      "type": "text",
+                                      "text": " Bénédicte du Marché (female)"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "name": "li",
+                                  "elements": [
+                                    {
+                                      "type": "text",
+                                      "text": " 534 Erewhon St PleasantVille Vic 3999 (HOME)"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "name": "li",
+                                  "elements": [
+                                    {
+                                      "type": "element",
+                                      "name": "a",
+                                      "attributes": {
+                                        "href": "tel:+33(237)998327"
+                                      },
+                                      "elements": [
+                                        {
+                                          "type": "text",
+                                          "text": "+33 (237) 998327"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "element",
+                                  "name": "li",
+                                  "elements": [
+                                    {
+                                      "type": "text",
+                                      "text": " Valid Period: 2012 --> (ongoing)"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "element",
+                      "name": "tr",
+                      "elements": [
+                        {
+                          "type": "element",
+                          "name": "td",
+                          "attributes": {
+                            "style": "background-color: #f3f5da",
+                            "title": "Patient Links"
+                          },
+                          "elements": [
+                            {
+                              "type": "text",
+                              "text": "Links:"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "element",
+                          "name": "td",
+                          "attributes": {
+                            "colspan": "3"
+                          },
+                          "elements": [
+                            {
+                              "type": "element",
+                              "name": "ul",
+                              "elements": [
+                                {
+                                  "type": "element",
+                                  "name": "li",
+                                  "elements": [
+                                    {
+                                      "type": "text",
+                                      "text": " Managing Organization:\n                "
+                                    },
+                                    {
+                                      "type": "element",
+                                      "name": "a",
+                                      "attributes": {
+                                        "href": "organization-example-gastro.html"
+                                      },
+                                      "elements": [
+                                        {
+                                          "type": "text",
+                                          "text": "Organization/1"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "text",
+                                      "text": "\n                \"Gastroenterology\"\n              "
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "name": "identifier",
+          "elements": [
+            {
+              "type": "element",
+              "name": "use",
+              "attributes": {
+                "value": "usual"
+              }
+            },
+            {
+              "type": "element",
+              "name": "type",
+              "elements": [
+                {
+                  "type": "element",
+                  "name": "coding",
+                  "elements": [
+                    {
+                      "type": "element",
+                      "name": "system",
+                      "attributes": {
+                        "value": "http://terminology.hl7.org/CodeSystem/v2-0203"
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "name": "code",
+                      "attributes": {
+                        "value": "MR"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "name": "system",
+              "attributes": {
+                "value": "urn:oid:1.2.36.146.595.217.0.1"
+              }
+            },
+            {
+              "type": "element",
+              "name": "value",
+              "attributes": {
+                "value": "12345"
+              }
+            },
+            {
+              "type": "element",
+              "name": "period",
+              "elements": [
+                {
+                  "type": "element",
+                  "name": "start",
+                  "attributes": {
+                    "value": "2001-05-06"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "name": "assigner",
+              "elements": [
+                {
+                  "type": "element",
+                  "name": "display",
+                  "attributes": {
+                    "value": "Acme Healthcare"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "name": "active",
+          "attributes": {
+            "value": "true"
+          }
+        },
+        {
+          "type": "comment",
+          "comment": "     Peter James Chalmers, but called \"Jim\"     "
+        },
+        {
+          "type": "element",
+          "name": "name",
+          "elements": [
+            {
+              "type": "element",
+              "name": "use",
+              "attributes": {
+                "value": "official"
+              }
+            },
+            {
+              "type": "element",
+              "name": "family",
+              "attributes": {
+                "value": "Chalmers"
+              }
+            },
+            {
+              "type": "element",
+              "name": "given",
+              "attributes": {
+                "value": "Peter"
+              }
+            },
+            {
+              "type": "element",
+              "name": "given",
+              "attributes": {
+                "value": "James"
+              }
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "name": "name",
+          "elements": [
+            {
+              "type": "element",
+              "name": "use",
+              "attributes": {
+                "value": "usual"
+              }
+            },
+            {
+              "type": "element",
+              "name": "given",
+              "attributes": {
+                "value": "Jim"
+              }
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "name": "name",
+          "elements": [
+            {
+              "type": "comment",
+              "comment": "    Maiden names apply for anyone whose name changes as a result of marriage - irrespective\nof gender    "
+            },
+            {
+              "type": "element",
+              "name": "use",
+              "attributes": {
+                "value": "maiden"
+              }
+            },
+            {
+              "type": "element",
+              "name": "family",
+              "attributes": {
+                "value": "Windsor"
+              }
+            },
+            {
+              "type": "element",
+              "name": "given",
+              "attributes": {
+                "value": "Peter"
+              }
+            },
+            {
+              "type": "element",
+              "name": "given",
+              "attributes": {
+                "value": "James"
+              }
+            },
+            {
+              "type": "element",
+              "name": "period",
+              "elements": [
+                {
+                  "type": "element",
+                  "name": "end",
+                  "attributes": {
+                    "value": "2002"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "name": "telecom",
+          "elements": [
+            {
+              "type": "element",
+              "name": "use",
+              "attributes": {
+                "value": "home"
+              }
+            },
+            {
+              "type": "comment",
+              "comment": "     home communication details aren't known     "
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "name": "telecom",
+          "elements": [
+            {
+              "type": "element",
+              "name": "system",
+              "attributes": {
+                "value": "phone"
+              }
+            },
+            {
+              "type": "element",
+              "name": "value",
+              "attributes": {
+                "value": "(03) 5555 6473"
+              }
+            },
+            {
+              "type": "element",
+              "name": "use",
+              "attributes": {
+                "value": "work"
+              }
+            },
+            {
+              "type": "element",
+              "name": "rank",
+              "attributes": {
+                "value": "1"
+              }
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "name": "telecom",
+          "elements": [
+            {
+              "type": "element",
+              "name": "system",
+              "attributes": {
+                "value": "phone"
+              }
+            },
+            {
+              "type": "element",
+              "name": "value",
+              "attributes": {
+                "value": "(03) 3410 5613"
+              }
+            },
+            {
+              "type": "element",
+              "name": "use",
+              "attributes": {
+                "value": "mobile"
+              }
+            },
+            {
+              "type": "element",
+              "name": "rank",
+              "attributes": {
+                "value": "2"
+              }
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "name": "telecom",
+          "elements": [
+            {
+              "type": "element",
+              "name": "system",
+              "attributes": {
+                "value": "phone"
+              }
+            },
+            {
+              "type": "element",
+              "name": "value",
+              "attributes": {
+                "value": "(03) 5555 8834"
+              }
+            },
+            {
+              "type": "element",
+              "name": "use",
+              "attributes": {
+                "value": "old"
+              }
+            },
+            {
+              "type": "element",
+              "name": "period",
+              "elements": [
+                {
+                  "type": "element",
+                  "name": "end",
+                  "attributes": {
+                    "value": "2014"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "comment",
+          "comment": "     use FHIR code system for male / female     "
+        },
+        {
+          "type": "element",
+          "name": "gender",
+          "attributes": {
+            "value": "male"
+          }
+        },
+        {
+          "type": "element",
+          "name": "birthDate",
+          "attributes": {
+            "value": "1974-12-25"
+          },
+          "elements": [
+            {
+              "type": "element",
+              "name": "extension",
+              "attributes": {
+                "url": "http://hl7.org/fhir/StructureDefinition/patient-birthTime"
+              },
+              "elements": [
+                {
+                  "type": "element",
+                  "name": "valueDateTime",
+                  "attributes": {
+                    "value": "1974-12-25T14:35:45-05:00"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "name": "deceasedBoolean",
+          "attributes": {
+            "value": "false"
+          }
+        },
+        {
+          "type": "element",
+          "name": "address",
+          "elements": [
+            {
+              "type": "element",
+              "name": "use",
+              "attributes": {
+                "value": "home"
+              }
+            },
+            {
+              "type": "element",
+              "name": "type",
+              "attributes": {
+                "value": "both"
+              }
+            },
+            {
+              "type": "element",
+              "name": "text",
+              "attributes": {
+                "value": "534 Erewhon St PeasantVille, Rainbow, Vic  3999"
+              }
+            },
+            {
+              "type": "element",
+              "name": "line",
+              "attributes": {
+                "value": "534 Erewhon St"
+              }
+            },
+            {
+              "type": "element",
+              "name": "city",
+              "attributes": {
+                "value": "PleasantVille"
+              }
+            },
+            {
+              "type": "element",
+              "name": "district",
+              "attributes": {
+                "value": "Rainbow"
+              }
+            },
+            {
+              "type": "element",
+              "name": "state",
+              "attributes": {
+                "value": "Vic"
+              }
+            },
+            {
+              "type": "element",
+              "name": "postalCode",
+              "attributes": {
+                "value": "3999"
+              }
+            },
+            {
+              "type": "element",
+              "name": "period",
+              "elements": [
+                {
+                  "type": "element",
+                  "name": "start",
+                  "attributes": {
+                    "value": "1974-12-25"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "name": "contact",
+          "elements": [
+            {
+              "type": "element",
+              "name": "relationship",
+              "elements": [
+                {
+                  "type": "element",
+                  "name": "coding",
+                  "elements": [
+                    {
+                      "type": "element",
+                      "name": "system",
+                      "attributes": {
+                        "value": "http://terminology.hl7.org/CodeSystem/v2-0131"
+                      }
+                    },
+                    {
+                      "type": "element",
+                      "name": "code",
+                      "attributes": {
+                        "value": "N"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "name": "name",
+              "elements": [
+                {
+                  "type": "element",
+                  "name": "family",
+                  "attributes": {
+                    "value": "du Marché"
+                  },
+                  "elements": [
+                    {
+                      "type": "comment",
+                      "comment": "     the \"du\" part is a family name prefix (VV in iso 21090)     "
+                    },
+                    {
+                      "type": "element",
+                      "name": "extension",
+                      "attributes": {
+                        "url": "http://hl7.org/fhir/StructureDefinition/humanname-own-prefix"
+                      },
+                      "elements": [
+                        {
+                          "type": "element",
+                          "name": "valueString",
+                          "attributes": {
+                            "value": "VV"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "element",
+                  "name": "given",
+                  "attributes": {
+                    "value": "Bénédicte"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "name": "telecom",
+              "elements": [
+                {
+                  "type": "element",
+                  "name": "system",
+                  "attributes": {
+                    "value": "phone"
+                  }
+                },
+                {
+                  "type": "element",
+                  "name": "value",
+                  "attributes": {
+                    "value": "+33 (237) 998327"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "name": "address",
+              "elements": [
+                {
+                  "type": "element",
+                  "name": "use",
+                  "attributes": {
+                    "value": "home"
+                  }
+                },
+                {
+                  "type": "element",
+                  "name": "type",
+                  "attributes": {
+                    "value": "both"
+                  }
+                },
+                {
+                  "type": "element",
+                  "name": "line",
+                  "attributes": {
+                    "value": "534 Erewhon St"
+                  }
+                },
+                {
+                  "type": "element",
+                  "name": "city",
+                  "attributes": {
+                    "value": "PleasantVille"
+                  }
+                },
+                {
+                  "type": "element",
+                  "name": "district",
+                  "attributes": {
+                    "value": "Rainbow"
+                  }
+                },
+                {
+                  "type": "element",
+                  "name": "state",
+                  "attributes": {
+                    "value": "Vic"
+                  }
+                },
+                {
+                  "type": "element",
+                  "name": "postalCode",
+                  "attributes": {
+                    "value": "3999"
+                  }
+                },
+                {
+                  "type": "element",
+                  "name": "period",
+                  "elements": [
+                    {
+                      "type": "element",
+                      "name": "start",
+                      "attributes": {
+                        "value": "1974-12-25"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "element",
+              "name": "gender",
+              "attributes": {
+                "value": "female"
+              }
+            },
+            {
+              "type": "element",
+              "name": "period",
+              "elements": [
+                {
+                  "type": "comment",
+                  "comment": "     The contact relationship started in 2012     "
+                },
+                {
+                  "type": "element",
+                  "name": "start",
+                  "attributes": {
+                    "value": "2012"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "element",
+          "name": "managingOrganization",
+          "elements": [
+            {
+              "type": "element",
+              "name": "reference",
+              "attributes": {
+                "value": "Organization/1"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -4,11 +4,22 @@
   "sourceRoot": "libs/xml/src",
   "projectType": "library",
   "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/xml",
+        "tsConfig": "libs/xml/tsconfig.lib.json",
+        "packageJson": "libs/xml/package.json",
+        "main": "libs/xml/src/index.ts",
+        "assets": ["libs/xml/*.md"]
+      }
+    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/xml/**/*.ts"]
+        "lintFilePatterns": ["libs/xml/**/*.ts", "libs/xml/package.json"]
       }
     },
     "test": {
