@@ -1,0 +1,594 @@
+{
+  "_declaration": {
+    "_attributes": {
+      "version": "1.0",
+      "encoding": "UTF-8"
+    }
+  },
+  "Patient": {
+    "_attributes": {
+      "xmlns": "http://hl7.org/fhir"
+    },
+    "id": {
+      "_attributes": {
+        "value": "example"
+      }
+    },
+    "_comment": [
+      "     MRN assigned by ACME healthcare on 6-May 2001     ",
+      "     Peter James Chalmers, but called \"Jim\"     ",
+      "     use FHIR code system for male / female     "
+    ],
+    "text": {
+      "status": {
+        "_attributes": {
+          "value": "generated"
+        }
+      },
+      "div": {
+        "_attributes": {
+          "xmlns": "http://www.w3.org/1999/xhtml"
+        },
+        "p": {
+          "_attributes": {
+            "style": "border: 1px #661aff solid; background-color: #e6e6ff; padding: 10px;"
+          },
+          "b": {
+            "_text": " Jim "
+          },
+          "_text": " male, DoB: 1974-12-25 ( Medical record number: 12345 (use: USUAL, period:\n  2001-05-06 --> (ongoing)))\n      "
+        },
+        "hr": {},
+        "table": {
+          "_attributes": {
+            "class": "grid"
+          },
+          "tr": [
+            {
+              "td": [
+                {
+                  "_attributes": {
+                    "style": "background-color: #f3f5da",
+                    "title": "Record is active"
+                  },
+                  "_text": "Active:"
+                },
+                {
+                  "_text": " true"
+                },
+                {
+                  "_attributes": {
+                    "style": "background-color: #f3f5da",
+                    "title": "Known status of Patient"
+                  },
+                  "_text": "Deceased:"
+                },
+                {
+                  "_attributes": {
+                    "colspan": "3"
+                  },
+                  "_text": "false"
+                }
+              ]
+            },
+            {
+              "td": [
+                {
+                  "_attributes": {
+                    "style": "background-color: #f3f5da",
+                    "title": "Alternate names (see the one above)"
+                  },
+                  "_text": "Alt\n      Names:"
+                },
+                {
+                  "_attributes": {
+                    "colspan": "3"
+                  },
+                  "ul": {
+                    "li": [
+                      {
+                        "_text": " Peter James Chalmers (OFFICIAL)"
+                      },
+                      {
+                        "_text": " Peter James Windsor (MAIDEN)"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "td": [
+                {
+                  "_attributes": {
+                    "style": "background-color: #f3f5da",
+                    "title": "Ways to contact the Patient"
+                  },
+                  "_text": "Contact Details:"
+                },
+                {
+                  "_attributes": {
+                    "colspan": "3"
+                  },
+                  "ul": {
+                    "li": [
+                      {
+                        "_text": " -unknown-(HOME)"
+                      },
+                      {
+                        "_text": " ph: (03) 5555 6473(WORK)"
+                      },
+                      {
+                        "_text": " ph: (03) 3410 5613(MOBILE)"
+                      },
+                      {
+                        "_text": " ph: (03) 5555 8834(OLD)"
+                      },
+                      {
+                        "_text": " 534 Erewhon St PeasantVille, Rainbow, Vic 3999(HOME)"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "td": [
+                {
+                  "_attributes": {
+                    "style": "background-color: #f3f5da",
+                    "title": "Nominated Contact: Next-of-Kin"
+                  },
+                  "_text": "Next-of-Kin:"
+                },
+                {
+                  "_attributes": {
+                    "colspan": "3"
+                  },
+                  "ul": {
+                    "li": [
+                      {
+                        "_text": " Bénédicte du Marché (female)"
+                      },
+                      {
+                        "_text": " 534 Erewhon St PleasantVille Vic 3999 (HOME)"
+                      },
+                      {
+                        "a": {
+                          "_attributes": {
+                            "href": "tel:+33(237)998327"
+                          },
+                          "_text": "+33 (237) 998327"
+                        }
+                      },
+                      {
+                        "_text": " Valid Period: 2012 --> (ongoing)"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "td": [
+                {
+                  "_attributes": {
+                    "style": "background-color: #f3f5da",
+                    "title": "Patient Links"
+                  },
+                  "_text": "Links:"
+                },
+                {
+                  "_attributes": {
+                    "colspan": "3"
+                  },
+                  "ul": {
+                    "li": {
+                      "_text": [
+                        " Managing Organization:\n                ",
+                        "\n                \"Gastroenterology\"\n              "
+                      ],
+                      "a": {
+                        "_attributes": {
+                          "href": "organization-example-gastro.html"
+                        },
+                        "_text": "Organization/1"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "identifier": {
+      "use": {
+        "_attributes": {
+          "value": "usual"
+        }
+      },
+      "type": {
+        "coding": {
+          "system": {
+            "_attributes": {
+              "value": "http://terminology.hl7.org/CodeSystem/v2-0203"
+            }
+          },
+          "code": {
+            "_attributes": {
+              "value": "MR"
+            }
+          }
+        }
+      },
+      "system": {
+        "_attributes": {
+          "value": "urn:oid:1.2.36.146.595.217.0.1"
+        }
+      },
+      "value": {
+        "_attributes": {
+          "value": "12345"
+        }
+      },
+      "period": {
+        "start": {
+          "_attributes": {
+            "value": "2001-05-06"
+          }
+        }
+      },
+      "assigner": {
+        "display": {
+          "_attributes": {
+            "value": "Acme Healthcare"
+          }
+        }
+      }
+    },
+    "active": {
+      "_attributes": {
+        "value": "true"
+      }
+    },
+    "name": [
+      {
+        "use": {
+          "_attributes": {
+            "value": "official"
+          }
+        },
+        "family": {
+          "_attributes": {
+            "value": "Chalmers"
+          }
+        },
+        "given": [
+          {
+            "_attributes": {
+              "value": "Peter"
+            }
+          },
+          {
+            "_attributes": {
+              "value": "James"
+            }
+          }
+        ]
+      },
+      {
+        "use": {
+          "_attributes": {
+            "value": "usual"
+          }
+        },
+        "given": {
+          "_attributes": {
+            "value": "Jim"
+          }
+        }
+      },
+      {
+        "_comment": "    Maiden names apply for anyone whose name changes as a result of marriage - irrespective\nof gender    ",
+        "use": {
+          "_attributes": {
+            "value": "maiden"
+          }
+        },
+        "family": {
+          "_attributes": {
+            "value": "Windsor"
+          }
+        },
+        "given": [
+          {
+            "_attributes": {
+              "value": "Peter"
+            }
+          },
+          {
+            "_attributes": {
+              "value": "James"
+            }
+          }
+        ],
+        "period": {
+          "end": {
+            "_attributes": {
+              "value": "2002"
+            }
+          }
+        }
+      }
+    ],
+    "telecom": [
+      {
+        "use": {
+          "_attributes": {
+            "value": "home"
+          }
+        },
+        "_comment": "     home communication details aren't known     "
+      },
+      {
+        "system": {
+          "_attributes": {
+            "value": "phone"
+          }
+        },
+        "value": {
+          "_attributes": {
+            "value": "(03) 5555 6473"
+          }
+        },
+        "use": {
+          "_attributes": {
+            "value": "work"
+          }
+        },
+        "rank": {
+          "_attributes": {
+            "value": "1"
+          }
+        }
+      },
+      {
+        "system": {
+          "_attributes": {
+            "value": "phone"
+          }
+        },
+        "value": {
+          "_attributes": {
+            "value": "(03) 3410 5613"
+          }
+        },
+        "use": {
+          "_attributes": {
+            "value": "mobile"
+          }
+        },
+        "rank": {
+          "_attributes": {
+            "value": "2"
+          }
+        }
+      },
+      {
+        "system": {
+          "_attributes": {
+            "value": "phone"
+          }
+        },
+        "value": {
+          "_attributes": {
+            "value": "(03) 5555 8834"
+          }
+        },
+        "use": {
+          "_attributes": {
+            "value": "old"
+          }
+        },
+        "period": {
+          "end": {
+            "_attributes": {
+              "value": "2014"
+            }
+          }
+        }
+      }
+    ],
+    "gender": {
+      "_attributes": {
+        "value": "male"
+      }
+    },
+    "birthDate": {
+      "_attributes": {
+        "value": "1974-12-25"
+      },
+      "extension": {
+        "_attributes": {
+          "url": "http://hl7.org/fhir/StructureDefinition/patient-birthTime"
+        },
+        "valueDateTime": {
+          "_attributes": {
+            "value": "1974-12-25T14:35:45-05:00"
+          }
+        }
+      }
+    },
+    "deceasedBoolean": {
+      "_attributes": {
+        "value": "false"
+      }
+    },
+    "address": {
+      "use": {
+        "_attributes": {
+          "value": "home"
+        }
+      },
+      "type": {
+        "_attributes": {
+          "value": "both"
+        }
+      },
+      "text": {
+        "_attributes": {
+          "value": "534 Erewhon St PeasantVille, Rainbow, Vic  3999"
+        }
+      },
+      "line": {
+        "_attributes": {
+          "value": "534 Erewhon St"
+        }
+      },
+      "city": {
+        "_attributes": {
+          "value": "PleasantVille"
+        }
+      },
+      "district": {
+        "_attributes": {
+          "value": "Rainbow"
+        }
+      },
+      "state": {
+        "_attributes": {
+          "value": "Vic"
+        }
+      },
+      "postalCode": {
+        "_attributes": {
+          "value": "3999"
+        }
+      },
+      "period": {
+        "start": {
+          "_attributes": {
+            "value": "1974-12-25"
+          }
+        }
+      }
+    },
+    "contact": {
+      "relationship": {
+        "coding": {
+          "system": {
+            "_attributes": {
+              "value": "http://terminology.hl7.org/CodeSystem/v2-0131"
+            }
+          },
+          "code": {
+            "_attributes": {
+              "value": "N"
+            }
+          }
+        }
+      },
+      "name": {
+        "family": {
+          "_attributes": {
+            "value": "du Marché"
+          },
+          "_comment": "     the \"du\" part is a family name prefix (VV in iso 21090)     ",
+          "extension": {
+            "_attributes": {
+              "url": "http://hl7.org/fhir/StructureDefinition/humanname-own-prefix"
+            },
+            "valueString": {
+              "_attributes": {
+                "value": "VV"
+              }
+            }
+          }
+        },
+        "given": {
+          "_attributes": {
+            "value": "Bénédicte"
+          }
+        }
+      },
+      "telecom": {
+        "system": {
+          "_attributes": {
+            "value": "phone"
+          }
+        },
+        "value": {
+          "_attributes": {
+            "value": "+33 (237) 998327"
+          }
+        }
+      },
+      "address": {
+        "use": {
+          "_attributes": {
+            "value": "home"
+          }
+        },
+        "type": {
+          "_attributes": {
+            "value": "both"
+          }
+        },
+        "line": {
+          "_attributes": {
+            "value": "534 Erewhon St"
+          }
+        },
+        "city": {
+          "_attributes": {
+            "value": "PleasantVille"
+          }
+        },
+        "district": {
+          "_attributes": {
+            "value": "Rainbow"
+          }
+        },
+        "state": {
+          "_attributes": {
+            "value": "Vic"
+          }
+        },
+        "postalCode": {
+          "_attributes": {
+            "value": "3999"
+          }
+        },
+        "period": {
+          "start": {
+            "_attributes": {
+              "value": "1974-12-25"
+            }
+          }
+        }
+      },
+      "gender": {
+        "_attributes": {
+          "value": "female"
+        }
+      },
+      "period": {
+        "_comment": "     The contact relationship started in 2012     ",
+        "start": {
+          "_attributes": {
+            "value": "2012"
+          }
+        }
+      }
+    },
+    "managingOrganization": {
+      "reference": {
+        "_attributes": {
+          "value": "Organization/1"
+        }
+      }
+    }
+  }
+}
