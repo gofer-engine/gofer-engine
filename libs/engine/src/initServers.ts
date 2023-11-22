@@ -13,8 +13,11 @@ import { getChannelVar, getGlobalVar, setChannelVar, setGlobalVar } from "@gofer
 import { httpsServer } from "@gofer-engine/https";
 import { httpServer } from "@gofer-engine/http";
 import { events, listeners } from "@gofer-engine/events";
+import { Job } from 'node-schedule';
+import { schedulerServer } from '@gofer-engine/scheduler';
 
 export const servers: Record<string | number, net.Server> = {};
+export const jobs: Record<string | number, Job> = {};
 
 export const initServers: InitServers = (channels) => {
   channels.forEach((c) => {
@@ -78,6 +81,15 @@ export const initServers: InitServers = (channels) => {
         ingestFunc,
         context,
         getMsgType,
+      )
+    } else if (c.source.kind === 'schedule') {
+      jobs[c.id] = schedulerServer(
+        c.id,
+        c.source.schedule,
+        undefined,
+        c.logLevel,
+        ingestFunc,
+        context
       )
     }
   });

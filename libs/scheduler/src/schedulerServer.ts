@@ -1,12 +1,35 @@
 import schedule from "node-schedule";
 
 import { publishers } from "@gofer-engine/events";
-import { IContext, IMessageContext, IngestMsgFunc, TLogLevel } from "@gofer-engine/message-type";
+import { GetMsgType, IContext, IMessageContext, IMsg, IngestMsgFunc, TLogLevel } from "@gofer-engine/message-type";
 
 import { SchedulerConfig } from "./types";
 import { getMsgVar, setMsgVar } from "@gofer-engine/variables";
 import { randomUUID } from "crypto";
 import { logger } from "@gofer-engine/logger";
+import { getSFTPMessages } from "@gofer-engine/sftp";
+
+const getMessages = (
+  runner: SchedulerConfig['runner'],
+  context: IContext,
+  getMsgType: GetMsgType,
+): Promise<IMsg[]> => {
+  let msgs: IMsg | IMsg[];
+  if (typeof runner === 'function') msgs = runner();
+  else if (runner.kind === 'sftp') {
+    return getSFTPMessages(
+      runner.sftp.connection,
+      context.kind,
+      getMsgType,
+      runner.sftp.directory,
+      runner.sftp.filterOptions,
+    )
+  }
+  if (!Array.isArray(msgs)) {
+    msgs = [msgs];
+  }
+  return Promise.resolve(msgs);
+}
 
 export const schedulerServer = (
   id: string | number,
@@ -15,6 +38,7 @@ export const schedulerServer = (
   logLevel: TLogLevel | undefined,
   ingestMessage: IngestMsgFunc,
   context: IContext,
+  getMsgType: GetMsgType,
 ): schedule.Job => {
   if (queueConfig !== undefined) {
     publishers.onError(
@@ -32,25 +56,27 @@ export const schedulerServer = (
   // TODO: do we need to check for non-unique job names? This id is the channel id
   const jobName = `${id}`;
   const job = () => {
-    let msgs = runner();
-    if (!Array.isArray(msgs)) {
-      msgs = [msgs];
-    }
-    // NOTE: this processes multiple messages asynchonously
-    msgs.forEach(msg => {
-      const msgUUID = randomUUID();
-      const msgContext: IMessageContext = {
-        ...context,
-        kind: msgType,
-        setMsgVar: setMsgVar(msgUUID),
-        getMsgVar: getMsgVar(msgUUID),
-        messageId: msgUUID,
-        channelId: id,
-        logger: logger({ channelId: id, msg })
-      }
-      ingestMessage(msg, () => {
-        // NOTE: do nothing, no acks for scheduled jobs
-      }, msgContext);
+    getMessages(
+      runner,
+      context,
+      getMsgType,
+    ).then((msgs) => {
+      msgs.forEach((msg) => {
+        // NOTE: this processes multiple messages asynchonously
+        const msgUUID = randomUUID();
+        const msgContext: IMessageContext = {
+          ...context,
+          kind: msgType,
+          setMsgVar: setMsgVar(msgUUID),
+          getMsgVar: getMsgVar(msgUUID),
+          messageId: msgUUID,
+          channelId: id,
+          logger: logger({ channelId: id, msg })
+        }
+        ingestMessage(msg, () => {
+          // NOTE: do nothing, no acks for scheduled jobs
+        }, msgContext);
+      });
     })
   }
   const Job = new schedule.Job(jobName, job)

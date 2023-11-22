@@ -29,6 +29,7 @@
       "@gofer-engine/queue": ["libs/queue/src/index.ts"],
       "@gofer-engine/queue-message": ["libs/queue-message/src/index.ts"],
       "@gofer-engine/scheduler": ["libs/scheduler/src/index.ts"],
+      "@gofer-engine/sftp": ["libs/sftp/src/index.ts"],
       "@gofer-engine/stores": ["libs/stores/src/index.ts"],
       "@gofer-engine/tcp": ["libs/tcp/src/index.ts"],
       "@gofer-engine/tools": ["libs/tools/src/index.ts"],

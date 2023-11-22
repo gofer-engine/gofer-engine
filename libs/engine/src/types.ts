@@ -8,6 +8,7 @@ import { TCPConnection } from "@gofer-engine/tcp";
 import { QueueConfig } from "@gofer-engine/queue";
 import { HTTPConfig, IHTTPConfig } from "@gofer-engine/http";
 import { HTTPSConfig, IHTTPSConfig } from "@gofer-engine/https";
+import { SchedulerConfig } from '@gofer-engine/scheduler';
 
 export type varTypes = 'Global' | 'Channel' | 'Route' | 'Msg';
 
@@ -50,11 +51,17 @@ export type HTTPSConnection<T extends 'I' | 'O'> = T extends 'I'
   ? { queue?: QueueConfig; kind: 'https'; https: HTTPSConfig<T> }
   : { kind: 'https'; https: HTTPSConfig<T> };
 
+export type ScheduleConnection = {
+  kind: 'schedule';
+  schedule: SchedulerConfig;
+};
+
 // NOTE: if new kind is added, adjust the isConnectionFlow type guard
 export type Connection<T extends 'I' | 'O'> =
   | TCPConnection<T>
   | HTTPConnection<T>
-  | HTTPSConnection<T>;
+  | HTTPSConnection<T>
+  | ScheduleConnection;
 // TODO: implement file reader source
 // NOTE: file source is different than the `file` store, because it will support additional methods such as ftp/sftp
 // | FileConnection<T>
