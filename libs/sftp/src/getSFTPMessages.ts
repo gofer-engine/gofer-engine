@@ -2,8 +2,6 @@ import { GetMsgType, IMsg, MsgTypes } from '@gofer-engine/message-type'
 import SFTP from 'ssh2-sftp-client'
 import { FileFilterOptions } from './types'
 
-const sftp = new SFTP();
-
 export const getSFTPMessages = (
   options: SFTP.ConnectOptions,
   messageTypes: MsgTypes,
@@ -22,12 +20,15 @@ export const getSFTPMessages = (
     fileDateMin,
     fileDateMax,
     sortFilesBy = 'date',
-  } = filterOptions
+  } = filterOptions;
+  const sftp = new SFTP();
   const now = Date.now();
   return sftp.connect(options)
-    .then(() => sftp.list(directory))
-    .then((files) => 
-      files.filter((file) => {
+    .then(() => {
+      return sftp.list(directory)
+    })
+    .then((files) => {
+      return files.filter((file) => {
         if (ignoreDotFiles && file.name.startsWith('.')) {
           return false
         }
@@ -65,14 +66,16 @@ export const getSFTPMessages = (
         }
         return 0;
       })
-    ).then((files) => {
+    }).then((files) => {
       return files.map((file) => {
         const buffer = sftp.get(`${directory}${file.name}`) as Promise<Buffer>
         return buffer
-          .then((buf) => buf.toString())
-          .then((str) => getMsgType(messageTypes, str))
+        .then((buf) => buf.toString())
+        .then((str) => getMsgType(messageTypes, str))
       })
     }).then((files) => {
       return Promise.all(files)
+    }).finally(() => {
+      sftp.end();
     })
 }

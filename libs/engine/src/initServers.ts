@@ -89,7 +89,8 @@ export const initServers: InitServers = (channels) => {
         undefined,
         c.logLevel,
         ingestFunc,
-        context
+        context,
+        getMsgType,
       )
     }
   });

@@ -17,10 +17,10 @@ export type SFTPConfig = {
   connection: SFTP.ConnectOptions;
   filterOptions?: FileFilterOptions;
   directory?: string;
-  _afterProcessAction: 'delete' | 'move' | 'none';
+  _afterProcessAction?: 'delete' | 'move' | 'none';
   _moveDirectory?: string;
   _moveFilename?: string;
-  _onErrorAction: 'delete' | 'move' | 'none';
+  _onErrorAction?: 'delete' | 'move' | 'none';
   _onErrorDirectory?: string;
   _onErrorFilename?: string;
   _encoding?: string;

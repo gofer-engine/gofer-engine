@@ -2,13 +2,16 @@ import { RecurrenceRule, RecurrenceSpecDateRange, RecurrenceSpecObjLit } from 'n
 
 import { IMsg, MsgTypes } from '@gofer-engine/message-type';
 import { SFTPConfig } from '@gofer-engine/sftp';
+import { Promisable } from 'type-fest';
+
+export type GetMsgFunc = () => Promisable<IMsg | IMsg[]>;
 
 export type SchedulerConfig = {
   msgType?: MsgTypes;
   runner: {
     kind: 'sftp'
     sftp: SFTPConfig
-  } | (() => IMsg | IMsg[]);
+  } | GetMsgFunc;
   schedule?: RecurrenceRule | RecurrenceSpecDateRange | RecurrenceSpecObjLit | Date | string | number;
   runOnStart?: boolean;
 };

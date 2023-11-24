@@ -9,14 +9,22 @@ import { randomUUID } from "crypto";
 import { logger } from "@gofer-engine/logger";
 import { getSFTPMessages } from "@gofer-engine/sftp";
 
-const getMessages = (
-  runner: SchedulerConfig['runner'],
-  context: IContext,
-  getMsgType: GetMsgType,
+export const getMessages = <
+  C extends SchedulerConfig['runner']
+>(
+  runner: C,
+  context?: C extends ()=>void ? never : IContext,
+  getMsgType?: C extends ()=>void ? never : GetMsgType,
 ): Promise<IMsg[]> => {
-  let msgs: IMsg | IMsg[];
-  if (typeof runner === 'function') msgs = runner();
-  else if (runner.kind === 'sftp') {
+  if (typeof runner === 'function') {
+    return Promise.resolve(runner()).then((msgs) => {
+      if (!Array.isArray(msgs)) {
+        msgs = [msgs];
+      }
+      return msgs;
+    });
+  }
+  if (runner.kind === 'sftp') {
     return getSFTPMessages(
       runner.sftp.connection,
       context.kind,
@@ -25,10 +33,7 @@ const getMessages = (
       runner.sftp.filterOptions,
     )
   }
-  if (!Array.isArray(msgs)) {
-    msgs = [msgs];
-  }
-  return Promise.resolve(msgs);
+  return Promise.reject(new Error(`Unknown runner kind ${runner.kind}`));
 }
 
 export const schedulerServer = (

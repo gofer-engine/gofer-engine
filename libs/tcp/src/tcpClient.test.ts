@@ -1,8 +1,5 @@
 import net from 'net';
 
-import HL7v2Msg from '@gofer-engine/hl7';
-import { isMsg } from "@gofer-engine/message-type";
-
 import { sendMessage } from './tcpClient';
 import { quickTCPServer } from './quickTCPServer';
 
