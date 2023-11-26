@@ -1,5 +1,3 @@
-import SFTP from 'ssh2-sftp-client';
-
 export type MaybeArray<T> = T | T[];
 
 export type FileFilterOptions = {
@@ -19,9 +17,7 @@ export type WriteOptions = {
   overwrite?: boolean;
   append?: boolean;
   // use null for binary
-  encoding?: string | null;
-  // example 0o666 = -rw-rw-rw-
-  mode?: number | string;
+  encoding?: BufferEncoding;
 }
 
 export type AfterProcess = {
@@ -30,15 +26,7 @@ export type AfterProcess = {
   filename?: string; // if undefined, use original filename
 }
 
-export type SFTPWriteConfig = {
-  connection: SFTP.ConnectOptions;
-  filename: string;
-  directory?: string;
-  writeOptions?: WriteOptions;
-};
-
-export type SFTPReadConfig = {
-  connection: SFTP.ConnectOptions;
+export type FileReadConfig = {
   filterOptions?: FileFilterOptions;
   directory?: string;
   afterProcess?: AfterProcess;

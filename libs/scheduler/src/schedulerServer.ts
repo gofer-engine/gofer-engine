@@ -7,14 +7,15 @@ import { SchedulerConfig } from "./types";
 import { getMsgVar, setMsgVar } from "@gofer-engine/variables";
 import { randomUUID } from "crypto";
 import { logger } from "@gofer-engine/logger";
-import { getSFTPMessages } from "@gofer-engine/sftp";
+import { readSFTPMessages } from "@gofer-engine/sftp";
+import { reader } from "@gofer-engine/file";
 
 export const getMessages = <
   C extends SchedulerConfig['runner']
 >(
   runner: C,
-  context?: C extends ()=>void ? never : IContext,
-  getMsgType?: C extends ()=>void ? never : GetMsgType,
+  context?: undefined | IContext,
+  getMsgType?: undefined | GetMsgType,
 ): Promise<IMsg[]> => {
   if (typeof runner === 'function') {
     return Promise.resolve(runner()).then((msgs) => {
@@ -24,16 +25,31 @@ export const getMessages = <
       return msgs;
     });
   }
+  if (context === undefined || getMsgType === undefined) {
+    throw new Error(`Cannot get messages without context and getMsgType`);
+  }
+  const kind = context.kind || 'HL7v2';
   if (runner.kind === 'sftp') {
-    return getSFTPMessages(
+    return readSFTPMessages(
       runner.sftp.connection,
-      context.kind,
+      kind,
       getMsgType,
       runner.sftp.directory,
       runner.sftp.filterOptions,
     )
   }
-  return Promise.reject(new Error(`Unknown runner kind ${runner.kind}`));
+  if (runner.kind === 'file') {
+    return reader(
+      kind,
+      getMsgType,
+      runner.file.directory,
+      runner.file.filterOptions,
+      runner.file.afterProcess,
+      runner.file.encoding,
+    )
+  }
+  // NOTE: this will not happen unless we add a new runner kind and forget to add it here
+  return Promise.reject(new Error(`Unknown runner kind ${(runner)}`));
 }
 
 export const schedulerServer = (
@@ -86,9 +102,8 @@ export const schedulerServer = (
   }
   const Job = new schedule.Job(jobName, job)
   if (sched !== undefined) {
-    // NOTE: the type for schedule is not correct. It does allow typof `sched`
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Job.schedule(sched as any);
+    // NOTE: the type for schedule is not correct. It does allow typeof `sched`
+    Job.schedule(sched as unknown as string | number | Date);
     if (logLevel === 'debug') {
       const log = (event: string) => () => context.logger(`Scheduled job ${jobName} ${event}`, `debug`)
       Job.addListener('run', log('run'));

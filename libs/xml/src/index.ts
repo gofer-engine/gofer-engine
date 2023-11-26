@@ -1,7 +1,7 @@
 import { Element, xml2js, js2xml, ElementCompact } from 'xml-js';
 import { cloneDeep, get, set, unset } from 'lodash';
 
-import { IMsg, JSONValue, isMsg } from '@gofer-engine/message-type';
+import { IMsg, isMsg } from '@gofer-engine/message-type';
 
 export interface IXMLMsg extends IMsg {
   kind: 'XML';
@@ -9,7 +9,7 @@ export interface IXMLMsg extends IMsg {
   json: <N extends boolean>(
     _normalized?: N,
   ) => N extends true ? Element : ElementCompact;
-  set: (path?: string | undefined, value?: JSONValue) => IXMLMsg;
+  set: (path?: string | undefined, value?: ElementCompact) => IXMLMsg;
   get: (path: string | undefined) => string | ElementCompact;
   delete: (path: string) => IXMLMsg;
   copy: (path: string, toPath: string) => IXMLMsg;
@@ -34,7 +34,7 @@ export const isXMLMsg = (msg: unknown): msg is IXMLMsg => {
 
 export class XMLMsg implements IXMLMsg {
   readonly kind = 'XML';
-  private _msg: Element = undefined;
+  private _msg: Element = {};
   private compact = () =>
     xml2js(js2xml(this._msg), { compact: true }) as ElementCompact;
   private uncompact = (msg: ElementCompact) => {

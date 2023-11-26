@@ -1,4 +1,13 @@
 {
   "name": "@gofer-engine/http",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "dependencies": {
+    "@gofer-engine/handelse": "*",
+    "@gofer-engine/message-type": "*",
+    "@gofer-engine/events": "*",
+    "@gofer-engine/queue": "*",
+    "@gofer-engine/variables": "*",
+    "@gofer-engine/logger": "*",
+    "tslib": "*"
+  }
 }

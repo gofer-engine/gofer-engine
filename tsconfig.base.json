@@ -19,6 +19,7 @@
       "@gofer-engine/cache": ["libs/cache/src/index.ts"],
       "@gofer-engine/engine": ["libs/engine/src/index.ts"],
       "@gofer-engine/events": ["libs/events/src/index.ts"],
+      "@gofer-engine/file": ["libs/file/src/index.ts"],
       "@gofer-engine/handelse": ["libs/handelse/src/index.ts"],
       "@gofer-engine/hl7": ["libs/hl7/src/index.ts"],
       "@gofer-engine/http": ["libs/http/src/index.ts"],

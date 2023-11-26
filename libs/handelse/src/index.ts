@@ -236,6 +236,16 @@ Handler set event type: "${handler.eventType ?? 'undefined'}"
   public do = this.sub;
   public start = this.sub;
   public listen = this.sub;
+  public subAll = <T>(
+    handler: SubFunc<T>,
+    options?: TEventGetHandlerOptions,
+  ) => this.get<T>('_ALL_', options).sub(handler);
+  public all = this.subAll;
+  public subscribeAll = this.subAll;
+  public onAll = this.subAll;
+  public doAll = this.subAll;
+  public startAll = this.subAll;
+  public listenAll = this.subAll;
   public remove = (
     handle: string,
     id: SubscriberID,

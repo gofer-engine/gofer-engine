@@ -1,4 +1,10 @@
 {
   "name": "@gofer-engine/json",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "dependencies": {
+    "@gofer-engine/hl7": "*",
+    "@gofer-engine/message-type": "*",
+    "lodash": "*",
+    "tslib": "*"
+  }
 }

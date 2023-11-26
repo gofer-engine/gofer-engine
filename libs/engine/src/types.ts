@@ -9,39 +9,9 @@ import { QueueConfig } from "@gofer-engine/queue";
 import { HTTPConfig, IHTTPConfig } from "@gofer-engine/http";
 import { HTTPSConfig, IHTTPSConfig } from "@gofer-engine/https";
 import { SchedulerConfig } from '@gofer-engine/scheduler';
+import { SFTPReadConfig, SFTPWriteConfig } from "@gofer-engine/sftp";
 
 export type varTypes = 'Global' | 'Channel' | 'Route' | 'Msg';
-
-interface IFileConfig {
-  directory: string;
-  ftp?: string;
-  sftp?: string;
-  filenamePattern?: string;
-  includeAllSubDirs?: boolean;
-  ignoreDotFiles?: boolean;
-  username?: boolean;
-  password?: boolean;
-  timeout?: number;
-  deleteAfterRead?: boolean;
-  moveAfterRead?: {
-    directory: string;
-    filename: string;
-  };
-  moveAfterError?: {
-    directory: string;
-    filename: string;
-  };
-  checkFileAge?: number;
-  limitSize?: RequireAtLeastOne<{
-    min?: number;
-    max?: number;
-  }>;
-}
-
-export type FileConfig = RequireExactlyOne<
-  IFileConfig,
-  'ftp' | 'sftp' | 'directory'
->;
 
 export type HTTPConnection<T extends 'I' | 'O'> = T extends 'I'
   ? { queue?: QueueConfig; kind: 'http'; http: HTTPConfig<T> }
@@ -51,17 +21,23 @@ export type HTTPSConnection<T extends 'I' | 'O'> = T extends 'I'
   ? { queue?: QueueConfig; kind: 'https'; https: HTTPSConfig<T> }
   : { kind: 'https'; https: HTTPSConfig<T> };
 
-export type ScheduleConnection = {
+export type ScheduleConnection<T extends 'I' | 'O'> = T extends 'I' ? {
   kind: 'schedule';
   schedule: SchedulerConfig;
+} : never;
+
+export type SFTPConnection<T extends 'I' | 'O'> = {
+  kind: 'sftp';
+  sftp: T extends 'I' ? SFTPReadConfig : SFTPWriteConfig;
 };
 
 // NOTE: if new kind is added, adjust the isConnectionFlow type guard
-export type Connection<T extends 'I' | 'O'> =
-  | TCPConnection<T>
-  | HTTPConnection<T>
-  | HTTPSConnection<T>
-  | ScheduleConnection;
+export type Connection<T extends 'I' | 'O'> = 
+    | TCPConnection<T>
+    | HTTPConnection<T>
+    | HTTPSConnection<T>
+    | ScheduleConnection<T>
+    | SFTPConnection<T>
 // TODO: implement file reader source
 // NOTE: file source is different than the `file` store, because it will support additional methods such as ftp/sftp
 // | FileConnection<T>
@@ -346,7 +322,6 @@ export interface OGofer {
   listen(method: 'tcp', host: string, port: number): OIngest;
   listen(method: 'http', options: IHTTPConfig): OIngest;
   listen(method: 'https', options: IHTTPSConfig): OIngest;
-  // files: (config: FileConfig) => OIngest
   // msg: (msg: Msg) => OIngest
   messenger: Messenger;
 }

@@ -9,6 +9,7 @@
     "test-stores": "npx nx run stores:test",
     "test-hl7": "npx nx run hl7:test",
     "test": "npx nx run-many -t test",
+    "lint": "npx nx run-many -t lint",
     "build": "npx nx run gofer-engine:build",
     "dev": "npx nx run gofer-engine:serve",
     "prepare": "husky install",

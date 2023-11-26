@@ -1,13 +1,15 @@
 import { GetMsgType, IMsg, MsgTypes } from '@gofer-engine/message-type'
 import SFTP from 'ssh2-sftp-client'
-import { FileFilterOptions } from './types'
+import { AfterProcess, FileFilterOptions } from './types'
 
-export const getSFTPMessages = (
+export const readSFTPMessages = (
   options: SFTP.ConnectOptions,
   messageTypes: MsgTypes,
   getMsgType: GetMsgType,
   directory = '/',
   filterOptions: FileFilterOptions = {},
+  afterProcess?: AfterProcess,
+  encoding?: BufferEncoding,
 ): Promise<IMsg[]> => {
   const {
     ignoreDotFiles = true,
@@ -38,10 +40,10 @@ export const getSFTPMessages = (
         if (file.size > fileSizeMaxBytes || file.size < fileSizeMinBytes) {
           return false
         }
-        if (fileAgeMinMS && now - file.modifyTime < fileAgeMinMS) {
+        if (fileAgeMinMS !== undefined && now - file.modifyTime < fileAgeMinMS) {
           return false
         }
-        if (fileAgeMaxMS && now - file.modifyTime > fileAgeMaxMS) {
+        if (fileAgeMaxMS !== undefined && now - file.modifyTime > fileAgeMaxMS) {
           return false
         }
         if (fileDateMin && file.modifyTime < fileDateMin.getTime()) {
@@ -70,8 +72,37 @@ export const getSFTPMessages = (
       return files.map((file) => {
         const buffer = sftp.get(`${directory}${file.name}`) as Promise<Buffer>
         return buffer
-        .then((buf) => buf.toString())
-        .then((str) => getMsgType(messageTypes, str))
+        .then((buf) => buf.toString(encoding))
+        .then(async (str) => {
+          const {
+            action = 'none',
+            // TODO: support variables in directory
+            directory: moveDirectory = directory + 'archived/',
+            // TODO: support variables in filename
+            filename = file.name,
+          } = afterProcess || {}
+          if (action === 'delete') {
+            await sftp
+              .delete(`${directory}${file.name}`)
+              .then((result) => {
+                // TODO: log this result
+              })
+              .catch((err) => {
+                // TODO: log this err
+              })
+          }
+          if (action === 'move') {
+            await sftp
+              .rename(`${directory}${file.name}`, `${moveDirectory}${filename}`)
+              .then((result) => {
+                // TODO: log this result
+              })
+              .catch((err) => {
+                // TODO: log this err
+              })
+          }
+          return getMsgType(messageTypes, str)
+        })
       })
     }).then((files) => {
       return Promise.all(files)

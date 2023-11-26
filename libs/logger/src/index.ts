@@ -6,10 +6,11 @@ type TLoggerArgs<T> = {
   routeId?: string | number;
   flowId?: string | number;
   readonly msg?: T;
+  direct?: boolean;
 };
 
 export const logger =
-  <T>({ channelId, flowId, msg }: TLoggerArgs<T>) =>
+  <T>({ channelId, flowId, msg, direct }: TLoggerArgs<T>) =>
   (log: string, logLevel?: TLogLevel) =>
     handelse.go(`gofer:${channelId}.onLog`, {
       msg,
@@ -17,4 +18,6 @@ export const logger =
       channel: channelId,
       flow: flowId,
       level: logLevel,
+    },{
+      createIfNotExists: direct
     });

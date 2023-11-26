@@ -1,4 +1,9 @@
 {
   "name": "@gofer-engine/logger",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "dependencies": {
+    "@gofer-engine/handelse": "*",
+    "@gofer-engine/message-type": "*",
+    "tslib": "*"
+  }
 }

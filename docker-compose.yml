@@ -15,7 +15,17 @@ services:
   sftp:
     image: atmoz/sftp
     volumes:
-      - ./sftp-data:/home/foo/upload
+      - ./samples:/home/foo/upload
     ports:
       - "2222:22"
     command: foo:pass:::upload
+  ftp:
+    image: garethflowers/ftp-server
+    volumes:
+      - ./samples:/home/foo
+    ports:
+      - "20-21:20-21/tcp"
+      - "40000-40009:40000-40009/tcp"
+    environment:
+      - FTP_USER=foo
+      - FTP_PASS=pass

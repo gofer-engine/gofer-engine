@@ -1,4 +1,16 @@
 {
   "name": "@gofer-engine/tcp",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "dependencies": {
+    "@gofer-engine/message-type": "*",
+    "portfinder": "*",
+    "@gofer-engine/logger": "*",
+    "@gofer-engine/variables": "*",
+    "@gofer-engine/ack": "*",
+    "@gofer-engine/handelse": "*",
+    "@gofer-engine/events": "*",
+    "@gofer-engine/queue": "*",
+    "@gofer-engine/queue-message": "*",
+    "tslib": "*"
+  }
 }
