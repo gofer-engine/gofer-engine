@@ -17,6 +17,7 @@
     "paths": {
       "@gofer-engine/ack": ["libs/ack/src/index.ts"],
       "@gofer-engine/cache": ["libs/cache/src/index.ts"],
+      "@gofer-engine/delimited": ["libs/delimited/src/index.ts"],
       "@gofer-engine/engine": ["libs/engine/src/index.ts"],
       "@gofer-engine/events": ["libs/events/src/index.ts"],
       "@gofer-engine/file": ["libs/file/src/index.ts"],
