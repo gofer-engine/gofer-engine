@@ -1,7 +1,7 @@
 import { IMsg, isMsg } from '@gofer-engine/message-type';
 import { cloneDeep } from "lodash";
 import Papa from 'papaparse';
-import { parsePath } from './parsePath';
+import { getData } from "./getData";
 
 export interface IDelimitedMsg extends IMsg {
   kind: 'DELIMITED';
@@ -45,7 +45,6 @@ export class DelimitedMsg implements IDelimitedMsg {
   private parse = (str: string, config?: Papa.ParseConfig<string[]>) => {
     return Papa.parse(str, config)
   }
-  private parsePath = parsePath;
   constructor(
     msg?: string | string[][],
     options: {
@@ -132,10 +131,7 @@ export class DelimitedMsg implements IDelimitedMsg {
     // TODO: implement set method
     return this;
   };
-  get = (_path?: string) => {
-    // TODO: implement get method
-    return undefined;
-  };
+  get = (path?: string) => getData(this._msg, path);
   delete = (_path: string): IDelimitedMsg => {
     // TODO: implement delete method
     return this;

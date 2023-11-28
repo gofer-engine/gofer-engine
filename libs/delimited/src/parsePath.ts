@@ -18,17 +18,14 @@ export const AlphaIndex = (
   return undefined;
 };
 
-export const parsePath = (
-  path: string,
-  headers: string[] = [],
-) => {
-// )
-// : {
-//   column?: number | number[];
-//   row?: number | number[];
-//   matrix?: 'row' | 'column';
-// } => {
-  const rowRegex = new RegExp(/^\d+$/);
+export type ParsedPath = Readonly<{
+  column?: number | number[];
+  row?: number | number[];
+  matrix?: 'row' | 'column';
+}>;
+
+export const parsePath = (path: string, headers: string[] = []): ParsedPath => {
+  const rowRegex = new RegExp(/(?:^(\d+)$)|(?:^\[(\d+)\]$)/);
   const columnRegex = new RegExp(/^(?:([a-zA-Z]+)|(?:'(.+)')|(?:"(.+)"))$/);
   const rowRangeRegex = new RegExp(
     /(?:^(\d+)(\+?)$)|(?:^([<>-])(\d+)$)|(?:^(\d+)([->])(\d+)$)/,
@@ -45,7 +42,9 @@ export const parsePath = (
   );
 
   if (rowRegex.test(path)) {
-    return { row: parseInt(rowRegex.exec(path)[0]) };
+    const [, ...rowNumbers] = rowRegex.exec(path);
+    const rowIndex = rowNumbers.filter(i => i !== undefined)?.[0];
+    return { row: parseInt(rowIndex) };
   }
   if (columnRegex.test(path)) {
     const [, columnAlpha, ...columnNames] = columnRegex.exec(path);
@@ -71,28 +70,28 @@ export const parsePath = (
       throw new Error(`Invalid range: ${path}`);
     }
     if (op === '-' && minIndex !== undefined && maxIndex !== undefined) {
-      return { column: [minIndex, maxIndex] };
+      return { row: [minIndex, maxIndex] };
     }
     if (op === '>' && minIndex !== undefined && maxIndex !== undefined) {
       if (minIndex > maxIndex) {
         throw new Error(`Invalid range: ${path}`);
       }
-      return { column: [minIndex + 1, maxIndex - 1] };
+      return { row: [minIndex + 1, maxIndex - 1] };
     }
     if (preOp === '<' && end !== undefined) {
-      return { column: [0, endIndex - 1] };
+      return { row: [0, endIndex - 1] };
     }
     if (preOp === '>' && end !== undefined) {
-      return { column: [endIndex + 1] };
+      return { row: [endIndex + 1] };
     }
     if (preOp === '-' && end !== undefined) {
-      return { column: [0 - endIndex] };
+      return { row: 0 - endIndex };
     }
     if (postOp === '+' && start !== undefined) {
-      return { column: [startIndex] };
+      return { row: [startIndex] };
     }
     // shouldn't ever hit this line as the rowRegex should have caught it above
-    return { column: [startIndex] };
+    return { row: [startIndex] };
   }
   if (cellRegex.test(path)) {
     const [
@@ -134,8 +133,17 @@ export const parsePath = (
     }
   }
   if (columnRangeRegex.test(path)) {
-    const [, startColAlpha, startColName1, startColName2, endColAlpha, endColName1, endColName2] = columnRangeRegex.exec(path);
-    let startIndex = AlphaIndex(startColAlpha) ?? startColName1 ?? startColName2;
+    const [
+      ,
+      startColAlpha,
+      startColName1,
+      startColName2,
+      endColAlpha,
+      endColName1,
+      endColName2,
+    ] = columnRangeRegex.exec(path);
+    let startIndex =
+      AlphaIndex(startColAlpha) ?? startColName1 ?? startColName2;
     if (typeof startIndex === 'string') {
       startIndex = headers.indexOf(startIndex);
       if (startIndex === -1) {
@@ -151,9 +159,6 @@ export const parsePath = (
     }
     if (startIndex !== undefined && endIndex !== undefined) {
       return { column: [startIndex, endIndex], matrix: 'column' };
-    }
-    return {
-      startColAlpha, startColName1, startColName2, endColAlpha, endColName1, endColName2
     }
   }
   if (rangeRegex.test(path)) {
@@ -226,13 +231,14 @@ export const parsePath = (
     if (
       typeof startColumn === 'number' &&
       typeof endColumn === 'number' &&
-      startColumn > endColumn
+      startColumn > endColumn &&
+      matrix
     ) {
       const temp = startColumn;
       startColumn = endColumn;
       endColumn = temp;
     }
-    if (!isNaN(startRow) && !isNaN(endRow) && startRow > endRow) {
+    if (!isNaN(startRow) && !isNaN(endRow) && startRow > endRow && matrix) {
       const temp = startRow;
       startRow = endRow;
       endRow = temp;
