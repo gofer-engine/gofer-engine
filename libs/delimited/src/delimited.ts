@@ -2,6 +2,10 @@ import { IMsg, isMsg } from '@gofer-engine/message-type';
 import { cloneDeep } from 'lodash';
 import Papa from 'papaparse';
 import { getData } from './getData';
+import { DelimitedValue, setData } from './setData';
+import { deleteData } from './deleteData';
+import { insertColumns } from './insertColumns';
+import { parsePath } from './parsePath';
 
 export interface IDelimitedMsg extends IMsg {
   kind: 'DELIMITED';
@@ -15,21 +19,13 @@ export interface IDelimitedMsg extends IMsg {
   ) => N extends true ? string[][] : Record<string, string>[];
   set: (
     path?: string | undefined,
-    value?:
-      | Record<string, string>[]
-      | Record<string, string>
-      | string
-      | string[]
-      | string[][],
+    value?: DelimitedValue
   ) => IDelimitedMsg;
+  insertRows: (index: number, rows: string[][]) => IDelimitedMsg;
+  insertColumns: (index: number, rows: string[][]) => IDelimitedMsg;
   setJSON: (
     path: string | undefined,
-    json:
-      | Record<string, string>[]
-      | Record<string, string>
-      | string
-      | string[]
-      | string[][],
+    json: DelimitedValue,
   ) => IDelimitedMsg;
   get: (
     path?: string | undefined,
@@ -45,13 +41,7 @@ export interface IDelimitedMsg extends IMsg {
   move: (fromPath: string, toPath: string) => IDelimitedMsg;
   map: (
     path: string,
-    v:
-      | string
-      | string[]
-      | string[][]
-      | Record<string, string>
-      | Record<string, string>[]
-      | (<T>(v: T, i: number) => T),
+    v: string | Record<string, string> | string[] | (<T>(v: T, x: number, y: number) => T),
     options?: {
       iteration?: boolean | undefined;
     },
@@ -123,17 +113,9 @@ export class DelimitedMsg implements IDelimitedMsg {
     return this;
   };
   setJSON = (
-    _path: string | undefined,
-    _json:
-      | Record<string, string>[]
-      | Record<string, string>
-      | string
-      | string[]
-      | string[][],
-  ): IDelimitedMsg => {
-    // TODO: implement setJSON method
-    return this;
-  };
+    path: string | undefined,
+    value: DelimitedValue
+  ) => this.set(path, value);
   toString = ({
     quotes = true,
     escapeFormulae = true,
@@ -167,20 +149,23 @@ export class DelimitedMsg implements IDelimitedMsg {
     ) as N extends true ? string[][] : Record<string, string>[];
   };
   set = (
-    _path?: string,
-    _value?:
-      | Record<string, string>[]
-      | Record<string, string>
-      | string
-      | string[]
-      | string[][],
+    path?: string,
+    value?: DelimitedValue,
   ): IDelimitedMsg => {
-    // TODO: implement set method
+    this._msg = cloneDeep(setData(this._msg, value, path))
     return this;
   };
+  insertRows = (index: number, rows: string[][]): IDelimitedMsg => {
+    this._msg.splice(index, 0, ...rows);
+    return this;
+  }
+  insertColumns = (index: number, columns: string[][]): IDelimitedMsg => {
+    this._msg = insertColumns(this._msg, index, columns);
+    return this;
+  }
   get = (path?: string) => getData(this._msg, path);
-  delete = (_path: string): IDelimitedMsg => {
-    // TODO: implement delete method
+  delete = (path: string): IDelimitedMsg => {
+    this._msg = deleteData(this._msg, path)
     return this;
   };
   copy = (path: string, toPath: string): IDelimitedMsg => {
@@ -190,28 +175,45 @@ export class DelimitedMsg implements IDelimitedMsg {
     return this.copy(fromPath, toPath).delete(fromPath);
   };
   map = (
-    _path: string,
-    _value:
-      | string
-      | string[]
-      | string[][]
-      | Record<string, string>
-      | Record<string, string>[]
-      | (<T>(v: T, i: number) => T),
-    _options?: {
-      iteration?: boolean | undefined;
-    },
+    path: string,
+    value: string | Record<string, string> | string[] | (<T>(v: T, x: number, y: number) => T),
   ): IDelimitedMsg => {
-    // TODO: implement map method
+    if (typeof value !== 'function') {
+      throw new Error('Map value for a delimited message must be a function');
+    }
+    let temp = this.get(path);
+    if (typeof temp === 'string') {
+      temp = [[temp]]
+    }
+    if (Array.isArray(temp) && temp.length > 0 && typeof temp[0] === 'string') {
+      temp = [temp as string[]]
+    }
+    temp = temp as string[][]
+    const { matrix } = parsePath(path, this._msg[0])
+    if (typeof value === 'function') {
+      temp = temp.map((row, x) => {
+        return row.map((cell, y) => {
+          if (matrix === 'column') {
+            return value(cell, y, x);
+          }
+          return value(cell, x, y);
+        })
+      })
+      this.set(path, temp);
+    }
     return this;
   };
-  setIteration = <Y>(
-    
-    _path: string,
-    _map: Y[] | ((val: Y, i: number) => Y),
-    _options?: { allowLoop: boolean },
+  /**
+   * @deprecated Use map instead
+   */
+  setIteration = (
+    path: string,
+    // _map: Y[] | ((val: Y, i: number) => Y),
+    // _options?: { allowLoop: boolean },
   ): IDelimitedMsg => {
-    // TODO: implement setIteration method
+    if (path !== undefined) {
+      throw new Error('setIteration is not implemented for delimited messages. Use map instead.');
+    }
     return this;
   };
 }

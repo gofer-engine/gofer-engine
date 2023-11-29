@@ -1,4 +1,4 @@
-import { cloneDeep, unzip, zip } from "lodash";
+import { cloneDeep, unzip } from "lodash";
 import { parsePath } from "./parsePath";
 
 export const getData = (msg: string[][], path?: string): undefined | string | string[] | string[][] => {

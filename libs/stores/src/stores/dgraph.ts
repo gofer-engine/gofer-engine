@@ -185,10 +185,10 @@ class DBStore implements IStoreClass {
     // this.updateSchema()
   }
   public store: StoreFunc = async (data, context) => {
-    // FIXME: implement for non-IMsg data
+    // FIXME: implement for non-HL7v2 data
     if (!msgIsHL7v2(data)) {
-      context.logger(`Not yet implemented for non-IMsg data`, 'error');
-      throw new Error(`Not yet implemented for non-IMsg data`)
+      context.logger(`Not yet implemented for non-HL7v2 data`, 'error');
+      throw new Error(`Not yet implemented for non-HL7v2 data`)
     }
     const id =
       this.id === 'UUID'

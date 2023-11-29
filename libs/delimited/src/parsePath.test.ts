@@ -2,7 +2,7 @@ import { AlphaIndex, parsePath } from './parsePath';
 
 const headers = ['Column 0', 'Column 1', 'me', 'Column 3', 'Column 45'];
 
-test('AlphaIndex', () => {
+test('parsePath alphaIndex', () => {
   expect(AlphaIndex('A')).toEqual(0);
   expect(AlphaIndex('B')).toEqual(1);
   expect(AlphaIndex('Z')).toEqual(25);
@@ -115,8 +115,10 @@ test('parsePath cell ranges', () => {
   expect(parsePath(`4AA-4AA`)).toEqual({ column: [26, 26], row: [4, 4] });
 });
 
-test.skip('parsePath column ranges', () => {
-  expect(parsePath(`'D|F`)).toEqual({ column: [3, 5], matrix: 'column' });
+test('parsePath column ranges', () => {
+  expect(parsePath(`D-F`)).toEqual({ column: [3, 5] });
+  expect(parsePath(`D|F`)).toEqual({ column: [3, 5], matrix: 'column' });
+  expect(parsePath(`D:F`)).toEqual({ column: [3, 5], matrix: 'row' });
 });
   
   

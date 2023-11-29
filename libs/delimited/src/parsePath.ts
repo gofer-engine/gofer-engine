@@ -38,7 +38,7 @@ export const parsePath = (path: string, headers: string[] = []): ParsedPath => {
   );
 
   const columnRangeRegex = new RegExp(
-    /^(?:(?:([a-zA-Z]+)|(?:'([^']+)')|(?:"([^"]+)"))\|(?:([a-zA-Z]+)|(?:'([^']+)')|(?:"([^"]+)")))$/,
+    /^(?:(?:([a-zA-Z]+)|(?:'([^']+)')|(?:"([^"]+)"))([-:|])(?:([a-zA-Z]+)|(?:'([^']+)')|(?:"([^"]+)")))$/,
   );
 
   if (rowRegex.test(path)) {
@@ -138,6 +138,7 @@ export const parsePath = (path: string, headers: string[] = []): ParsedPath => {
       startColAlpha,
       startColName1,
       startColName2,
+      operator,
       endColAlpha,
       endColName1,
       endColName2,
@@ -157,8 +158,9 @@ export const parsePath = (path: string, headers: string[] = []): ParsedPath => {
         throw new Error(`Invalid column: ${path}`);
       }
     }
+    const matrix = operator === '|' ? 'column' : operator === ':' ? 'row' : undefined;
     if (startIndex !== undefined && endIndex !== undefined) {
-      return { column: [startIndex, endIndex], matrix: 'column' };
+      return { column: [startIndex, endIndex], ...{ matrix } };
     }
   }
   if (rangeRegex.test(path)) {
