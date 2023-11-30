@@ -1,4 +1,4 @@
-import { IMessageContext, IMsg, isMsg } from '@gofer-engine/message-type';
+import { IDelimitedOptions, IMessageContext, IMsg, isMsg } from '@gofer-engine/message-type';
 import { cloneDeep } from 'lodash';
 import Papa from 'papaparse';
 import { getData } from './getData';
@@ -73,12 +73,7 @@ export class DelimitedMsg implements IDelimitedMsg {
   };
   constructor(
     msg?: string | string[][],
-    options: {
-      delimiter?: string;
-      escapeChar?: string;
-      quoteChar?: string;
-      rowDelimiter?: '\r' | '\n' | '\r\n';
-    } = {},
+    options: IDelimitedOptions = {},
   ) {
     if (typeof msg === 'string') {
       const parsed = this.parse(msg, {

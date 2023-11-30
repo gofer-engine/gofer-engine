@@ -1,7 +1,11 @@
 import { SetRequired } from 'type-fest';
-import { IContext, IMsg } from '.';
+import { IContext, IDelimitedOptions, IMsg } from '.';
 
-export type MsgTypes = 'HL7v2' | 'JSON' | 'XML' | 'DELIMITED';
+export type MsgTypes = 
+  | 'HL7v2'
+  | 'JSON'
+  | 'XML'
+  | 'DELIMITED' | { kind: 'DELIMITED', options?: IDelimitedOptions };
 
 // log levels in order of severity. If you show 'DEBUG' logs, you will also see 'INFO' logs, etc.
 export type TLogLevel = 'debug' | 'info' | 'warn' | 'error';

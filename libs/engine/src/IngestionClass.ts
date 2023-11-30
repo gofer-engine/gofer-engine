@@ -1,4 +1,13 @@
+import {
+  uniqueNamesGenerator,
+  adjectives,
+  colors,
+  animals,
+} from 'unique-names-generator';
+
 import { IMessageContext, IMsg } from '@gofer-engine/message-type';
+import { genId } from '@gofer-engine/tools';
+
 import { isMsgVFunc } from './isMsgVFunc';
 import {
   ChannelConfig,
@@ -9,13 +18,6 @@ import {
 } from './types';
 import { CompleteClass } from './CompleteClass';
 import { RouteClass } from './RouteClass';
-import {
-  uniqueNamesGenerator,
-  adjectives,
-  colors,
-  animals,
-} from 'unique-names-generator';
-import { genId } from '@gofer-engine/tools';
 import { gofer } from './gofer';
 
 export class IngestionClass implements OIngest {
