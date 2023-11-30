@@ -1,4 +1,4 @@
-import { IMsg, isMsg } from '@gofer-engine/message-type';
+import { IMessageContext, IMsg, isMsg } from '@gofer-engine/message-type';
 import { cloneDeep } from 'lodash';
 import Papa from 'papaparse';
 import { getData } from './getData';
@@ -53,7 +53,11 @@ export interface IDelimitedMsg extends IMsg {
   ) => IDelimitedMsg;
 }
 
-export const isDelimitedMsg = (msg: unknown): msg is IDelimitedMsg => {
+export const isDelimitedMsg = (msg: unknown, context?: IMessageContext): msg is IDelimitedMsg => {
+  // if context is provided, it must be for a delimited message
+  if (context !== undefined && context.kind !== 'DELIMITED') {
+    return false;
+  }
   return isMsg(msg) && msg.kind === 'DELIMITED';
 };
 
