@@ -1,0 +1,97 @@
+---
+sidebar_position: 3
+---
+
+import ExampleCode from '@site/src/components/ExampleCode';
+
+# `transform` — Manipulate Data
+
+Transform Flows are used to manipulate message data. 
+
+## Interface
+
+The interface TransformFlow can be defined as:
+
+```ts
+type TransformFunc = (msg: IMsg, context: IMessageContext) => IMsg
+type TransformFlow =
+  | TransformFunc
+  | { kind: 'transform'; transform: TransformFunc }
+```
+
+<!-- FIXME: Add correct links here -->
+
+_Refer to the [Message Interface](#) for more information on the `IMsg` exposed methods and  transforming the data in the message._
+
+_Refer to the [Context Object](#) for more information on the `IMessageContext` type._
+
+The transformer functions of the class retuns back the class instance, so you can chain them together.
+
+## Use Case
+
+The Ingestion and Route each allow for an array of flows. The transform flow, is one of the allowed flows in either one of these arrays. If a message is transformed in an ingestion flow, then all of the latter flows in the ingestion, and all of the routes will use the newly transformed data. If a message is transformed in a route, then only the latter flows in that route will use the newly transformed data. _Routes are called **asynchronously**_, _The Ingestion flows are called **synchronously**_.
+
+```ts
+const channel: ChannelConfig = {
+  // ...
+  ingestion: [
+    // highlight-next-line
+    // transformers here
+  ],
+  routes: [
+    {
+      kind: 'route',
+      name: 'Route 1',
+      flows: [
+        // highlight-next-line
+        // transformers here
+      ],
+    },
+    {
+      kind: 'route',
+      name: 'Route 2',
+      flows: [
+        // highlight-next-line
+        // transformers here
+      ],
+    }
+  ]
+};
+```
+
+## Example
+
+Here is an example of a transformer that takes the field PV1-3 and adds a prefix to it:
+
+<ExampleCode path="locationPrefix.ts" numbered />
+
+## Advanced Example
+
+Since Gofer Engine uses native TypeScript/JavaScript, you can use any of the recipes you are familiar with to pass variables and create advanced transformer logic. You could even keep your transformers in a common directory and import them where needed into your channels.
+
+Let's refactor the previous example a little bit and make the transformer function reusable for other paths and allowing a passed through prefix/suffix.
+
+<ExampleCode path="addPrefix.ts" numbered />
+
+<ExampleCode path="prefixedChannel.ts" numbered />
+
+## Advanced Type Control
+
+
+For advanced type control, you can pass through a generic to the `ChannelConfig` (the _second_ generic option) which passes down to the `FilterFlow` generic to either:
+
+- `'F'` = Only allows raw transform functions. E.G. `ingestion: [(msg) => msg]`
+- `'O'` = Only allow transforming functions in objects. E.G. `ingestion: [{ transform: (msg) => msg }]`
+- `'B'` = Allow _**B**oth_ raw transform functions or wrapped in objects. E.G. `ingestion: [(msg) => msg, { transform: (msg) => msg }]`
+The default is 'B'. E.G. `const conf: ChannelConfig<'B', 'B'> = ...`
+
+### OOP Style
+
+The OOP style channel builder transform method aligns with the following types:
+
+```ts
+IngestionClass.transform = (transform: TransformFlow<'F'>) => IngestionClass
+RouteClass.transform = (transform: TransformFlow<'F>) => RouteClass
+```
+
+This means that the `transform` method accepts a single argument which is a function.

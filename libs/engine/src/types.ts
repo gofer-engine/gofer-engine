@@ -93,7 +93,7 @@ export type FilterFlow<Filt extends 'O' | 'F' | 'B' = 'B'> = Filt extends 'O'
   ? FilterFunc
   : FilterFunc | { kind: 'filter'; filter: FilterFunc };
 
-type TransformFunc = (msg: IMsg, context: IMessageContext) => IMsg;
+export type TransformFunc = (msg: IMsg, context: IMessageContext) => IMsg;
 
 // O = require objectified transformers
 // F = require raw function transformers

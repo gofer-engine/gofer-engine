@@ -20,10 +20,17 @@
     "version-major": "npx nx release v major -p=stores,queue,handelse,engine,hl7",
     "version-minor": "npx nx release v minor -p=stores,queue,handelse,engine,hl7",
     "version-patch": "npx nx release v patch -p=stores,queue,handelse,engine,hl7",
-    "publish": "nx release p -p=stores,queue,handelse,engine,hl7"
+    "publish": "nx release p -p=stores,queue,handelse,engine,hl7",
+    "docs": "npm --prefix ./apps/docs run"
   },
   "private": true,
   "dependencies": {
+    "@docusaurus/preset-classic": "3.0.1",
+    "@mdx-js/react": "^3.0.0",
+    "clsx": "^2.0.0",
+    "prism-react-renderer": "^2.3.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "axios": "^1.5.1",
     "dgraph-js": "^21.3.1",
     "graphql": "^16.8.1",
@@ -39,6 +46,9 @@
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
+    "@docusaurus/module-type-aliases": "3.0.1",
+    "@docusaurus/tsconfig": "3.0.1",
+    "@docusaurus/types": "3.0.1",
     "@commitlint/cli": "^17.7.2",
     "@commitlint/config-conventional": "^17.7.0",
     "@jscutlery/semver": "^4.1.0",

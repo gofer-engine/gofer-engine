@@ -1,3 +1,4 @@
+import { MsgTypes } from '@gofer-engine/message-type';
 import SFTP from 'ssh2-sftp-client';
 
 export type MaybeArray<T> = T | T[];
@@ -39,6 +40,8 @@ export type SFTPWriteConfig = {
 
 export type SFTPReadConfig = {
   connection: SFTP.ConnectOptions;
+  // FIXME: use msgType in src code.
+  msgType?: MsgTypes;
   filterOptions?: FileFilterOptions;
   directory?: string;
   afterProcess?: AfterProcess;
