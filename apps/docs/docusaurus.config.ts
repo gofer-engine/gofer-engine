@@ -121,7 +121,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Gofer Engine. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Gofer Engine. Docs Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,

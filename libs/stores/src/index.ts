@@ -13,6 +13,14 @@ const stores = {
   postgres,
 } as const;
 
+export {
+  fileOpts,
+  surrealOpts,
+  mongoOpts,
+  dgraphOpts,
+  postgresOpts,
+};
+
 export interface StoreOptions {
   file: fileOpts;
   surreal: surrealOpts;

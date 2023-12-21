@@ -1,0 +1,252 @@
+---
+sidebar_position: 6
+---
+
+import ExampleCode from '@site/src/components/ExampleCode';
+
+# `routes` — Route Messages
+
+<!--<ExampleCode path="storeExample.ts" numbered metastring="{5,8-16,21}" />-->
+
+"Routing" is the term used for outbound processing of messages in Gofer Engine.
+You can develop channel routes in either the JSON config route following the
+`Route` type, or you can use the OOP style and follow the `ORoute` interface.
+
+## Using JSON Style
+
+_Alternatively [use OOP style](#using-oop-style)._
+
+Using object configs offer simplified strongly typed configuration and allows the configs to be easily stringified to JSON and broken apart for exporting/importing.
+
+The `routes` property in the `ChannelConfig` type takes a multidimensional
+arrays of `Route`s. This allows routes to be procecessed syncronously or
+asyncronously. Routes within the same inner array will be called sequentially,
+If a route sends to a tcp server, then the next route will be using the ACK
+returned by that server.
+
+<ExampleCode path="configRouteExample.ts" numbered metastring="{3-10,12-15,17-23,51}" />
+
+
+## Using OOP Style
+
+_Alternatively [use JSON style](#using-json-style)._
+
+### `name`
+
+Call the `name` method to name the route
+
+<ExampleCode path="oopRoutingExample.ts" start={7} end={7} numbered={false} />
+
+### `id`
+
+Call the id method to override the generated id given to the route. If not
+provided the id will be a UUID
+
+<ExampleCode path="oopRoutingExample.ts" start={8} end={8} numbered={false} />
+
+### `filter`
+
+Call the filter method to filter the message. See Filter Flow for the function
+definition
+
+<ExampleCode path="oopRoutingExample.ts" start={9} end={9} numbered={false} />
+
+### `transform`
+
+Call the transform method to transform/modify the message. See Transform Flow
+for the function definition
+
+<ExampleCode path="oopRoutingExample.ts" start={10} end={10} numbered={false} />
+
+### `store`
+
+Call the store method to persist the message to a data store. See Store Config
+for the config definition
+
+<ExampleCode path="oopRoutingExample.ts" start={11} end={11} numbered={false} />
+
+### `setVar`
+
+Call the setVar method to set a variable value for the specific scope. The
+varValue can either be the value itself or a function to callback to retrieve
+the value from the message and context. See Variables for more information on
+using variables.
+
+<ExampleCode path="oopRoutingExample.ts" start={12} end={14} numbered={false} />
+
+### `setMsgVar`
+Call the setMsgVar method to set a variable value for the Message scope. Later
+in this message will be able to use this variable. The varValue can either be
+the value itself or a function to callback to retrieve the value from the
+message and context. See Variables for more information on using variables.
+
+<ExampleCode path="oopRoutingExample.ts" start={15} end={15} numbered={false} />
+
+### `setRouteVar`
+Call the setMsgVar method to set a variable value for the Message scope. Later
+in this message will be able to use this variable. The varValue can either be
+the value itself or a function to callback to retrieve the value from the
+message and context. See Variables for more information on using variables.
+
+<ExampleCode path="oopRoutingExample.ts" start={16} end={16} numbered={false} />
+
+### `setChannelVar`
+
+Call the setChannelVar method to set a variable value for the Channel scope.
+Later in this message or following messages within this same channel will be
+able to use this variable. The varValue can either be the value itself or a
+function to callback to retrieve the value from the message and context. See
+Variables for more information on using variables.
+
+<ExampleCode path="oopRoutingExample.ts" start={17} end={17} numbered={false} />
+
+### `setGlobalVar`
+
+Call the setGlobalVar method to set a variable value for the Global scope.
+Anywhere later in current or following messages within this same server will be
+able to use this variable. The varValue can either be the value itself or a
+function to callback to retrieve the value from the message and context. See
+Variables for more information on using variables.
+
+<ExampleCode path="oopRoutingExample.ts" start={18} end={18} numbered={false} />
+
+### `getVar`
+
+Call the getVar method to get a previously set variable for the given scope by
+name. Define the callback function (cb) to do something with the value of the
+variable. You can use the value to filter or transform the message, or do
+something with the MessageContext.
+
+To filter the message, return a boolean.
+
+To transform the message, return the transformed Msg class instance You can
+return undefined or even not return anything (void)
+
+<ExampleCode path="oopRoutingExample.ts" start={19} end={19} numbered={false} />
+
+### `getMsgVar`
+
+Call the getMsgVar method to get a previously set variable for the Msg scope.
+
+<ExampleCode path="oopRoutingExample.ts" start={20} end={20} numbered={false} />
+
+### getRouteVar
+
+Call the getRouteVar method to get a previously set variable for the Route
+scope.
+
+<ExampleCode path="oopRoutingExample.ts" start={21} end={23} numbered={false} />
+
+### `getChannelVar`
+
+Call the getChannelVar method to get a previously set variable for the Channel
+scope.
+
+<ExampleCode path="oopRoutingExample.ts" start={24} end={26} numbered={false} />
+
+### `getGlobalVar`
+Call the getGlobalVar method to get a previously set variable for the Channel scope
+
+<ExampleCode path="oopRoutingExample.ts" start={27} end={29} numbered={false} />
+
+### `send`
+Call the send method to configure a destination to send the message.
+
+Currently only TCP (MLLP), HTTP, and HTTPS destinations are supported, but
+coming soon, Gofer Engine will also support ftp, sftp, and database direct
+queries/mutations.
+
+For example, you can send the message via TCP to the IP and port provided by
+your EHR
+
+<ExampleCode path="oopRoutingExample.ts" start={30} end={30} numbered={false} />
+
+You can also use a function to extract this information from the message or
+context
+
+<ExampleCode path="oopRoutingExample.ts" start={31} end={36} numbered={false} />
+
+Another example, you can send the message to an HTTPS endpoint with a
+self-signed certificate, and provide basic authorization.
+
+<ExampleCode path="oopRoutingExample.ts" start={42} end={50} numbered={false} />
+
+
+### `export`
+
+Call the export method to save the configuration to a JSON object. This method
+is mainly used for testing purposes and inner implementation.
+
+## Simplified types
+
+```ts
+type Route = {
+  kind: 'route';
+  id?: string | number;
+  name?: string;
+  tags?: Tag[];
+  queue?: QueueConfig;
+  flows:
+    | SetRequired<RouteFlowNamed, 'id'>[]
+    | (RouteFlow | RouteFlowNamed)[];
+}
+
+type RouteFlow =
+  | FilterFlow
+  | TransformFlow
+  | TransformOrFilterFlow
+  | ({ kind: "store" } & StoreConfig)
+  | Connection;
+
+type Connection =
+  | { kind: "tcp"; tcp: TcpConfig }
+  | { kind: "http"; http: HTTPConfig }
+  | { kind: "https"; https: HTTPSConfig };
+
+type RouteFlowNamed = {
+  kind: "flow";
+  id?: string | number; // a unique id for this route flow. If not provided will use UUID to generate. if not defined it may not be the same between deployments/reboots
+  name?: string; // a human readable name for this route flow. Preferrably unique
+  tags?: Tag[]; // Tags to help organize/identify route flows
+  queue?: QueueConfig;
+  flow: RouteFlow;
+};
+
+interface ORoute {
+  name: (name: string) => ORoute;
+  id: (id: string | number) => ORoute;
+  filter: (f: FilterFunc) => ORoute;
+  transform: (t: TransformFunc) => ORoute;
+  store: (s: StoreConfig) => ORoute;
+  setVar: <V>(scope: varTypes, varName: string, varValue: MsgVar<V>) => ORoute;
+  setMsgVar: <V>(varName: string, varValue: MsgVar<V>) => ORoute;
+  setRouteVar: <V>(varname: string, varValue: MsgVar<V>) => ORoute;
+  setChannelVar: <V>(varName: string, varValue: MsgVar<V>) => ORoute;
+  setGlobalVar: <V>(varName: string, varValue: MsgVar<V>) => ORoute;
+  getVar: <V>(scope: varTypes, varName: string, getVal: WithVarDo<V>) => ORoute;
+  getMsgVar: <V>(varName: string, getVal: WithValDo<V>) => ORoute;
+  getRouteVar: <V>(varName: string, getVal: WithValDo<V>) => ORoute;
+  getChannelVar: <V>(varName: string, getVal: WithValDo<V>) => ORoute;
+  getGlobalVar: <V>(varName: string, getVal: WithValDo<V>) => ORoute;
+  send(method: 'tcp', host: string, port: number): ORoute;
+  send(method: 'http', options: IHTTPConfig): ORoute;
+  send(method: 'https', options: IHTTPSConfig): ORoute;
+  export: () => SetRequired<Route, "id" | "flows">;
+}
+```
+
+## Advanced Config Style Conformance
+
+For advanced type control, you can pass through generics to the `Route`,
+`RouteFlow`, and `RouteFlowNamed` typed.
+
+1. The first generic seen in source as `Filt` controls the type of the filter
+   style to either (`F`) Functional configs, (`O`) Ojectified configs, or (`B`) to
+   allow Both config styles.
+2. The second generic seen in source as `Tran` controls the type of the
+   transformer style to either (`F`) Functional configs, (`O`) Ojectified configs,
+   or (`B`) to allow Both config styles.
+3. The third generic seen in source as `Stct` controls controls the strictness of
+   the configs to either (`S`) Strictly require objectified configs with ids, or
+   (`L`) then allow looser config without requirind ids.
+

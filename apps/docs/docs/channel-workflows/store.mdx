@@ -1,0 +1,281 @@
+---
+sidebar_position: 5
+---
+
+import ExampleCode from '@site/src/components/ExampleCode';
+
+# `store` — Persist Data
+
+Gofer Engine currently supports data stores for persisting messages,
+acknowledgements, or other elements configured within the worfklows. Currently,
+five storage databases/methods are supported. This provides a variety of
+different type of datastores that may work for different applications. We
+support an RDBMS, a Document Store, a Graph Database, and a Multi-Model
+Database. Depending upon the uniformity of your data and how you want to use the
+persisted data, you find some data stores work better for your use case than
+others.
+
+Stores can be used within the flow of both the ingestion and the routes of
+channels in Gofer Engine. This allows storing messages before they are filtered
+and/or transformed. You can also add configuration to persist acknowledgement
+replies.
+
+The `StoreConfig` type accepts one of the keys from the interface `StoreOptions`.
+
+```ts
+import { RequireExactlyOne } from 'type-fest';
+import {
+  postgresOpts,
+  mongoOpts,
+  surrealOpts,
+  dgraphOpts,
+  fileOpts,
+} from '@gofer-engine/stores';
+
+interface StoreOptions {
+  postgres: postgresOpts;
+  mongo: mongoOpts;
+  surreal: surrealOpts;
+  dgraph: dgraphOpts;
+  file: fileOpts;
+}
+
+type StoreConfig = RequireExactlyOne<StoreOptions>;
+```
+
+<ExampleCode path="storeExample.ts" numbered metastring="{5,8-16,21}" />
+
+## PostgreSQL
+
+[PostgreSQL](https://www.postgresql.org/), often simply Postgres, is an advanced
+open-source relational database management system (RDBMS). It has been proven to
+be highly scalable both in the sheer quantity of data it can manage and in the
+number of concurrent users it can accommodate. It offers an extensive range of
+data types, robust transactional support, and a variety of extension
+capabilities. Postgres is widely used in many production applications today due
+to its performance, robustness, and broad SQL compliance.
+
+Since RDBMS has a schemafull database, the messages are stored in json columns
+of predefined schemad tables. On the first initialization of a postgres store,
+a schema check is performed and the required schema applied if it does not
+conflict with the existing schema.
+
+The postgres configuration type extends the `PoolConfiguration` from the
+`postgresql-client`. This allows developers the ability to follow an interface
+they are accustom to using, and add the following options for `schemaowner`,
+`table`, and `id`.
+
+```ts
+import { PoolConfiguration } from 'postgresql-client';
+
+type postgresOpts extends PoolConfiguration {
+  table?: string;
+  schemaOwner?: string;
+  // @depracated PostgreSQL will use an internal auto-incremented primary key
+  id?: string;
+}
+```
+
+- `table` - The table to use to store messages. Defaults to `"test"`
+- `schemaOwner` - The location of the schema that holds the table. Defaults to
+  `"postgres"`
+- `id` - If `"UUID"` then a random UUID will be generated, else if matches
+  pattern of HL7v2 path such as `$MSH-10.1` then the id will be selected from the
+  message, else undefined. This value will be set to the `guid` column.
+
+## MongoDB
+
+[MongoDB](https://www.mongodb.com/) is a popular NoSQL database that provides
+high performance, high availability, and easy scalability. It works on the
+concept of collections and documents, using a flexible, JSON-like format called
+BSON for data storage. Unlike relational databases, MongoDB's document-oriented
+model makes it easy to store and process large amounts of data with diverse
+structures. It's often used for building modern applications that require a
+flexible, scalable database, and rapid development.
+
+Since MongoDB uses flexible JSON-like data storage, there is no need to
+predefine schemad tables. On the first initialization of a mongo store, there is
+no schema check, instead a reusable connection is made to the mongo store.
+
+The mongo configuration type provides the following options for connecting to a Mongo Store and declaring how messages are stored:
+
+```ts
+import { MongoClientOptions } from 'mongodb';
+
+type mongoOpts {
+  id?: string;
+  uri?: string;
+  options?: MongoClientOptions;
+  database?: string;
+  collection?: string;
+  warnOnError?: boolean;
+  normalized?: boolean;
+}
+```
+
+- `id` - The source to use for each message identifier. Defaults to `UUID` and can get message pieces using for example `$MSH-10.1`
+- `uri` - The mongodb uri string to use for connecting. See:
+  [Connection String](https://www.mongodb.com/docs/manual/reference/connection-string/)
+- `options` - The `MongoClientOptions` to use in the connection. See [Mongo
+  Connection
+  Options](https://www.mongodb.com/docs/drivers/node/current/fundamentals/connection/connection-options/)
+- `database` - The database to use to store messages.
+- `collection` - The collection to use to store messages.
+- `warnOnError` - If true, log warnings instead of throwing errors.
+- `normalized` - If true, the JSON document will be normalized for easier
+  comparing between documents. If false, a minified JSON document will be stored
+  providing for smaller size records.
+
+## SurrealDB
+
+[SurrealDB](https://surrealdb.com/) is a distributed, multi-model database
+system designed for cloud-native applications. It supports various data models
+including document, graph, and key-value stores, making it versatile for
+different types of applications. SurrealDB is built to handle large-scale data
+across many commodity servers, providing high availability and easy scalability.
+Its distributed nature and multi-model support make it a suitable choice for
+applications that require a flexible, robust, and scalable database solution.
+
+Since SurrealDB is a flexible multi-model storage, there is no need to
+predefine schemad tables. On the first initialization of a surreal store, there is
+no schema check, instead a reusable connection is made to the surreal database store.
+
+The surreal configuration type provides the following options for connecting to a Surreal Database and declaring how messages are stored:
+
+```ts
+type surrealOpts {
+  id?: string;
+  uri?: string;
+  pass?: string;
+  warnOnError?: boolean;
+  namespace?: string;
+  database?: string;
+  table?: string;
+  normalized?: boolean;
+}
+```
+
+- `id` - The source to use for each message identifier. Defaults to `UUID` and
+  can get message pieces using for example `$MSH-10.1`
+- `uri` - The rpc endpoint to your SurrealDB database. Example:
+  `"http://127.0.0.1:8000/rpc"`
+- `user` - The username to use for authentication to the database.
+- `pass` - The password to use for authentication to the database.
+- `warnOnError` - If true, log warnings instead of throwing errors.
+- `namespace` - The namespace within SurrealDB to use. Defaults to `"test"`.
+- `database` - The database to use to store messages. Defaults to `"test"`.
+- `table` - The table to use to store messages. Defaults to `"test"`
+- `normalized` - If true, the JSON document will be normalized for easier
+  comparing between documents. If false, a minified JSON document will be stored
+  providing for smaller size records.
+
+## DgraphDB
+
+[Dgraph](https://dgraph.io/) is an open-source, distributed graph database,
+built for production environments, and written entirely in Go. Dgraph is
+designed to be a high-performance database that scales seamlessly, providing
+ACID transactions, consistent replication, and linearizable reads. It's
+optimized for fast, efficient retrieval of complex query patterns, making it
+suitable for powering real-time applications. Its graph model is flexible and
+easy to work with, allowing for intuitive data modeling and interaction.
+
+Dgraph doesn't support JSON fields, and there are limitations on data structure when using it's type system, so for these reasons, Gofer Engine only supports Dgraph for storing and retrieving HL7 v2 message types at this time.
+
+```ts
+type dgraphOpts {
+  id?: string;
+  uri?: string;
+  warnOnError?: boolean;
+}
+```
+
+- `id` - The source to use for each message identifier. Defaults to `UUID` and
+  can get message pieces using for example `$MSH-10.1`
+- `uri` - uri including port to gRPC of alpha node. Defaults to:
+  `"172.0.0.1:9080"`. See [Dgraph Port Usage](https://dgraph.io/docs/deploy/security/ports-usage/)
+- `warnOnError` - If true, log warnings instead of throwing errors.
+
+## OS File System
+
+File System ([fs](https://nodejs.org/api/fs.html)) storage refers to the use of a computer's file system to store and
+manage data. This method of storage involves writing data directly to a
+system's hard drive or other storage device. It's a simple and straightforward
+method of data storage, often used for local applications or for applications
+that don't require the complex features provided by databases. File System
+storage allows for direct control over files and directories, making it a
+flexible option for many different types of applications.
+
+```ts
+type fileOpts {
+  path?: string[]
+  format?: 'string' | 'json'
+  overwrite?: boolean
+  append?: boolean
+  autoCreateDir?: boolean
+  warnOnError?: boolean
+  extension?: string
+  filename?: string | string[]
+  verbose?: boolean
+  /**
+    * @depracated Not used in file store, use filename instead
+    */ 
+  id?: string
+}
+```
+
+
+- `path` - Defaults to `"['local']"`
+- `format` - Ddefaults to `"string"`
+- `overwrite` - Default to `true`
+- `append` - Defaults to `false`
+- `autoCreateDir` - Defaults to `true`
+- `warnOnError` - If true, log warnings instead of throwing errors. Defaults to `false`
+- `extension` - Defaults to `".hl7"`
+- `filename` - Defaults to `"$MSH-10.1"`
+- `verbose` - Defaults to `false`
+- ~~`id`~~ - Not used in file store, use filename instead
+
+The `path` and `filename` settings can be an array of strings that get
+concatenated together. Paths are concatenated using the directory traverse
+character (`/`). Filenames are concatenating with no separating characters. If you
+need a separating character, then you can add it as an element in the array.
+
+
+## Adding New Stores
+
+Gofer Engine is open to implementing additional storage solutions. To implement
+a new store, a new class should be created implementing the `IStoreClass`
+interface.
+
+### Interface
+
+Each of the store classes must implement the base `IStoreClass` providing three
+main methods.
+
+```ts
+interface IStoreClass {
+  store: StoreFunc;
+  close: () => Promise<void>;
+  query: (query: string) => Promise<unknown>;
+}
+type StoreFunc = (data: IMsg, context: IMessageContext) => Promise<boolean>;
+```
+
+- `store` - The main method used by the implementation to take a message and
+  persists it into the store. A boolean must be returned indicating if the
+  message was stored (returns `true`) or if the message was not stored (return
+  `false`)
+
+- `close` - The method used to close the connection to the database when the
+  channel is being stopped.
+
+- `query` - The method used to query a stored message. This is currently used
+  for building tests but in the future may be used to query messages from the
+  store on scheduled jobs.
+
+## Future Changes
+
+All of the stores are currently in a single npm library, `@gofer-engine/stores`.
+In the future, we will most likely break each store into it’s own library and
+require users to install only the stores that they need to use to reduce unused
+code in project builds.
