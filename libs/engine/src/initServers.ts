@@ -20,31 +20,31 @@ export const servers: Record<string | number, net.Server> = {};
 export const jobs: Record<string | number, Job> = {};
 
 export const initServers: InitServers = (channels) => {
-  channels.forEach((c) => {
-    const e = events<IMsg>(c.id.toString());
-    listeners.channels[c.id] = e;
-    verboseListeners(c.logLevel, e);
+  channels.forEach((channel) => {
+    const eventHandlers = events<IMsg>(channel.id.toString());
+    listeners.channels[channel.id] = eventHandlers;
+    verboseListeners(channel.logLevel, eventHandlers);
     const context: IContext = {
-      logger: logger({ channelId: c.id }),
+      logger: logger({ channelId: channel.id }),
       setGlobalVar,
       getGlobalVar,
-      setChannelVar: setChannelVar(c.id),
-      getChannelVar: getChannelVar(c.id),
+      setChannelVar: setChannelVar(channel.id),
+      getChannelVar: getChannelVar(channel.id),
     };
     const ingestFunc: IngestMsgFunc = async (msg, ack, context) => {
-      const ingestedMsg = runIngestFlows(c, msg, ack, context);
+      const ingestedMsg = runIngestFlows(channel, msg, ack, context);
       const accepted = typeof ingestedMsg === 'boolean' ? false : true;
-      e.onIngest.go({
+      eventHandlers.onIngest.go({
         pre: msg,
         post: ingestedMsg,
         accepted,
-        channel: c.id.toString(),
+        channel: channel.id.toString(),
       });
       if (ingestedMsg !== false) {
-        const comp = await runRoutes(c, ingestedMsg, context);
-        e.onComplete.go({
+        const comp = await runRoutes(channel, ingestedMsg, context);
+        eventHandlers.onComplete.go({
           orig: msg,
-          channel: c.id,
+          channel: channel.id,
           status: comp,
         });
         return comp;
@@ -52,42 +52,42 @@ export const initServers: InitServers = (channels) => {
       // NOTE: have to return true on filtered messages or else a Queue if exists will retry
       return true;
     }
-    if (c.source.kind === 'tcp') {
-      servers[c.id] = tcpServer(
-        c.id,
-        c.source.tcp,
-        c.source.queue,
-        c.logLevel,
+    if (channel.source.kind === 'tcp') {
+      servers[channel.id] = tcpServer(
+        channel.id,
+        channel.source.tcp,
+        channel.source.queue,
+        channel.logLevel,
         ingestFunc,
         context,
         getMsgType,
       );
-    } else if (c.source.kind === 'http') {
-      servers[c.id] = httpServer(
-        c.id,
-        c.source.http,
-        c.source.queue,
-        c.logLevel,
+    } else if (channel.source.kind === 'http') {
+      servers[channel.id] = httpServer(
+        channel.id,
+        channel.source.http,
+        channel.source.queue,
+        channel.logLevel,
         ingestFunc,
         context,
         getMsgType,
       )
-    } else if (c.source.kind === 'https') {
-      servers[c.id] = httpsServer(
-        c.id,
-        c.source.https,
-        c.source.queue,
-        c.logLevel,
+    } else if (channel.source.kind === 'https') {
+      servers[channel.id] = httpsServer(
+        channel.id,
+        channel.source.https,
+        channel.source.queue,
+        channel.logLevel,
         ingestFunc,
         context,
         getMsgType,
       )
-    } else if (c.source.kind === 'schedule') {
-      jobs[c.id] = schedulerServer(
-        c.id,
-        c.source.schedule,
+    } else if (channel.source.kind === 'schedule') {
+      jobs[channel.id] = schedulerServer(
+        channel.id,
+        channel.source.schedule,
         undefined,
-        c.logLevel,
+        channel.logLevel,
         ingestFunc,
         context,
         getMsgType,

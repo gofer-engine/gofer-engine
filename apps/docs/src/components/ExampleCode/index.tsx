@@ -1,4 +1,3 @@
-// import fs from 'fs';
 import CodeBlock from '@theme/CodeBlock';
 import styles from './styles.module.css';
 
@@ -10,6 +9,7 @@ type ExampleCodeProps = {
   start?: number;
   end?: number;
   hide?: [start: number, end: number, replace?: string][];
+  replacers?: [string,string][];
 };
 
 const toTxt = (d: unknown): string => {
@@ -33,19 +33,26 @@ const toTxt = (d: unknown): string => {
   return typeof d
 }
 
-export default function ExampleCode({ path, preappendPath, numbered = true, start, end, hide, metastring }: ExampleCodeProps): JSX.Element {
+export default function ExampleCode({ path, preappendPath, numbered = true, start, end, hide, metastring, replacers = [] }: ExampleCodeProps): JSX.Element {
   const fileParts = path.split('.')
   const ext = fileParts.pop()
   const Code = require(`@site/static/code/${path}.md`).default()
-  console.log(start, end, toTxt(Code));
   if (start !== undefined) {
     start = start - 1;
   }
-  const lines = toTxt(Code).split(`\n`).slice(start, end);
+  let lines = toTxt(Code).split(`\n`).slice(start, end);
   if (hide) {
     hide.forEach(([s, e, r]) => {
       const rep = r ? [r] : []
       lines.splice(s - 1, e - s + 1, ...rep)
+    })
+  }
+  if (replacers.length) {
+    lines = lines.map((line) => {
+      replacers.forEach(([from, to]) => {
+        line = line.replace(from, to)
+      })
+      return line;
     })
   }
   const text = lines.join('\n')

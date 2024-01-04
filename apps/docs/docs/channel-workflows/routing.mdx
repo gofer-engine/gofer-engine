@@ -46,21 +46,21 @@ provided the id will be a UUID
 
 ### `filter`
 
-Call the filter method to filter the message. See Filter Flow for the function
+Call the filter method to filter the message. See [Filter Flow](./filter) for the function
 definition
 
 <ExampleCode path="oopRoutingExample.ts" start={9} end={9} numbered={false} />
 
 ### `transform`
 
-Call the transform method to transform/modify the message. See Transform Flow
+Call the transform method to transform/modify the message. See [Transform Flow](./transform)
 for the function definition
 
 <ExampleCode path="oopRoutingExample.ts" start={10} end={10} numbered={false} />
 
 ### `store`
 
-Call the store method to persist the message to a data store. See Store Config
+Call the store method to persist the message to a data store. See [Store Config](./store)
 for the config definition
 
 <ExampleCode path="oopRoutingExample.ts" start={11} end={11} numbered={false} />
@@ -152,17 +152,13 @@ Call the getGlobalVar method to get a previously set variable for the Channel sc
 ### `send`
 Call the send method to configure a destination to send the message.
 
-Currently only TCP (MLLP), HTTP, and HTTPS destinations are supported, but
-coming soon, Gofer Engine will also support ftp, sftp, and database direct
-queries/mutations.
-
 For example, you can send the message via TCP to the IP and port provided by
 your EHR
 
 <ExampleCode path="oopRoutingExample.ts" start={30} end={30} numbered={false} />
 
-You can also use a function to extract this information from the message or
-context
+You can also use a function to extract this information from the message, the
+context, or variables.
 
 <ExampleCode path="oopRoutingExample.ts" start={31} end={36} numbered={false} />
 

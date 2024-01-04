@@ -1,12 +1,20 @@
 import { IChannelEvents, IMsg, TLogLevel } from '@gofer-engine/message-type';
+import handelse from '@gofer-engine/handelse';
 import { isLogging } from './helpers';
+
+const LOGGER = handelse.create<string>('LOGGER')
+
+LOGGER.sub((log) => {
+  console.log(log)
+  return true
+});
 
 export const verboseListeners = (
   logLevel: TLogLevel | undefined,
   handlers: IChannelEvents<IMsg>,
 ) => {
   const logger = (channel: string | number | undefined, log: string) => {
-    console.log(`${new Date().toISOString()}: <${channel}> ${log}`);
+    LOGGER.pub(`${new Date().toISOString()}: <${channel}> ${log}`);
     return true;
   };
   if (isLogging('debug', logLevel)) {

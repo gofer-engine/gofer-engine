@@ -1,0 +1,299 @@
+---
+sidebar_position: 1
+---
+
+import ExampleCode from '@site/src/components/ExampleCode';
+
+# Event System
+
+Gofer Engine's Event System's library package has been named `handelse`.
+
+:::info
+
+_**Händelse**_ is the Swedish word for event.
+
+:::
+
+This library is designed to be used as a
+standalone event system library package if so desired.
+
+<ExampleCode path="eventsExample.ts" hide={[[3,68,'// ...']]} />
+
+The default export of the library is an initialized class of the `EventSystemManager`. Since this is the default import, you can shorten the name to your liking:
+
+<ExampleCode path="eventsExample.ts" hide={[[3,68,'// ...']]} replacers={[['eventSystemManager','handelse']]} />
+
+If instead you wish to initialize or extend the `EventSystemManager` class yourself, you can import just the class and initialize your own manager.
+
+<ExampleCode path="eventsExample.ts" hide={[[3,68,'const manager = new EventSystemManager(["custom-reserved-handler"]);\n\n// ...']]} replacers={[['eventSystemManager','{ EventSystemManager }']]} />
+
+## Global vs. Local Handlers
+
+The handelse library provides both named global event handlers, and unnamed
+local event handlers. Named global event handlers can be later retrieved outside
+of the current scope while local event handlers only live within their current
+scope.
+
+### Create a Local Handler
+
+To create a local event handler, use the `createLocal` method:
+
+<ExampleCode path="eventsExample.ts" hide={[[3,31,'// ...\n'],[6,40,'// ...']]} />
+
+:::tip[Aliases]
+
+Alternatively you can use these aliases for the `createLocal` method: `local`,
+`createInstance`, `instance`.
+
+:::
+
+### Create a Global Handler
+
+To create a global event handler, use the `createGlobal` method:
+
+<ExampleCode path="eventsExample.ts" hide={[[5,68,'// ...'],]} />
+
+:::tip[Aliases]
+
+Alternatively you can use these aliases for the `createGlobal` method: `create`,
+`global`.
+
+:::
+
+### Get a Global Handler
+
+Global Event Handlers can be later retrieved by their referenced handle.
+
+<ExampleCode path="eventsExample.ts" hide={[[3,12,'// ...'],[9,59,'// ...']]} />
+
+:::tip
+
+For many use cases, it will be uneccessary to retrieve the handler to perform
+routine tasks such as publishing or subscribing to an event handler as these
+actions can be performed from the `eventSystemManager` class by passing the
+handler name.
+
+:::
+
+:::note
+
+As local event handlers are not referencable by name within the manager after
+creation, the `get`, `sub`, `pub`, `unsub` and `delete` methods only support
+global event handlers. See **[The Event System
+Manager](#the-event-system-manager)**.
+
+:::
+
+## Event Handling
+
+After creating either a local or global event handler, you can use the handler
+the following ways:
+
+### Subscribing
+
+The `sub` methos allows adding a subscriber to an event handler. A subscriber is
+simply a promisable function that returns a boolean. If the subscriber
+successfully handled the event, then the return should be true. If the
+subscriber rejected the event, then the return should be false.
+
+<ExampleCode path="eventsExample.ts" hide={[[1,32,'// ...'],[8,37,'// ...']]} />
+
+The return of the `sub` method returns the subscriber id. This id can be later
+used to [unsubscribe](#unsubscribing) this particular subscription.
+
+:::tip[Aliases]
+
+Alternatively, you could use any one of these aliases for the `sub` method:
+`subscribe`, `on`, `do`, `start`, or `listen`.
+
+:::
+
+### Publishing
+
+The `pub` method provides the ability to publish an event to all subscribers.
+
+<ExampleCode path="eventsExample.ts" hide={[[1,37,'// ...'],[5,32,'// ...']]} />
+
+The `pub` method returns a promise object, mapping each subscriber's id to it's
+acceptance of the event.
+
+:::tip[Aliases]
+
+Alternatively, you could use any one of these aliases for the `pub`
+method: `publish`, `go`, `emit`, `broadcast`, or `signal`
+
+:::
+
+### Unsubscribing
+
+The `unsub` method allows for active subscribers to be removed from the current
+handler. The input requires the subscriber identifier which is returned when
+adding the subscriber. See [Subscribing](#subscribing)
+
+<ExampleCode path="eventsExample.ts" hide={[[1,39,'// ...'],[5,30,'// ...']]} />
+
+:::tip[Aliases]
+
+Alternatively, you could use any of of these aliases for the `unsub` method:
+`unsubscribe`, `off`, `remove`, `stop`, or `deafen`
+
+:::
+
+You can bulk unsubscribe all subscribers using the `removeAll` method.
+
+<ExampleCode path="eventsExample.ts" hide={[[1,25,'// ...\n'],[3,44,'\n// ...']]} />
+
+## The Event System Manager
+
+Aside from [creating event handlers](#global-vs-local-handlers), the Event
+System Manager provided methods for directly interacting with global event
+handlers.
+
+### Global Subscribing
+
+The `sub` method works identical to the [`sub` method of the event handler
+class](#subscribing), with the addition of the handler name as the first
+argument.
+
+<ExampleCode path="eventsExample.ts" hide={[[3,3,'// ...'],[10,68,'// ...']]} />
+
+:::tip[Aliases]
+
+Alternatively, you could use any one of these aliases for the `sub` method:
+`subscribe`, `on`, `do`, `start`, or `listen`.
+
+:::
+
+### Global Publishing
+
+The `pub` method works identical to the [`pub` method of the event handler
+class](#publishing), with the addition of the handler name as the first
+argument.
+
+<ExampleCode path="eventsExample.ts" hide={[[3,8,'// ...'],[7,63,'// ...']]} />
+
+:::tip[Aliases]
+
+Alternatively, you could use any one of these aliases for the `pub`
+method: `publish`, `go`, `emit`, `broadcast`, or `signal`
+
+:::
+
+### Global Unsubscribing
+
+The `unsub` method works identical to the [`unsub` method of the event handler
+class](#unsubscribing), with the addition of the handler name as the first
+argument.
+
+<ExampleCode path="eventsExample.ts" hide={[[3,10,'// ...'],[7,61,'// ...']]} />
+
+:::tip[Aliases]
+
+Alternatively, you could use any of of these aliases for the `unsub` method:
+`unsubscribe`, `off`, `remove`, `stop`, or `deafen`
+
+:::
+
+You can bulk unsubscribe all subscribers using the `removeAllSubs` method. This
+method works similar to the `removeAll` method of the handler class
+
+<ExampleCode path="eventsExample.ts" hide={[[1,26,'// ...\n'],[4,43,'// ...']]} />
+
+### Deleting Handlers
+
+The `delete` method provides the capability for removing Global Event Handlers.
+
+:::note
+
+Local Event Handlers do not have a `delete` method as they naturally live within
+their scope and are natively garbage collected by the environment. Global Event
+Handlers live forever within the scope of the running process. So when they are
+no longer being used, it would be wise to delete the global event handlers to
+allow native garbage  collection processes.
+
+:::
+
+<ExampleCode path="eventsExample.ts" hide={[[1,27,'// ...'],[5,42,'// ...']]} />
+
+The manager also provides the `clear` method for removing _**all**_ global event handlers.
+
+<ExampleCode path="eventsExample.ts" hide={[[1,66,'// ...']]} />
+
+:::warning
+
+You cannot delete the reserved `_ALL_` global event handler. When clearning all
+global event handlers using the `clear()` method, the reserved `_ALL_` event
+handler will be reattached.
+
+:::
+
+## Typing Event Handlers
+
+If you are using TypeScript in your project, which we highly recommend, then you
+can pass in generic types to validate event types upon compiling. These generics
+are available to use when creating local or global event handlers, and can be
+used to strongly type global handlers retrived using the `get` method.
+
+:::tip[Runtime Typing]
+
+TypeScript typing can only be used while compiling and not during runtime. For
+this purpose, we have included the `eventType` option parameter to help do basic
+type checking during runtime using the `typeof` syntax. This will throw errors
+during runtime if the `typeof event` does not match the `options.eventType` if
+it is not `undefined`.
+
+You can do additional type checking in your subscriber functions and rejecting
+malformed data. This `eventType` option runs the check before hitting
+subscribers.
+
+:::
+
+<ExampleCode path="eventsExample.ts" hide={[[1,43,'// ...\n'],[17,26,'// ...']]} />
+
+:::danger
+
+If you manually coerce typescript types in your publisher, then your subscribers may receive events of an unexpected type. _It is recommended to add additional **sanitization** and data **validation** processes before sending data to systems susceptable to injection vulnerabilities._
+
+:::
+
+
+## Advanced Options
+
+With the available options object, you can do the following advanced workflows:
+
+- Subscribe to Global Event Handlers not already existing with the
+  `createIfNotExists` option set to `true`
+- Publish to Global Event Handlers not already existing with the
+  `createIfNotExists` option set to `true`
+- Prevent errors of creating Global Event Handlers already created with the `getIfAlreadyCreated` option set to `true`
+
+<ExampleCode path="eventsExample.ts" hide={[[1,59,'// ...\n'],[10,10,'// ...']]} />
+
+:::tip[Unique Handlers]
+
+Remember that global handlers should be globally unique within the running process. It might be beneficial to use a custom prefix for handlers that you manage if your are using handelse as a library within your application. In Gofer Engine, we prefix most global handlers with `gofer:` and within channel contexts include the channel id as well.
+
+:::
+
+## The `_ALL_` Event Handler
+
+Handelse creates a global handler named `_ALL_` that cannot be removed or
+published to directly. This handler is automatically subscribed to all other
+event handlers. This allows you to listen globally to all events. The Event
+System Manager provides the method `subAll` and aliases `all`, `subscribeAll`,
+`onAll`, `doAll`, `startAll`, or `listenAll` to add subscriber functions to this
+`_ALL_` global event handler.
+
+This reserved handler can be used like any other global event handler with the
+exception of being able to directly publish to this handler.
+
+## Gofer Engine `LOGGER` Handle
+
+Gofer Engine adds an additional global handler named `LOGGER`. Subscribing to
+this event handler, you can setup a custom log receiver in additional to or
+instead of the default `console.log` handler.
+
+See [Logging](./logging) for more information.
+
+
+

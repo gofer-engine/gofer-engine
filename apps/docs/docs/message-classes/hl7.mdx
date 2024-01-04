@@ -1,0 +1,562 @@
+---
+sidebar_position: 1
+---
+
+# HL7 v2
+
+The `@gofer-engine/hl7` is a strongly typed `Msg` TypeScript class to encode,
+decode, extrapolate, transform, and map over HL7 message data.
+
+This library package was developed as an independent library within
+`@gofer-engine`. This allows developers to use this package without also needing
+`@gofer-engine/engine`.
+
+Formerly released as `ts-hl7`, this package was the initial project which spurred
+the creation of Gofer Engine to bring the simplicity of `ts-hl7` into a complete
+working Engine and not just a message encapsulation class.
+
+## Purpose
+
+HL7 v2.x has a unique syntax and message structure. Usually, HL7 messages are
+encoded and decoded into and out of XML structures. While XML structures are
+flexible enough to handle the unique message structure. They are harder to work
+with for extrapolating and transforming over the more commonly used JSON data
+structure. We knew we wanted to store the message data in a format that was
+compact but could also be easily queried directly and deeply within modern graph
+and document databases such as MongoDB, SurrealDB, and Dgraph which also work
+directly with JSON data structures. So for these reasons, we developed this
+package.
+
+If you are unfamiliar with HL7, the founder of Gofer Engine, Anthony Master, has written an
+article providing a introduction for beginners into the world of HL7: [What is
+HL7](https://dev.to/amaster507_59/what-is-hl7-4c9f)
+
+## Installation
+
+To use with Node projects, open a terminal/command prompt inside of your node
+project directory and run
+
+```sh
+npm install @gofer-engine/hl7
+```
+
+If you want to use this library in a TS/JS project, but outside of a node
+project, please contact me and we will work out the steps to follow. I have not
+had a need for this yet.
+
+## Usage
+
+```ts
+import Msg from '@gofer-engine/hl7'
+// using fs to read sample.hl7 file
+import fs from 'fs'
+
+const HL7_String = fs.readFileSync('./sample.hl7', 'utf8')
+
+const msg = new Msg(HL7_String)
+```
+
+## Documentation
+
+### Decoding
+
+HL7 messages can be decoded by simply passing the raw string message to the Msg constructor:
+
+```ts
+const msg = new Msg(HL7_string)
+```
+
+To see the JSON decoded message, you can use the json() method:
+
+```ts
+const json = new Msg(HL7_string).json()
+console.log(JSON.stringify(json, undefined, 2))
+```
+
+You can pass an argument to the json method to normalize the JSON format
+
+```ts
+const normalized = new Msg(HL7_string).json(true)
+console.log(JSON.stringify(normalized, undefined, 2))
+```
+
+If you have a JSON object that you want to replace the decoded JSON object, you can use the setMsg method:
+
+```ts
+const foo = new Msg(HL7_string)
+const bar = new Msg('MSH|^~\\&|...')
+bar.setMsg(foo.json())
+
+console.log(bar.json())
+```
+
+### Encoding
+
+To encode a message back to an HL7 string, you can use the ‘toString’ method on the Msg class:
+
+```ts
+const msg = new Msg(HL7_string)
+console.log(msg.toString())
+```
+
+### Extrapolating
+
+HL7 uses paths to reference data inside of the HL7 message structure. The path
+is a string that is a combination of the segment name, segment iteration index,
+field index, field iteration index, component index, and subcomponent index.
+Iteration indexes are surrounded by brackets (`[...]`). The other path parts are
+separated by either a period (`.`) or a dash (`-`). The path is 1-indexed, meaning
+the first segment iteration is `1`, the first field is `1`, the first field
+iteration is `1`, the first component is `1`, and the first subcomponent is `1`. The
+segment name is `3` upper case characters. A path can be specific down to the
+subcomponent level with optional iteration indexes or can be as general as just
+the segment name. The following are all valid paths (_may not be valid HL7
+schemed messages_):
+
+`MSH`, `MSH-3`, `MSH.7`, `MSH.9.1`, `MSH.9-2`, `MSH.10`, `STF-2.1`, `STF-2[2].1`, `STF-3.1`, `STF-11[2]`, `LAN[1]`, `LAN[2].3`, `LAN[3].6[1].1`
+
+The `Msg` class provides methods to structure and destructure paths.
+
+```ts
+type Paths = {
+  segmentName?: string
+  segmentIteration?: number
+  fieldPosition?: number
+  fieldIteration?: number
+  componentPosition?: number
+  subComponentPosition?: number
+}
+Msg.paths = (path?: string) => Paths
+Msg.toPath = (path?: Paths) => string
+```
+
+Iteration indexes can be defined as `[1]` even for non-iterative paths. Simplified
+`1` based paths are also supported even if the value is not deeply nested. For
+example `ZZZ[1]-1[1].1` might reference the same value (Source) as the following:
+`ZZZ[1]-1[1]`, `ZZZ[1]-1`, `ZZZ-1`, `ZZZ-1[1]`, and `ZZZ-1.1` in the the following HL7
+messages:
+
+```hl7
+MSH|^~\&|HL7REG|UH|HL7LAB|CH|200702280700||PMU^B01^PMU_B01|MSGID002|P|2.5.1|
+EVN|B01|200702280700|
+STF||U2246^^^PLW~111223333^^^USSSA^SS|HIPPOCRATES^HAROLD^H^JR^DR^M.D.|P|M|19511004|A|^ICU|^MED|(555)555-1003X345^C^O~(555)555-3334^C^H~(555)555-1345X789^C^B|1003 HEALTHCARE DRIVE^SUITE 200^ANNARBOR^MI^98199^H~3029 HEALTHCARE DRIVE^^ANNARBOR^MI^98198^O|19890125^DOCTORSAREUS MEDICAL SCHOOL&L01||PMF88123453334|74160.2326@COMPUSERV.COM|B
+PRA||^HIPPOCRATES FAMILY PRACTICE|ST|I|OB/GYN^STATE BOARD OF OBSTETRICS AND GYNECOLOGY^C^19790123|1234887609^UPIN~1234987^CTY^MECOSTA~223987654^TAX~1234987757^DEA~12394433879^MDD^CA|ADMIT&T&ADT^MED&&L2^19941231~DISCH&&ADT^MED&&L2^19941231|
+AFF|1|AMERICAN MEDICAL ASSOCIATION|123 MAIN STREET^^OUR TOWN^CA^98765^U.S.A.^M |19900101|
+LAN|1|ESL^SPANISH^ISO639|1^READ^HL70403|1^EXCELLENT^HL70404|
+LAN|2|ESL^SPANISH^ISO639|2^WRITE^HL70403|2^GOOD^HL70404|
+LAN|3|FRE^FRENCH^ISO639|3^SPEAK^HL70403|3^FAIR^HL70404|
+EDU|1|BA^BACHELOR OF ARTS^HL70360|19810901^19850601|YALE UNIVERSITY^L|U^HL70402|456 CONNECTICUT AVENUE^^NEW HAVEN^CO^87654^U.S.A.^M|
+EDU|2|MD^DOCTOR OF MEDICINE^HL70360|19850901^19890601|HARVARD MEDICAL SCHOOL^L |M^HL70402|123 MASSACHUSETTS AVENUE^CAMBRIDGE^MA^76543^U.S.A.^M|
+ZZZ|Source|HL7 Version 2.5.1 Standard^Chapter&15&Personnel Management^Section&5&Example Transactions^Page&15-40^Date&200704
+```
+
+The `Msg` class exposes the `get` method that accepts a string which can be comprised of the following:
+
+- Segment Name
+- Segment Repition Index
+- Field Index
+- Field Repition Index
+- Component Index
+- Sub-Component Index
+
+Repetition Indexes are optional and can be omitted. If omitted on a repeating
+segment/field, then an array of values will be returned.
+
+For example to get all `LAN` segments you can use the get path `LAN`.
+
+If you wanted just one of the segments, you would add in the repetition index,
+for example, `LAN[2]` would return the second `LAN` segment.
+
+Repetition Indexes are always syntactically wrapped in square brackets. e.g. `[2]`
+
+Field, Component, and Sub-Component are optional and can be omitted. If omitted
+and the field/component is made up of smaller units, then an array of values
+will be returned.
+
+For example, to get all the components of the language codes in the 1st `LAN`
+segment you can use the get path `LAN[1]-2`
+
+Field, Component, and Sub-Component are always prefixed with either a dot or a
+hyphen. e.g. `.2` or `-2`
+
+If there is only a single larger component, then the smaller divisions can be
+omitted.
+
+For example, `EVN-1.1.1` will return the same as `EVN-1.1` or `EVN-1`
+
+Fields can also be repetitive and can be accessed by using the field repetition
+index. For example, `STF-10[1]` will return the 1st repetition of the 10th field
+in the `SFT` segment.
+
+Compare how these different extracted paths compare:
+
+```ts
+import Msg from './src/'
+import fs from 'fs'
+
+const HL7 = fs.readFileSync('./sample.hl7', 'utf8')
+
+const msg = new Msg(HL7)
+
+console.log('STF-10[1].1:', msg.get('STF-10[1].1'))   // (555)555-1003X345
+console.log('STF[1]-10[1]:', msg.get('STF[1]-10[1]')) // ['(555)555-1003X345','C','O']
+console.log('STF-10[1]:', msg.get('STF-10[1]'))       // ['(555)555-1003X345','C','O']
+console.log('STF-10.1:', msg.get('STF-10.1'))         // ['(555)555-1003X345','(555)555-3334','(555)555-1345X789']
+console.log('STF.10.1:', msg.get('STF.10.1'))         // ['(555)555-1003X345','(555)555-3334','(555)555-1345X789']
+console.log('LAN:', msg.get('LAN'))                   // [Seg{ ... },Seg{ ... },Seg{ ... }]
+console.log('LAN[2]:', msg.get('LAN[2]'))             // Seg{ ... }
+console.log('LAN-2.1:', msg.get('LAN-2.1'))           // ['ESL','ESL','FRE']
+console.log('LAN[1]-2.1:', msg.get('LAN[1]-2.1'))     // 'ESL'
+console.log('LAN-2:', msg.get('LAN-2'))               // [['ESL','SPANISH','ISO639'],['ESL','SPANISH','ISO639'],['FRE','FRENCH','ISO639']]
+console.log('ZZZ-2.2', msg.get('ZZZ-2.2'))            // ['Chapter','15','Personnel Management' ]
+console.log('ZZZ-2.2.1', msg.get('ZZZ-2.2.1'))        // 'Chapter'
+```
+
+Unless a path is fully defined including all repetition indexes, then the type
+returned could be an array or a string.
+
+If the path is only a segment name, then either a single Segment (`Seg`) class or
+an array of Segment (`Seg`) classes will be returned. See [Segment Class](#segment-class). If you
+want to be sure to get back a singular string value, then you should use the
+most specific path possible. For example, if you want to get the first component
+of the first field of the first segment iteration of the `MSH` segment, then you
+should use the path `MSH[1].1.1`. If you use the path `MSH.1.1`, and there are
+multiple `MSH` segments, then you will get back an array of strings, one for each
+segment iteration.
+
+You can use wrap the `get` method around the `toPath` method, to specify path
+components individually instead of a concatenated string.
+
+```ts
+const event = msg.get(msg.toPath({
+  segmentName: 'MSH',
+  segmentIteration: 1, // defaults to 1
+  fieldPosition: 9,
+  fieldIteration: 1, // defaults to 1
+  componentPosition: 2,
+  subComponentPosition: 1, // defaults to 1
+}))
+```
+
+### Transforming
+
+You can use the following methods to transform the message. Each method returns
+the self-class instance, so you can chain the methods together as needed.
+
+#### `addSegment`
+
+`addSegment(segment: string | Segment | Seg | Segs, after?: number | string)` —
+Adds a HL7 encoded segment string or Segment json or Seg(s) class(es) after the
+indicated position in the message.
+
+```ts
+// parses the HL7 segment(s) and adds the segment(s) at the end of the message
+msg.addSegment('ZZZ|Test')
+
+// add the simplified json segment to the beginning of the message
+const segment = ['MSH', '|', '^~\\&',,,,,,,['PMU','B01','PMU_B01'],,,'2.5.1',]
+msg.addSegment(segment, 0)
+
+// add the segment class after the first OBX segment
+const seg = new Seg(['NTE', 1, null, 'Some Note'])
+msg.addSegment(seg, 'OBX')
+
+// parse and adds multiple segments after the second OBX segment
+const notes = `NTE|1||Multi-line
+NTE|1||Note`
+msg.addSegment(notes, 'OBX[2]')
+
+// add multiple simplified json segments after the SPM, OBR, OBX[2], TCD segment sequence
+const noteArray = [['NTE', 1, , 'Foo'], ['NTE', 1, , 'Bar']]
+msg.addSegment(noteArray, 'SPM:OBR:OBX[2]:TCD')
+```
+
+:::note
+
+If the path sequence is not found then an error will be returned.
+
+:::
+
+#### `transform`
+
+`transform(limit: { restrict: IMsgFieldList, remove: IMsgFieldList })` —
+Transforms the message by restricting to only certain elements and/or removing
+certain elements. See the comments in the example below.
+
+```ts
+msg.transform({
+  restrict: {
+    MSH: () => true, // if function equates to true, keep whole segment
+    LAN: 3, // an integer keeps only the nth iteration of the segment (LAN[3])
+    ZZZ: { // an object keeps only certain fields of the segment
+      1: true, // true keeps the entire field as is (ZZZ-1)
+      2: [1, 5] // an array keeps only certain components of the field (ZZZ-2.1, ZZZ-2.5)
+    },
+    STF: {
+      2: [1, 4],
+      3: [], // an empty array keeps no components, same as if key was undefined
+      4: [2],
+      5: true,
+      10: 1, // an integer keeps only the nth repeition of the field
+      11: (f) => f?.[5] === 'O' // NOICE! `f` here is 0-indexed. This is keeping only the repetition that has STF-11.6 === 'O'
+    },
+    EDU: true, // if true, keep whole segment as is
+    // Any segments not specifically listed in a `restrict` object are removed.
+  },
+  remove: {
+    LAN: 2,
+    EDU: {
+      1: true, // deletes EDU-1
+      2: [3], // deletes EDU-2.3
+      3: (f) => {
+        if (Array.isArray(f) && typeof f[0] === 'string')
+          return f[0] > '19820000' // NOTICE! `f` here is 0-indexed. This looks at EDU-3.1
+        return false
+      }, // A function deletes when returns true. This is deleting EDU-3 when EDU-3.1 is greater than the year 1982
+      4: 2 // deletes EDU-4[2]
+    }
+  }
+})
+```
+
+#### `copy`
+
+`copy(fromPath: string, toPath: string)` — Copies the value from one path to
+another. Copy allows for deep copy copying repeating fields, components, and
+sub-components that may exist.
+
+```ts
+msg.copy('ZZZ-2', 'MSH-3')
+```
+
+#### `move`
+
+`move(fromPath: string, toPath: string)` — Moves the value from one path to
+another. Move is the same as copying the value to a temporary variable, deleting
+the value, writing the variable to the new path, and then clearing the temporary
+variable.
+
+```ts
+msg.move('LAN[1]-3[2]', 'LAN[1]-4')
+```
+
+#### `delete`
+
+`delete(path: string)` — Removes the value at the given path
+
+```ts
+msg.delete('EDU-6.6').delete('ZZZ')
+```
+
+#### `set`
+
+`set(path: string, value: string)` — Sets the value at the given path
+
+```ts
+msg.set('LAN[3]-4.1', '2')
+msg.set('LAN[3]-4.2', 'GOOD')
+```
+
+#### `setJSON`
+
+`setJSON(path: string, value: MsgValue)` — Sets the value at the given path with
+a JSON object in case of sub-items.
+
+```ts
+msg.setJSON('LAN-4', ['3', 'FAIR', 'HL70404'])
+```
+
+#### `map`
+
+`map(path: string, dictionary: string | Record<string, string> | string[] |
+<T>(val: T, index: number) => T, { iteration: boolean })` — Sets the value at
+the given path with a mapped value. If the map is a string, then the value will
+be replaced with the map. If the map is a key-value object, then the value will
+be replaced with the value of the key-value object where the existing value
+matches the key. If the map is an array, then the value will be replaced with
+the value of the array at the index of the value converted to an integer
+(1-based indexing). If the map is a function, then the value will be replaced
+with the return value of the function. The function will be passed the value and
+the index of the value (1-based indexing). If the iteration option is set to
+true, then the function will be called for each iteration of the path. If the
+iteration option is set to false, then the function will only be called once for
+the path. Defaults to false.
+
+```ts
+// Dictionary Map an HL7 path using a key-value object.
+msg.map('LAN-2.2', { ENGLISH: 'English' })
+
+// Integer Map an HL7 path using an array. Array is treated as 1-based indexed.
+msg.map('LAN-4.1', ['Excellent', 'Fair', 'Poor'])
+
+// Function Map an HL7 path using a custom defined function that receives the original value and returns the new value.
+msg.map('ZZZ-1', (orig) => orig.toUpperCase())
+
+msg.map('LAN-4.2', {
+  EXCELLENT: 'BEST',
+  GOOD: 'BETTER',
+  FAIR: 'GOOD',
+})
+```
+
+#### `setIteration`
+
+`setIteration<Y>(path: string, map: Y[] | ((val: Y, i: number) => Y), {
+allowLoop: boolean })` — Sets the iteration of the path to the given map. If the
+map is an array, then the iteration will be set to the iterated index of the
+array (1-based). If the map is a function, then the iteration will be set to the
+return value of the function. The function will be passed the value and the
+index of the iteration (1-based indexing). If the allowLoop option is set to
+true and the array length is less than the iterations of the path, then the
+array will be looped over to fill the iterations. If the allowLoop option is set
+to false and the array length is less than the iterations of the path, then the
+remaining iterations will be set to empty. Defaults to false.
+
+```ts
+// Function Map an HL7 path using a custom defined function that receives the original value and returns the new value
+msg.map('ZZZ-1', (orig) => orig.toUpperCase())
+
+// Renumber LAN segment ids (LAN-1)
+msg.setIteration<string>('LAN-1', (_v, i) => i.toString())
+
+// Iteration Map an iterated HL7 path using an array. Useful for renumbering segments by type.
+msg.setIteration('LAN-1', ['A', 'B', 'C'])
+```
+
+#### Concatenating Transformers
+
+The Transformer functions return the class itself allowing for the transformers to be chained in sequence.
+
+```ts
+msg
+  .transform({
+    restrict: {
+      MSH: () => true, // if function equates to true, keep whole segment
+      LAN: 3, // an integer keeps only the nth iteration of the segment (LAN[3])
+      ZZZ: { // an object keeps only certain fields of the segment
+        1: true, // true keeps the entire field as is (ZZZ-1)
+        2: [1, 5] // an array keeps only certain components of the field (ZZZ-2.1, ZZZ-2.5)
+      },
+      STF: {
+        2: [1, 4],
+        3: [], // an empty array keeps no components, same as if key was undefined
+        4: [2],
+        5: true,
+        10: 1, // an integer keeps only the nth repeition of the field
+        11: (f) => f?.[5] === 'O' // f is 0-indexed. This is keeping only the repetition that has STF-11.6 === 'O'
+      },
+      EDU: true, // if true, keep whole segment as is
+      // Any segments not specifically listed in a `restrict` object are removed.
+    },
+    remove: {
+      LAN: 2,
+      EDU: {
+        1: true, // deletes EDU-1
+        2: [3], // deletes EDU-2.3
+        3: (f) => {
+          if (Array.isArray(f) && typeof f[0] === 'string')
+            return f[0] > '19820000'
+          return false
+        }, // A function deletes when returns true. This is deleting EDU-3 when EDU-3.1 is greater than the year 1982
+        4: 2 // deletes EDU-4[2]
+      }
+    }
+  })
+  .addSegment('ZZZ|Engine|gofer')
+  .copy('ZZZ-2', 'MSH-3')
+  .set('ZZZ-1', 'Developer')
+  .set('ZZZ-2', 'amaster507')
+  .delete('LAN')
+  .addSegment('LAN|1|ESL^SPANISH^ISO639|1^READ^HL70403~1^EXCELLENT^HL70404|')
+  .addSegment('LAN|1|ESL^SPANISH^ISO639|2^WRITE^HL70403~2^GOOD^HL70404|')
+  .addSegment('LAN|1|FRE^FRENCH^ISO639|3^SPEAK^HL70403~3^FAIR^HL70404|')
+  .setIteration<string>('LAN-1', (_v, i) => i.toString())
+  .move('LAN[1]-3[2]', 'LAN[1]-4')
+  .move('LAN[2]-3[2]', 'LAN[2]-4')
+  .move('LAN[3]-3[2]', 'LAN[3]-4')
+  .map('LAN-4.2', {
+    EXCELLENT: 'BEST',
+    GOOD: 'BETTER',
+    FAIR: 'GOOD',
+  })
+```
+
+### Sub-classes
+
+:::info
+
+This section is still a work in progress.
+
+:::
+
+#### `Seg`, `Segs` & `Seg[]`
+
+- `Seg` — returned when there is only a single Segment by name
+- `Segs` — returned when there are multiple Segments by name if no iteration is defined
+
+```ts
+Msg.getSegment(name: string, iteration?: number) => Seg | Segs
+```
+
+- `Seg[]` returned `Seg` classes in an array.
+
+:::tip
+
+These will be 0-based index.
+
+:::
+
+```ts
+Msg.getSegments(name: string) => Seg[]
+```
+
+#### `Fld`, `Flds`, & `Fld[]`
+
+- `Fld` (`Seg.getField(index: number, iteration?: number)`)
+
+- `Flds`
+
+- `Fld[]` (`Seg.getFields(index: number)`) returned `Fld` classes in an array. 
+
+:::tip
+
+These will be 0-based index.
+
+:::
+
+#### Rep[]
+
+- Rep[] (Fld.getRepetitions()) returned Rep classes in an array.
+
+:::tip
+
+These will be 0-based index.
+
+:::
+
+#### `Cmp`, `Cmps`, & `Cmp[]`
+
+- `Cmp` — returned when there is a single component
+- `Fld.getComponent(index?: number)` — 
+- `Flds.getComponent(index?: number)` — 
+- `Rep.getComponent(index?: number)` — 
+- `Cmps` (`Field.getComponent(index?: number)`) — returned when there are multiple
+  components
+- `Cmp[]` (`Field.getComponents(index: number)`) — returned `Cmp` classes in an array.
+
+:::note
+
+NOTICE These will be 0-based index.
+
+:::
+
+#### `Sub`, `Subs`, & `MultiSubs`
+
+- `SubComponent` (`Component.getSubComponent(index: number)`)
+
+Each of the above subclasses exposes the following methods:
+
+- `json(strict?: boolean)` —
+- `toString()` —
+
+The `Seg` class exposes an additional `getName` method that returns the segment name string.
