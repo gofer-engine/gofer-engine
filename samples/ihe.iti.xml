@@ -1,0 +1,68 @@
+<List xmlns="http://hl7.org/fhir">
+  <id value="ex-compFolder"/>
+  <meta>
+    <profile
+             value="https://profiles.ihe.net/ITI/MHD/StructureDefinition/IHE.MHD.Comprehensive.Folder"/>
+    <security>
+      <system value="http://terminology.hl7.org/CodeSystem/v3-ActReason"/>
+      <code value="HTEST"/>
+    </security>
+  </meta>
+  <text>
+    <status value="generated"/>
+    <div xmlns="http://www.w3.org/1999/xhtml"><h2>Example Folder with comprehensive metadata</h2><table class="clstu"><tr><td>Date: Dec 25, 2004, 10:50:50 PMMode: workingStatus: currentCode: Folder as a FHIR List</td></tr><tr><td>Subject: <a href="Patient-ex-patient.html">Patient/ex-patient</a> &quot; SCHMIDT&quot;</td></tr></table><table class="grid"><tr style="backgound-color: #eeeeee"><td><b>Items</b></td></tr><tr><td><a href="DocumentReference-ex-documentreference.html">DocumentReference/ex-documentreference</a></td></tr><tr><td><a href="DocumentReference-ex-documentreference2.html">DocumentReference/ex-documentreference2</a></td></tr></table></div>
+  </text>
+  <extension
+             url="https://profiles.ihe.net/ITI/MHD/StructureDefinition/ihe-designationType">
+    <valueCodeableConcept>
+      <coding>
+        <system value="http://snomed.info/sct"/>
+        <code value="225728007"/>
+      </coding>
+    </valueCodeableConcept>
+  </extension>
+  <extension
+             url="https://profiles.ihe.net/ITI/MHD/StructureDefinition/ihe-designationType">
+    <valueCodeableConcept>
+      <coding>
+        <system value="http://snomed.info/sct"/>
+        <code value="284548004"/>
+      </coding>
+    </valueCodeableConcept>
+  </extension>
+  <identifier foo="1">
+    <use value="official"/>
+    <system value="urn:ietf:rfc:3986"/>
+    <value value="urn:uuid:0a468477-5dd1-4a81-bddf-8d5ee9b0cac3"/>
+  </identifier>
+  <identifier foo="2">
+    <use value="usual"/>
+    <system value="urn:ietf:rfc:3986"/>
+    <value
+           value="urn:oid:1.2.840.113556.1.8000.2554.58783.21864.3474.19410.44358.58254.41281.46341"/>
+  </identifier>
+  <status value="current"/>
+  <mode value="working"/>
+  <title value="Example Folder with comprehensive metadata"/>
+  <code>
+    <coding>
+      <system
+              value="https://profiles.ihe.net/ITI/MHD/CodeSystem/MHDlistTypes"/>
+      <code value="folder"/>
+    </coding>
+  </code>
+  <subject>
+    <reference value="Patient/ex-patient"/>
+  </subject>
+  <date value="2004-12-25T23:50:50-05:00"/>
+  <entry>
+    <item>
+      <reference value="DocumentReference/ex-documentreference"/>
+    </item>
+  </entry>
+  <entry>
+    <item>
+      <reference value="DocumentReference/ex-documentreference2"/>
+    </item>
+  </entry>
+</List>

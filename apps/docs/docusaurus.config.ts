@@ -56,7 +56,7 @@ const config: Config = {
 
   themeConfig: {
     // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'img/gofer-engine-social-card.jpg',
     navbar: {
       title: 'Gofer Engine',
       logo: {
@@ -130,7 +130,7 @@ const config: Config = {
     liveCodeBlock: {
       playgroundPosition: 'bottom',
     },
-    themes: ['@docusaurus/theme-live-codeblock'],
+    themes: ['@docusaurus/theme-classic'],
   } satisfies Preset.ThemeConfig,
 };
 

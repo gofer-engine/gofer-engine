@@ -3,14 +3,21 @@ import { cloneDeep, get, set, unset } from 'lodash';
 
 import { IMsg, isMsg } from '@gofer-engine/message-type';
 
+import { parseXMLPath } from './parseXMLPath';
+
+export { parseXMLPath };
+
+export type XMLJson = Element;
+export type XMLJsonCompact = ElementCompact;
+
 export interface IXMLMsg extends IMsg {
   kind: 'XML';
-  setMsg: (msg: Element) => IXMLMsg;
+  setMsg: (msg: XMLJson) => IXMLMsg;
   json: <N extends boolean>(
     _normalized?: N,
-  ) => N extends true ? Element : ElementCompact;
-  set: (path?: string | undefined, value?: ElementCompact) => IXMLMsg;
-  get: (path: string | undefined) => string | ElementCompact;
+  ) => N extends true ? XMLJson : XMLJsonCompact;
+  set: (path?: string | undefined, value?: XMLJsonCompact) => IXMLMsg;
+  get: (path: string | undefined) => string | XMLJsonCompact;
   delete: (path: string) => IXMLMsg;
   copy: (path: string, toPath: string) => IXMLMsg;
   move: (fromPath: string, toPath: string) => IXMLMsg;
@@ -34,20 +41,25 @@ export const isXMLMsg = (msg: unknown): msg is IXMLMsg => {
 
 export class XMLMsg implements IXMLMsg {
   readonly kind = 'XML';
-  private _msg: Element = {};
+  private _msg: XMLJson = {};
   private compact = () =>
-    xml2js(js2xml(this._msg), { compact: true }) as ElementCompact;
-  private uncompact = (msg: ElementCompact) => {
-    this._msg = xml2js(js2xml(msg, { compact: true })) as Element;
+    xml2js(js2xml(this._msg), { compact: true }) as XMLJsonCompact;
+  private uncompact = (msg: XMLJsonCompact) => {
+    this._msg = xml2js(js2xml(msg, { compact: true })) as XMLJson;
   };
-  private process = (fn: (msg: ElementCompact) => ElementCompact) => {
+  private process = (fn: (msg: XMLJsonCompact) => XMLJsonCompact) => {
     this.uncompact(fn(this.compact()));
   };
-  constructor(msg?: string | Element, parse = true) {
-    if (parse) {
+  constructor(msg?: string | XMLJson, parse = true) {
+    if (msg === '') {
+      this._msg = {};
+    } else if (parse) {
       if (typeof msg === 'string') {
         try {
-          this._msg = xml2js(msg, { compact: false }) as Element;
+          this._msg = xml2js(msg, { 
+            compact: false,
+            elementNameFn: (value) => value.split(':').join('::'),
+          }) as XMLJson;
         } catch (err) {
           throw new Error(`Cannot parse string with xml2js: ${err}`);
         }
@@ -63,22 +75,22 @@ export class XMLMsg implements IXMLMsg {
       }
     }
   }
-  setMsg = (msg: Element): IXMLMsg => {
+  setMsg = (msg: XMLJson): IXMLMsg => {
     this._msg = cloneDeep(msg);
     return this;
   };
   json = <N extends boolean>(
     normalized?: N,
-  ): N extends true ? Element : ElementCompact => {
+  ): N extends true ? XMLJson : XMLJsonCompact => {
     const msg = cloneDeep(this._msg);
     return (normalized ? msg : this.compact()) as N extends true
-      ? Element
-      : ElementCompact;
+      ? XMLJson
+      : XMLJsonCompact;
   };
   toString = () => js2xml(this._msg, { spaces: 2 });
   set = (
     path?: string,
-    value?: string | ElementCompact,
+    value?: string | XMLJsonCompact,
     parse = false,
   ): IXMLMsg => {
     value = cloneDeep(value);

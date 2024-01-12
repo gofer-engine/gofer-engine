@@ -6,12 +6,14 @@ const expected = fs.readFileSync('./samples/expected.xml', 'utf8');
 const json = fs.readFileSync('./samples/xml.json', 'utf8');
 const jsonCompacted = fs.readFileSync('./samples/xml_compact.json', 'utf8');
 
+const normalizeLE = (string: string) => string.replace(/\r\n|\r|\n/g, '\n');
+
 test('XMLMsg', () => {
   expect(patient.substring(0, 5)).toBe('<?xml');
   const msg = new XMLMsg(patient);
   expect(msg).toBeInstanceOf(XMLMsg);
   // NOTE: the line breakings are a tad different and inconsistent but equate to the same xml structure.
-  expect(msg.toString()).toBe(expected);
+  expect(normalizeLE(msg.toString())).toBe(normalizeLE(expected));
   expect(msg.json()).toEqual(JSON.parse(jsonCompacted));
   expect(msg.json(true)).toEqual(JSON.parse(json));
   expect(msg.get('Patient.id')).toBe('example');

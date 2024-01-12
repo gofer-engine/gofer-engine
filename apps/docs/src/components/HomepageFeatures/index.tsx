@@ -4,15 +4,12 @@ import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
   description: JSX.Element;
 };
 
 const FeatureList: FeatureItem[] = [
   {
     title: 'Easy to Use',
-    // FIXME: replace with our own image
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
         Gofer Engine was designed from the ground up for simplicity and speed.
@@ -25,8 +22,6 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Strongly Typed',
-    // FIXME: replace with our own image
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
         Gofer Engine is built on top of TypeScript. This means that you can
@@ -38,8 +33,6 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Engine or Library',
-    // FIXME: replace with our own image
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
         Gofer Engine can be used as a standalone interoperability engine or as
@@ -52,12 +45,12 @@ const FeatureList: FeatureItem[] = [
   },
 ];
 
-function Feature({ title, Svg, description }: FeatureItem) {
+function Feature({ title, description }: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
-      <div className="text--center">
+      {/* <div className="text--center">
         <Svg className={styles.featureSvg} role="img" />
-      </div>
+      </div> */}
       <div className="text--center padding-horiz--md">
         <Heading as="h3">{title}</Heading>
         <p>{description}</p>

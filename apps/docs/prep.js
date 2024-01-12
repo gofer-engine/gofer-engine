@@ -1,9 +1,12 @@
 // import fs from 'fs';
 const fs = require('fs');
 
+// if option watch is passed, watch the folder for changes
+const watch = process.argv.includes('watch')
+
 const folderToWatch = '../gofer-engine/src/examples';
 
-fs.watch(folderToWatch, () => {
+const processFiles = () => {
   const files = fs.readdirSync('../gofer-engine/src/examples');
   files.forEach((file) => {
     const fileParts = file.split('.');
@@ -12,5 +15,13 @@ fs.watch(folderToWatch, () => {
   
     fs.writeFileSync(`../docs/static/code/${file}.md`, content, { flag: 'w' });
   });
-});
+}
+
+if (watch) {
+  fs.watch(folderToWatch, () => {
+    processFiles();
+  });
+} else {
+  processFiles();
+}
 
