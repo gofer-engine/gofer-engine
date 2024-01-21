@@ -6,27 +6,34 @@ import ExampleCode from '@site/src/components/ExampleCode';
 
 # Standalone Tutorial
 
-_**This tutorial is useful for building a standalone interface engine. If you are looking to integrate Gofer Engine into an existing application, you may find the [Integration Tutorial](./integration) more helpful.**_
+_**This tutorial is geared towards building a standalone interface engine. For
+those looking to integrate Gofer Engine into an existing application, the
+[Integration Tutorial](./integration) might be more suitable.**_
 
-I find it helpful to newer developers to have a step-by-step guide to get them started. If you are experienced already with Node projects, you can skip to the [Installation](#install-gofer-engine) section.
+Providing a step-by-step guide is invaluable for newer developers. If you're
+already well-versed in Node projects, feel free to skip to the
+[Installation](#install-gofer-engine) section.
 
 ## Setup the Environment
 
-It is recommended to use the latest version of Node.js. You can download it [here](https://nodejs.org/en/download/).
+Ensure you're using the latest Node.js version; download it
+[here](https://nodejs.org/en/download/).
 
-1. Create a new project directory to contain your Node application.
+1. Create a new project directory for your Node application.
 2. Open a terminal/command prompt in your project folder.
-3. Create a new node project by running npm init and follow the prompts.
+3. Initiate a new node project by running `npm init` and follow the prompts.
 
-The following packages are recommended to have installed, but not required:
+While not mandatory, it's recommended to have the following packages installed:
 
-- TypeScript - A superset of JavaScript that compiles to plain JavaScript. Install by running: `npm install -D typescript`
+- **TypeScript:** A superset of JavaScript. Install with: `npm install -D
+  typescript`
+- **nodemon:** Monitors changes in your source and restarts your server. Install
+  with: `npm install -D nodemon`
+- **ts-node:** Allows running TypeScript files directly without compiling.
+  Install with: `npm install -D ts-node`
 
-- nodemon - A utility that will monitor for any changes in your source and automatically restart your server. Install by running: `npm install -D nodemon`
-
-- ts-node - A utility that will allow you to run TypeScript files directly without having to compile them first. Install by running: `npm install -D ts-node`
-
-If you are using TypeScript, which is optional but highly recommended, then you should create a tsconfig.json file in your project’s root directory. You can use the following as a starting point:
+If using TypeScript (optional but recommended), create a `tsconfig.json` file in
+your project’s root directory. Use the following as a starting point:
 
 ```json
 {
@@ -44,32 +51,38 @@ If you are using TypeScript, which is optional but highly recommended, then you 
 }
 ```
 
-_Just a side note, but if you are not already using VS-Code IDE, we highly recommend it!_
+:::tip
+
+Noteworthy: If you're not already using the VS-Code IDE, we highly recommend
+it!
+
+:::
 
 ## Install Gofer Engine
 
-1. Open a terminal in your project folder
-2. Run `npm install @gofer-engine/engine` to install Gofer Engine dependency.
+1. Open a terminal in your project folder.
+2. Run `npm install @gofer-engine/engine` to install the Gofer Engine
+   dependency.
 
 ## Usage
 
-1. Create a new directory called `src` in your project’s root directory.
-2. Create a new file called `server.ts` in your project’s `src` folder.
-3. Add the following code to the `server.ts` file:
+1. Create a new directory called `src` in your project’s root.
+2. Create a `server.ts` file in your project’s `src` folder.
+3. Add the following code to `server.ts`:
 
 <ExampleCode path="server.ts" numbered />
 
-Alternatively, you could pass a configuration object:
+Alternatively, use a configuration object:
 
 <ExampleCode path="serverConfig.ts" numbered />
 
-The above examples add a single channel that listens on `localhost` port `5500`
-via `tcp` for HL7 v2.x messages. It will reply with an acknowledgment message
-and write the message to a file in the default `./local` directory.
+These examples add a single channel listening on `localhost` port `5500` via
+`tcp` for HL7 v2.x messages. It replies with an acknowledgment message and
+writes the message to a file in the default `./local` directory.
 
-See the [Developing Interface Channels in OOP style](#) or the 
-[Developing Interface Channels with Config Files](#) pages for more information
-on building and configuring channels.
+Refer to [Developing Interface Channels in OOP style](#) or [Developing
+Interface Channels with Config Files](#) for more information on building and
+configuring channels.
 
 ## Running in Development
 
@@ -83,30 +96,31 @@ on building and configuring channels.
 
 2. Run `npm run dev` to start the server.
 
-_By using nodemon as you make chnanges to your project files the server will restart._
+:::tip
+
+By using nodemon, changes to your project files will trigger server restarts.
+
+:::
 
 ## Version Control with Git
 
-One of the beauties of using Gofer Engine is that you can version control your
-channels, by simply checking your Node project into a git repository. This
-allows you to easily branch and merge changes to your channels to ease with
-development and testing of new interfaces and changes to existing interfaces.
+Gofer Engine allows easy version control of your channels by checking your Node
+project into a Git repository. Branch and merge changes effortlessly for
+development and testing.
 
-With git comes other tools to help develop pipelines for CI/CD. Here are some
-tools to check out:
+Explore additional tools for CI/CD:
 
-- [jest](https://jestjs.io/) - A delightful JavaScript (and TypeScript) Testing
-  Framework with a focus on simplicity,
-- [husky](https://typicode.github.io/husky/#/) - A utility to make modern
-  native git hooks easy.
+- [jest](https://jestjs.io/): A delightful JavaScript (and TypeScript) Testing
+Framework with a focus on simplicity.
+- [husky](https://typicode.github.io/husky/#/): A utility to simplify modern
+native git hooks. For more CI/CD resources, check out these [38 Best CI/CD Tools
+for 2023](https://www.lambdatest.com/blog/best-ci-cd-tools/).
 
-And if you need more resources for CI/CD then check out these
-[38 Best CI/CS Tools for 2023](https://www.lambdatest.com/blog/best-ci-cd-tools/).
+If you're in an on-premise-only environment, consider Bonobo Git Server as an
+alternative to GitHub.
 
-If you are an on-premise-only environment, then might I recommend Bonobo Git
-Server as an alternative to GitHub.
+## Preparing for Production
 
-Preparing for Production
 Add a build and start script to your package.json file:
 
 ```json
@@ -118,15 +132,24 @@ Add a build and start script to your package.json file:
 
 ## Deploying to Production
 
-The workflow outlined below uses a git repository. You could deploy to
-production using alternative means.
+The workflow below uses a Git repository. Alternatively, you can deploy to
+production using other methods.
 
-On your production server run `git clone <your-project-repo>` to clone your repository.
+On your production server, run `git clone <your-project-repo>` to clone your
+repository.
 
-Run `npm install && run build && npm start` to install dependencies, build, and start the server.
+Run `npm install && run build && npm start` to install dependencies, build, and
+start the server.
 
-If going to production in a Windows environment, you could use this setup guide to run the node server as a Windows Service: https://www.helpmegeek.com/run-nodejs-application-as-windows-service/
+For Windows environments, use [this setup
+guide](https://www.helpmegeek.com/run-nodejs-application-as-windows-service/) to
+run the node server as a Windows Service.
 
-If going to production in a Linux environment, you could use this setup guide to run the server: https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-18-04
+For Linux environments, follow [this setup
+guide](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-18-04)
+to run the server.
 
-You could alternatively use docker with a docker-compose file to clone your repository, install dependencies, build the project, and start the server in a container. This configuration is out of the current scope, but if anyone needs help or wants to contribute, please reach out.
+Consider using Docker with a docker-compose file for cloning the repository,
+installing dependencies, building the project, and starting the server in a
+container. While outside the current scope, reach out if you need assistance or
+want to contribute.

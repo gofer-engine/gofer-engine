@@ -30,13 +30,18 @@ type AckConfig = {
 - `text` — Text to use in ACK MSA.3. Defaults to empty string
 - `msg` — A function that accepts the ACK `IMsg` interface, MSG `IMsg` interface, and context state object and returns the ACK `IMsg` interface back. This allows for custom transformation of the ACK message.
 
-<!-- TODO: Add link to Context Object -->
+:::info[REFERENCES]
 
-_More information on Msg More information on [Context Object](#)_
+See more documentation on:
+
+- [Context Object](../advanced/context)
+- [IMsg](../message-classes)
+
+:::
 
 ## HL7v2 ACKS
 
-HL7 v2 uses a basic acknowledgment when the application doesn't have a specific acknowledgment message or can't process due to an error. It's also used for accept level acknowledgments. The most simple ACK message looks like:
+[HL7 v2](../../blog/what-is-hl7) uses a basic acknowledgment when the application doesn't have a specific acknowledgment message or can't process due to an error. It's also used for accept level acknowledgments. The most simple ACK message looks like:
 
 ```hl7
 MSH|^~\&|||||202401010800||ACK^A20^ACK|123|T|2.2
@@ -78,8 +83,17 @@ Understandably your sender may expect a different JSON response, and in such cas
 
 ## Delimitted Text Acks
 
-FIXME: Currently Delimitted Text message type acks respond with a [HL7v2 ACK](#hl7v2-acks) message.
+:::danger[FIXME]
+
+Currently Delimitted Text message type acks respond with a [HL7v2
+ACK](#hl7v2-acks) message.
+
+:::
 
 ## XML Acks
 
-FIXME: Currently XML message type acks respond with a [HL7v2 ACK](#hl7v2-acks) message.
+:::danger[FIXME]
+
+Currently XML message type acks respond with a [HL7v2 ACK](#hl7v2-acks) message.
+
+:::

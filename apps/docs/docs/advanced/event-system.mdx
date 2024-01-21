@@ -10,7 +10,7 @@ Gofer Engine's Event System's library package has been named `handelse`.
 
 :::info
 
-_**Händelse**_ is the Swedish word for event.
+_**Händelse**_ is the Swedish word for _event_.
 
 :::
 
@@ -19,13 +19,23 @@ standalone event system library package if so desired.
 
 <ExampleCode path="eventsExample.ts" hide={[[3,68,'// ...']]} />
 
-The default export of the library is an initialized class of the `EventSystemManager`. Since this is the default import, you can shorten the name to your liking:
+The default export of the library is an initialized class of the
+`EventSystemManager`. Since this is the default import, you can shorten the name
+to your liking:
 
-<ExampleCode path="eventsExample.ts" hide={[[3,68,'// ...']]} replacers={[['eventSystemManager','handelse']]} />
+<ExampleCode
+  path="eventsExample.ts" hide={[[3,68,'// ...']]}
+  replacers={[['eventSystemManager','handelse']]}
+/>
 
-If instead you wish to initialize or extend the `EventSystemManager` class yourself, you can import just the class and initialize your own manager.
+If instead you wish to initialize or extend the `EventSystemManager` class
+yourself, you can import just the class and initialize your own manager.
 
-<ExampleCode path="eventsExample.ts" hide={[[3,68,'const manager = new EventSystemManager(["custom-reserved-handler"]);\n\n// ...']]} replacers={[['eventSystemManager','{ EventSystemManager }']]} />
+<ExampleCode
+  path="eventsExample.ts"
+  hide={[[3,68,'const manager = new EventSystemManager(["custom-reserved-handler"]);\n\n// ...']]}
+  replacers={[['eventSystemManager','{ EventSystemManager }']]}
+/>
 
 ## Global vs. Local Handlers
 
@@ -215,7 +225,8 @@ allow native garbage  collection processes.
 
 <ExampleCode path="eventsExample.ts" hide={[[1,27,'// ...'],[5,42,'// ...']]} />
 
-The manager also provides the `clear` method for removing _**all**_ global event handlers.
+The manager also provides the `clear` method for removing _**all**_ global event
+handlers.
 
 <ExampleCode path="eventsExample.ts" hide={[[1,66,'// ...']]} />
 
@@ -252,7 +263,10 @@ subscribers.
 
 :::danger
 
-If you manually coerce typescript types in your publisher, then your subscribers may receive events of an unexpected type. _It is recommended to add additional **sanitization** and data **validation** processes before sending data to systems susceptable to injection vulnerabilities._
+If you manually coerce typescript types in your publisher, then your subscribers
+may receive events of an unexpected type. _It is <u>always</u> recommended to add
+additional **sanitization** and data **validation** processes before sending
+data to systems susceptable to injection vulnerabilities._
 
 :::
 
@@ -265,13 +279,18 @@ With the available options object, you can do the following advanced workflows:
   `createIfNotExists` option set to `true`
 - Publish to Global Event Handlers not already existing with the
   `createIfNotExists` option set to `true`
-- Prevent errors of creating Global Event Handlers already created with the `getIfAlreadyCreated` option set to `true`
+- Prevent errors of creating Global Event Handlers already created with the
+  `getIfAlreadyCreated` option set to `true`
 
 <ExampleCode path="eventsExample.ts" hide={[[1,59,'// ...\n'],[10,10,'// ...']]} />
 
 :::tip[Unique Handlers]
 
-Remember that global handlers should be globally unique within the running process. It might be beneficial to use a custom prefix for handlers that you manage if your are using handelse as a library within your application. In Gofer Engine, we prefix most global handlers with `gofer:` and within channel contexts include the channel id as well.
+Remember that global handlers should be globally unique within the running
+process. It might be beneficial to use a custom prefix for handlers that you
+manage if your are using handelse as a library within your application. In Gofer
+Engine, we prefix most global handlers with `gofer:` and within channel contexts
+include the channel id as well.
 
 :::
 

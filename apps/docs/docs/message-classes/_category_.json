@@ -1,8 +1,4 @@
 {
   "label": "Message Classes",
-  "position": 4,
-  "link": {
-    "type": "generated-index",
-    "description": "Working with Message Classes to handle different message formats."
-  }
+  "position": 4
 }

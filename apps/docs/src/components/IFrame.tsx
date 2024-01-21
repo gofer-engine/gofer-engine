@@ -1,6 +1,8 @@
 interface IFrameProps {
   src: string;
+  href?: string;
   title: string;
+  video?: boolean;
 }
 
 const containerStyle: React.HTMLAttributes<HTMLDivElement>['style'] = {
@@ -21,11 +23,20 @@ const iframeStyle: React.HTMLAttributes<HTMLIFrameElement>['style'] = {
   borderStyle: 'solid',
 }
 
-export default function IFrame({ src, title }: IFrameProps) {
+
+export default function IFrame({ src, href, title, video }: IFrameProps) {
+  const extraProps = video ? {
+    allow: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
+    allowfullscreen: true,
+    style: {
+      ...iframeStyle,
+      height: '25rem',
+    }
+  } : {}
   return (
     <div style={containerStyle}>
-      <a href={src} style={linkStyle}>{title}</a>
-      <iframe src={src} style={iframeStyle} />
+      <a href={href ?? src} target="_blank" style={linkStyle}>{title}</a>
+      <iframe src={src} style={iframeStyle} {...extraProps} />
     </div>
   )
 

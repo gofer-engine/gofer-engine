@@ -21,3 +21,24 @@
   align-items: center;
   justify-content: center;
 }
+
+.ctaButtons {
+  margin-top: 3.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media screen and (max-width: 996px) {
+  .ctaButtons {
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.ctaButtons a {
+  /* color: #00aeef !important; */
+  color: #fefefe !important;
+  background-color: #00aeef !important;
+}

@@ -9,37 +9,49 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
+    title: 'Intuitive Deployment',
     description: (
       <>
-        Gofer Engine was designed from the ground up for simplicity and speed.
-        Get your interoperability engine up and running quickly. Deploy
-        interface channels in minutes instead of days. Gofer Engine is easy to
-        use and easy to learn. Get started in 5 minutes with our{' '}
-        <a href="/docs/intro">tutorial</a>.
+        Experience the power of Gofer Engine, meticulously crafted for
+        simplicity and speed. Elevate your interoperability journey with an
+        engine designed from the ground up to make complexity disappear.
+        Launch your interface channels swiftly, turning what used to take days
+        into a matter of minutes. Gofer Engine isn't just easy to use; it's a
+        breeze to learn. Dive into the world of seamless connectivity in just 5
+        minutes with our beginner-friendly <a href="/docs/intro">tutorial</a>.
+        Your journey to smooth healthcare interoperability starts here, with a
+        toolkit that prioritizes simplicity and rapid deployment.
       </>
     ),
   },
   {
-    title: 'Strongly Typed',
+    title: 'Type-Safe Development',
     description: (
       <>
-        Gofer Engine is built on top of TypeScript. This means that you can
-        write filters and transformer steps with confidence and code completion.
-        Whether you are writing a simple filter or a complex transformer, Gofer
-        Engine will help you catch errors before they make it to production.
+        Gofer Engine is powered by TypeScript, bringing a robust and strongly-
+        typed foundation to your development experience. When crafting filters
+        and transformer steps, embrace the confidence that comes with robust
+        type checking and code completion. Whether you're shaping a simple
+        filter or intricately designing a complex transformer, Gofer Engine
+        acts as your vigilant ally, ensuring errors are caught and resolved
+        before they even have a chance to reach production. With strong typing
+        at the core, code with assurance and elevate your development workflow.
       </>
     ),
   },
   {
-    title: 'Engine or Library',
+    title: 'Versatile Integration Options',
     description: (
       <>
-        Gofer Engine can be used as a standalone interoperability engine or as
-        a library in your application. As a standalone engine, Gofer Engine can
-        process messages between a variety of sources and destinations. As a
-        library, Gofer Engine can be used to build interoperability directly
-        into your app.
+        Unlock the versatility of Gofer Engine, offering the flexibility to
+        serve as a standalone interoperability engine or seamlessly integrate
+        as a library into your application. In standalone mode, Gofer Engine
+        excels at processing messages between diverse sources and destinations.
+        As a library, it empowers you to seamlessly embed interoperability
+        directly into your application, making it an integral part of your
+        software ecosystem. Whether you're orchestrating interoperability
+        independently or integrating within your app, Gofer Engine adapts to
+        your needs with ease and efficiency.
       </>
     ),
   },

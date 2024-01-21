@@ -4,7 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'Gofer Engine',
-  tagline: 'An HL7 interface engine built for simplicity and speed, strongly typed, and ready to containerize.',
+  tagline: 'Your Toolkit for Smooth Healthcare Interoperability - Simple, Reliable, and Fast!',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here

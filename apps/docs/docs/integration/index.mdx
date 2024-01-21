@@ -6,17 +6,24 @@ import ExampleCode from '@site/src/components/ExampleCode';
 
 # Integration Tutorial
 
-Are you building a Node.JS such as a Next.JS application or a GraphQL Server and
-needing to integrate directly with HL7 interfaces? We have included messengers
-to make creating and sending HL7 simple once and for all.
+If you're building a Node.JS application like Next.JS or a GraphQL Server and
+need to integrate directly with HL7 interfaces, we've included messengers to
+make creating and sending HL7 simple once and for all.
 
 ## Setup
 
-To integrate Gofer Engine into an existing application, it seems silly to say, but you will need an existing application. Maybe you are researching before building a new application, or extending functionality of an existing application. Either way, this short tutorial is purposefully not covering the setup of an existing project. But it does require that the project is a Node.JS environment and that you have access to the npm repository.
+To integrate Gofer Engine into an existing application, it seems silly to say,
+but you will need an existing application. Perhaps you are researching before
+building a new application or extending functionality of an existing one. Either
+way, this short tutorial purposely doesn't cover the setup of an existing
+project. But it does require that the project is a Node.JS environment, and you
+have access to the npm repository.
 
-Another thing which should be clarified in most cases, is that integrating messenger services into your application should be implemented on the **server side**. 
+Another point to clarify is that integrating messenger services into your
+application should be implemented on the **server side**.
 
-_For example, in your Next.JS application, the messenger should be implemented in a API Page or Server Side function and not in a front-end page directly._
+_For example, in your Next.JS application, the messenger should be implemented
+in an API Page or Server Side function and not in a front-end page directly._
 
 ## Install
 
@@ -26,15 +33,17 @@ Within your project, run:
 npm i @gofer-engine/engine @gofer-engine/hl7 @gofer-engine/tools
 ```
 
-You can alternatively use your package manager of choice and follow it's syntax for adding new packages from the npm repository.
+Alternatively, use your package manager of choice and follow its syntax for
+adding new packages from the npm repository.
 
-You may need additional/fewer packages from `@gofer-engine/` depending on what functionality you are needing.
+You may need additional/fewer packages from `@gofer-engine/` depending on what
+functionality you need.
 
 ## Create a Messenger
 
 The `gofer` class exposes a method called `messenger` that accepts a
 `MessengerRoute` function. This method returns a tuple that contains the
-messenger callback and an id to idneitfy the messenger class to observe events
+messenger callback and an id to identify the messenger class to observe events
 or control later in your application.
 
 The `MessengerRoute` function follows the below _simplified_ type. Also including the _simplified_ `ORoute` interface for quick reference.
@@ -65,7 +74,9 @@ export interface ORoute extends OBase<ORoute> {
 }
 ```
 
-For this tutorial, we will just use a single flow in the route to send to a tcp HL7 listener. The full example will show that the `host` and `port` options can come from the envionment variables.
+For this tutorial, we will just use a single flow in the route to send to a tcp
+HL7 listener. The full example will show that the `host` and `port` options can
+come from the environment variables.
 
 <ExampleCode
   preappendPath="function/"
@@ -78,7 +89,10 @@ For this tutorial, we will just use a single flow in the route to send to a tcp 
 
 ## Use the Callback
 
-The messenger callback function accepts a function that is ran to build the message to send to the route defined in the previous steps. This inline function is expected to return any one of the classes that implement the `IMsg` interface.
+The messenger callback function accepts a function that is run to build the
+message to send to the route defined in the previous steps. This inline function
+is expected to return any one of the classes that implement the `IMsg`
+interface.
 
 In this example, we will be using the `HL7v2Msg` class.
 
@@ -93,14 +107,19 @@ In this example, we will be using the `HL7v2Msg` class.
   ]}
 />
 
-Alternatively, we could create and return a new instance of the `HL7v2Msg` class instead of using the argument of this callback function which provides the interface `IMsg`. We asserted that `msg` is the `HL7v2Msg` _default_ class. If we did not need custom methods such as the `addSegment` method, then we would not need to assert the class and could use any of the interface methods exposed by every message type class.
+Alternatively, we could create and return a new instance of the `HL7v2Msg` class
+instead of using the argument of this callback function, which provides the
+interface `IMsg`. We asserted that `msg` is the `HL7v2Msg` _default_ class. If
+we did not need custom methods such as the `addSegment` method, then we would
+not need to assert the class and could use any of the interface methods exposed
+by every message type class.
 
 <!-- TODO: add link to message type classes docs -->
 
 ## Full Example
 
-Here is the full detailed example of using Gofer Engine to send `ADT_A20` messages
-within a Next.JS API page.
+Here is the full detailed example of using Gofer Engine to send `ADT_A20`
+messages within a Next.JS API page.
 
 <ExampleCode preappendPath="function/" path="sample-messenger-function.ts" />
 
