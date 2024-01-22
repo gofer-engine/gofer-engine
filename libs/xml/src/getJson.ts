@@ -1,22 +1,26 @@
-import { XMLJson } from ".";
+import { Element } from 'xml-js'
 
 const filterElements = (name: string) => (item: string): boolean => {
   if (name === '*') {
     return true;
   }
+  // add support to match namespaces with either single or double colon
+  if (name.indexOf('::')) {
+    name = name.replace(/::/g, ':')
+  }
   if (item === name) {
     return true;
   }
   // add support to match namespaced elements with a wildcard prefix.
-  if (name.startsWith('*::')) {
-    if (item.split('::').slice(1).join('::') === name.slice(3)) {
+  if (name.startsWith('*:')) {
+    if (item.split(':').slice(1).join(':') === name.slice(2)) {
       return true;
     }
   }
   // add support to match all elements of a namespace
-  if (name.endsWith('::*')) {
-    if (item.indexOf('::')) {
-      if (item.split('::').slice(0, -1).join('::') === name.split('::').slice(0, -1).join('::')) {
+  if (name.endsWith(':*')) {
+    if (item.indexOf(':')) {
+      if (item.split(':').slice(0, -1).join(':') === name.split(':').slice(0, -1).join(':')) {
         return true;
       }
     } else {
@@ -25,7 +29,7 @@ const filterElements = (name: string) => (item: string): boolean => {
   }
   // add support to match namespaced elements without giving a prefix,
   // i.e get all elements no matter the namespace prefix
-  if (item?.split?.('::')?.slice?.(1)?.join?.('::') === name) {
+  if (item?.split?.(':')?.slice?.(1)?.join?.(':') === name) {
     return true;
   }
   return false;
@@ -62,7 +66,7 @@ const Value = (value: unknown): string | number | boolean => {
   }
 }
 
-export const flattenXML = (xml: XMLJson): XMLJson[] => {
+export const flattenXML = (xml: Element): Element[] => {
   if (xml.elements?.length) {
     return [
       ...xml.elements,
@@ -72,10 +76,10 @@ export const flattenXML = (xml: XMLJson): XMLJson[] => {
   return [];
 }
 
-export const getXML = (
-  xml: XMLJson,
+export const getJson = (
+  xml: Element,
   path: (string | number)[]
-): XMLJson => {
+): Element => {
   // console.log({ path, xml: JSON.stringify(xml, null, 2) })
   // to prevent parralel instances of modifying the same path, we clone the path
   path = [...path]
@@ -85,7 +89,7 @@ export const getXML = (
     return xml;
   }
   // placeholder for the picked xml
-  let picked: XMLJson;
+  let picked: Element;
   const current = path.shift();
   const next = path?.[0];
   // path start with //, create a flat list of all elements but keep the hierarchy under
@@ -94,7 +98,7 @@ export const getXML = (
       throw new Error('Invalid path "//"');
     }
     const elements = flattenXML(xml).filter(e => e.type === 'element');
-    picked = getXML({ elements }, path);
+    picked = getJson({ elements }, path);
     // console.log(JSON.stringify(picked))
   }
   // path starts with @, we are looking for an attribute
@@ -115,18 +119,18 @@ export const getXML = (
 
   } else if (typeof current === 'number') {
     // xPath is 1 based, so we need to subtract 1 from the index
-    picked = getXML(xml.elements?.[current-1], path);
+    picked = getJson(xml.elements?.[current-1], path);
   } else if (typeof current === 'string') {
     const list = xml.elements?.filter(e => filterElements(current)(e.name));
     if (!list.length) {
       picked = {};
     } else if (list.length === 1) {
-      picked = getXML(list[0], path);
+      picked = getJson(list[0], path);
     } else if (typeof next === 'number') {
       // xPath is 1 based, so we need to subtract 1 from the index
-      picked = getXML(list[next-1], path.slice(1));
+      picked = getJson(list[next-1], path.slice(1));
     } else if (next === '*') {
-      picked = { elements: list.map(e => getXML(e, path.slice(1))) };
+      picked = { type: 'list', elements: list.map(e => getJson(e, path.slice(1))) };
     } else {
       picked = { elements: list };
       // picked = { elements: list.map(e => getXML(e, path)) };

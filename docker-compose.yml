@@ -1,5 +1,19 @@
 version: '3'
 services:
+  docs:
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    image: node:20
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "3000:3000"
+    working_dir: /usr/src/app/apps/docs
+    command: npm run dev
+    user: node
+    environment:
+      - container=docker
   app:
     restart: unless-stopped
     stdin_open: true
