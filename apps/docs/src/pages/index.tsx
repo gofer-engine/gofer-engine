@@ -91,7 +91,7 @@ export default function Home(): JSX.Element {
                     <ul>
                       <li>HL7 v2</li>
                       <li>JSON</li>
-                      <li>XML</li>
+                      <li>XML (Incomplete, WIP)</li>
                       <li>Delimitted Text</li>
                     </ul>
                   </div>
