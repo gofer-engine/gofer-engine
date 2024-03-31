@@ -1,0 +1,36 @@
+---
+sidebar_position: 4
+---
+
+import ExampleCode from '@site/src/components/ExampleCode';
+
+# `transformFilter`
+
+For added flexibility, you can pass through a `TransformOrFilterFlow` to the ingestion array or route flows. This allows you to specify a filter and/or a transformer in the same step.
+
+
+## Interface
+
+The interface TransformOrFilterFlow is defined as:
+
+```ts
+type TransformFilterFunction = (
+  msg: IMsg,
+  context: IMessageContext
+) => false | IMsg
+type TransformOrFilterFlow =
+  | TransformFilterFunction
+  | { kind: 'transformFilter'; transformFilter: TransformFilterFunction }
+```
+
+## Use Case
+
+This allows you to write a flow step that can exit early if a condition is not met and return false to prevent further processing of the following transformation steps. Another benefit this flexibility affords is to be able to keep your logic in a single process instead of having to break it out between filters and transformers separate flows.
+
+An example use case without providing a code snippet, is when you need to do a transformation step, but only if another condition is met, such as converting local identifiers to coded value sets unless they are already mapped by a previous process.
+
+## OOP Style
+
+<!-- TODO: implement filterOrTransform in OOP Style -->
+
+The method `filterOrTransform` is not yet implemented for the OOP style channel builder.

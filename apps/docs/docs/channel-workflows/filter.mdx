@@ -1,0 +1,99 @@
+---
+sidebar_position: 2
+---
+
+import ExampleCode from '@site/src/components/ExampleCode';
+
+# `filter` — Stop Processing
+
+Filter Flows are used to filter messages. They are used to determine if a message should be processed further or if it should be dropped. 
+
+## Interface
+
+The interface FilterFlow can be defined as:
+
+```ts
+type FilterFunc = (msg: IMsg, context: IMessageContext) => boolean
+type FilterFlow = FilterFunc | { kind: 'filter'; filter: FilterFunc }
+```
+
+<!-- TODO: Add Correct Links here -->
+
+_Refer to the [Message Interface (IMsg)](#) for more information on the Msg class and extrapolating data from the message to use in comparisons._
+
+_Refer to the [Context Object](#) for more information on the context object._
+
+## Use Cases
+
+The Ingestion and Route each allow for an array of flows. The filter flow, is one of the allowed flows in either one of these arrays. If a message is filtered out in an ingestion flow, then none of the latter flows in the ingestion, nor any of the routes will be called. If a message is filtered out in a route, then none of the latter flows in that route will be called, however, the next route will still be called. _Routes are called **asynchronously**_, _Ingestion flows are called **synchronously**_.
+
+```ts
+const channel: ChannelConfig = {
+  // ...
+  ingestion: [
+    // highlight-next-line
+    // filters here
+  ],
+  routes: [
+    {
+      kind: 'route',
+      name: 'Route 1',
+      flows: [
+        // highlight-next-line
+        // filters here
+      ],
+    },
+    {
+      kind: 'route',
+      name: 'Route 2',
+      flows: [
+        // highlight-next-line
+        // filters here
+      ],
+    }
+  ]
+};
+```
+
+## Example
+
+If the filter function returns true, then the message will be processed further. If the filter functions return false, then the message will be dropped. An easy catchy phrase to remember is “If it’s true, then let it through. If it’s false, then it will halt.”
+
+Here is a simple example of a filter that will only allow ADT event messages to be processed further:
+
+<ExampleCode path="adtFilter.ts" numbered />
+
+## Advanced Example
+
+Since Gofer Engine uses native TypeScript/JavaScript, you can use any of the recipes you are familiar with to pass variables and create advanced filtering logic. You could even keep your filters in a common directory and import them where needed into your channels.
+
+Let's refactor the previous example a little bit and make the filter function reusable for other channels allowing a set of HL7 v2 message categories.
+
+
+<ExampleCode path="filterByCategory.ts" numbered />
+
+<ExampleCode path="adtOrmOruFilter.ts" numbered />
+
+## Advanced Type Control
+
+Config Style allows for advanced type control. You can pass through a generic to the `ChannelConfig` (the first generic option) to either:
+
+
+- `'F'` = Only allows raw filter _**F**unctions_. E.G. ingestion: `[() => true]`
+- `'O'` = Only allow filter functions in _**O**bjects_. E.G. ingestion: `[{ filter: () => true }]`
+- `'B'` = Allow _**B**oth_ raw filter functions or wrapped in objects. E.G. ingestion: `[() => true, { filter: () => true }]`
+
+The default is `'B'`. E.G. `const channel: ChannelConfig<'B'> = ...`
+
+<ExampleCode path="filterTypeControl.ts" numbered />
+
+### OOP Style
+
+The OOP style channel builder `filter` method aligns with the following types:
+
+```ts
+IngestionClass.filter = (filter: FilterFlow<'F'>) => IngestionClass
+RouteClass.filter = (filter: FilterFlow<'F>) => RouteClass
+```
+
+This means that the `filter` method accepts a single argument which is a function and does not accept an object containing the `kind` property

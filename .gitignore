@@ -42,3 +42,6 @@ Thumbs.db
 
 # Environment Files
 .env
+
+# NX specific
+.nx/cache

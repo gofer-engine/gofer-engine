@@ -1,0 +1,15 @@
+{
+  "name": "@gofer-engine/scheduler",
+  "version": "0.0.1",
+  "dependencies": {
+    "@gofer-engine/events": "*",
+    "@gofer-engine/message-type": "*",
+    "@gofer-engine/variables": "*",
+    "@gofer-engine/logger": "*",
+    "@gofer-engine/sftp": "*",
+    "@gofer-engine/file": "*",
+    "node-schedule": "*",
+    "type-fest": "*",
+    "tslib": "*"
+  }
+}

@@ -1,4 +1,10 @@
 {
   "name": "@gofer-engine/xml",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "dependencies": {
+    "xml-js": "*",
+    "lodash": "*",
+    "tslib": "*",
+    "@gofer-engine/message-type": "*"
+  }
 }

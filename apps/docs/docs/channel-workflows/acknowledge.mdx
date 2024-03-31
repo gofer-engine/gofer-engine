@@ -1,0 +1,99 @@
+---
+sidebar_position: 1
+---
+
+import ExampleCode from '@site/src/components/ExampleCode';
+
+# `ack` — Acknowledge
+
+Acknowledgements are responses returned to the sender of a message. If a sender is using queuing, then an acknowledgement response promptly will inform the sender that the message was received whether accepted or rejected. This will let the sender move on to the next message in the queue.
+
+The ack flow is an optional ingestion flow. If the server should respond to the source, then there should be an ack flow somewhere in the list of ingestion flows. If you do not add an ack config in your ingestion flow, and you are not utilizing source queuing, then no response will be returned to the sender.
+
+**Gofer Engine handles ACKS a little bit different for each message type.** However the `AckConfig` type is used for each message type as the basis of the response.
+
+## `AckConfig`
+
+```ts
+type AckConfig = {
+  application?: string
+  organization?: string
+  responseCode?: 'AA' | 'AE' | 'AR'
+  text?: string
+  msg?: (ack: IMsg, msg: IMsg, context: IAckContext) => Msg
+}
+```
+
+- `application` — Value to use in ACK MSH.3 field. Defaults to `'gofer Engine'`
+- `organization` — Value to use in ACK MSH.4 field. Defaults to empty string
+- `responseCode` — Value to use in MSA-1 field. Defaults to 'AA'
+- `text` — Text to use in ACK MSA.3. Defaults to empty string
+- `msg` — A function that accepts the ACK `IMsg` interface, MSG `IMsg` interface, and context state object and returns the ACK `IMsg` interface back. This allows for custom transformation of the ACK message.
+
+:::info[REFERENCES]
+
+See more documentation on:
+
+- [Context Object](../advanced/context)
+- [IMsg](../message-classes)
+
+:::
+
+## HL7v2 ACKS
+
+[HL7 v2](../../blog/what-is-hl7) uses a basic acknowledgment when the application doesn't have a specific acknowledgment message or can't process due to an error. It's also used for accept level acknowledgments. The most simple ACK message looks like:
+
+```hl7
+MSH|^~\&|||||202401010800||ACK^A20^ACK|123|T|2.2
+MSA|AA|42|
+```
+
+In this example ACK, both the sending and receiving application and facilities are blank. The `A20` matches the event type (MSH-9.2) and the string `42` matches the id (MSH-10.1) of the specific message being acknowledged. The `T` indicates that this is a test environment. The `2.2` indicates the subversion of HL7 v2 being used. The `AA` is from the table 0008 and is defined as "Application Accept". The last element of importance here is the date and time the message was generated.
+
+
+### Default Ack
+
+If you pass in no arguments/options, Gofer Engine will return an ACK with the default response code, application, organization, and text.
+
+<ExampleCode path="basicAck.ts" numbered />
+
+### Advanced Ack
+
+For a little more complex example, we can use data in the received message, and the filtered status found in the message context to send back an NACK when messages are filtered, or 
+
+<ExampleCode path="advancedAck.ts" numbered />
+
+## JSON Acks
+
+Gofer Engine does not currently follow any singular JSON schema definitions. For this reason, the ack returned by JSON listeners is just a basic JSON object that can be customized to suite your needs.
+
+By default the acknowledgement would be similar to the folowing example adjusting the `datetime`
+
+```json
+{
+  "org": "",
+  "res": "AA",
+  "accepted": true,
+  "app": "gofer ENGINE",
+  "datetime": "2021-01-01T08:00:00.000Z"
+}
+```
+
+Understandably your sender may expect a different JSON response, and in such cases, you can use the [`msg`](#ackconfig) option to provide a callback to build the correct JSON response message class.
+
+## Delimitted Text Acks
+
+:::danger[FIXME]
+
+Currently Delimitted Text message type acks respond with a [HL7v2
+ACK](#hl7v2-acks) message.
+
+:::
+
+## XML Acks
+
+:::danger[FIXME]
+
+Currently XML message type acks respond with a [HL7v2 ACK](#hl7v2-acks) message.
+
+:::

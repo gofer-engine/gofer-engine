@@ -1,0 +1,11 @@
+{
+  "name": "@gofer-engine/sftp",
+  "version": "0.0.1",
+  "dependencies": {
+  
+    "@gofer-engine/message-type": "*",
+    "ssh2-sftp-client": "^9.1.0",
+    "type-fest": "^4.6.0",
+    "tslib": "^2.6.2"
+  }
+}

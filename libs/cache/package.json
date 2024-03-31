@@ -1,4 +1,7 @@
 {
   "name": "@gofer-engine/cache",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "dependencies": {
+    "tslib": "*"
+  }
 }

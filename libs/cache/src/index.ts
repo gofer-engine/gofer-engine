@@ -1,6 +1,5 @@
 import path from 'path';
 import fs from 'fs';
-// import { onLog, setLoggingConfig } from '../eventHandlers';
 
 interface CacheOptions {
   base?: string;
@@ -35,8 +34,6 @@ class cache<T> {
     this.cacheDir = path.normalize(
       this.base + '/' + (this.options.name || 'cache'),
     );
-    // setLoggingConfig({ console: options.verbose ?? false });
-    // onLog.go({ cacheDir: this.cacheDir });
     this.cacheInfinitely = !(typeof this.options.duration === 'number');
     this.cacheDuration = this.options.duration ?? 0;
     if (!exists(this.cacheDir))

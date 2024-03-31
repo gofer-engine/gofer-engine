@@ -1,0 +1,9 @@
+{
+  "name": "@gofer-engine/file",
+  "version": "0.0.1",
+  "dependencies": {
+    "@gofer-engine/message-type": "*",
+    "type-fest": "*",
+    "tslib": "*"
+  }
+}

@@ -1,0 +1,397 @@
+---
+sidebar_position: 2
+---
+
+# XML
+
+:::warning WARNING - Rewriting this Library in Progress
+
+This `xml` library has begun a rewriting process to correctly handle XML with
+xPath and XSLT template transformers. This rewrite did not get accomplished
+within the timeframe needed to push this release out.
+
+**_USE this library at your own risk with limited functionality!_**
+
+:::
+
+:::note
+
+Support for XML is supported by Gofer Engine, but this document page is still
+under development.
+
+:::
+
+Gofer Engine's XML library implements xml support with help of the [`xml-js`
+library](https://www.npmjs.com/package/xml-js) that handles converting XML to
+JSON internally. Gofer Engine's `XMLMsg` class wraps around this `xml-js`
+library and provides additional methods to extrapolate and transform xml data.
+
+The `IXMLMsg` interface which is implemented by the `XMLMsg` class takes the shape of:
+
+```ts
+interface IXMLMsg {
+  kind: 'XML';
+  setMsg: (msg: Element) => IXMLMsg;
+  json: <N extends boolean>(
+    _normalized?: N,
+  ) => N extends true ? Element : ElementCompact;
+  toString: () => string;
+  set: (path?: string | undefined, value?: ElementCompact) => IXMLMsg;
+  setJSON: (path: string | undefined, json: any) => IMsg;
+  get: (path: string | undefined) => string | ElementCompact;
+  delete: (path: string) => IXMLMsg;
+  copy: (path: string, toPath: string) => IXMLMsg;
+  move: (fromPath: string, toPath: string) => IXMLMsg;
+  map: (
+    path: string,
+    v: string | Record<string, string> | string[] | (<T>(v: T, i: number) => T),
+    options?: {
+      iteration?: boolean | undefined;
+    },
+  ) => IXMLMsg;
+  setIteration: <Y>(
+    path: string,
+    map: Y[] | ((val: Y, i: number) => Y),
+    options?: { allowLoop: boolean },
+  ) => IXMLMsg;
+}
+```
+
+## Example XML
+
+To have a working example, we will use the following example XML message sourced from https://build.fhir.org/patient-example.xml.html
+
+```xml snippet title="sample.xml"
+<?xml version="1.0" encoding="UTF-8"?>
+<Patient xmlns="http://hl7.org/fhir">
+  <id value="example"/> 
+  <text>
+    <status value="generated"/>
+    <div xmlns="http://www.w3.org/1999/xhtml">
+      <p style="border: 1px #661aff solid; background-color: #e6e6ff; padding: 10px;">
+        <b> Jim </b>  male, DoB: 1974-12-25 ( Medical record number: 12345 (use: USUAL, period: 2001-05-06
+        --&gt; (ongoing)))</p>
+      <hr/>
+      <table class="grid">
+        <tr>
+          <td style="background-color: #f3f5da" title="Record is active">Active:</td> 
+          <td> true</td>
+          <td style="background-color: #f3f5da" title="Known status of Patient">Deceased:</td>
+          <td colspan="3">false</td>
+        </tr>
+        <tr>
+          <td style="background-color: #f3f5da" title="Alternate names (see the one above)">Alt Names:</td>
+          <td colspan="3">
+            <ul>
+              <li> Peter James Chalmers (OFFICIAL)</li>
+              <li> Peter James Windsor (MAIDEN)</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td style="background-color: #f3f5da" title="Ways to contact the Patient">Contact Details:</td>
+          <td colspan="3">
+            <ul>
+              <li> -unknown-(HOME)</li>
+              <li> ph: (03) 5555 6473(WORK)</li>
+              <li> ph: (03) 3410 5613(MOBILE)</li>
+              <li> ph: (03) 5555 8834(OLD)</li>
+              <li> 534 Erewhon St PeasantVille, Rainbow, Vic  3999(HOME)</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td style="background-color: #f3f5da" title="Nominated Contact: Next-of-Kin">Next-of-Kin:</td>
+          <td colspan="3">
+            <ul>
+              <li> Bénédicte du Marché  (female)</li>
+              <li> 534 Erewhon St PleasantVille Vic 3999 (HOME)</li>
+              <li> <a href="tel:+33(237)998327">+33 (237) 998327</a> </li>
+              <li> Valid Period: 2012 --&gt; (ongoing)</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td style="background-color: #f3f5da" title="Patient Links">Links:</td>
+          <td colspan="3">
+            <ul>
+              <li> Managing Organization: <a href="organization-example-gastro.html">Organization/1</a>  &quot;Gastroenterology&quot;</li>
+            </ul>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </text>
+  <identifier>
+    <use value="usual"/>
+    <type>
+      <coding>
+        <system value="http://terminology.hl7.org/CodeSystem/v2-0203"/>
+        <code value="MR"/>
+      </coding>
+    </type>
+    <system value="urn:oid:1.2.36.146.595.217.0.1"/>
+    <value value="12345"/>
+    <period>
+      <start value="2001-05-06"/>
+    </period>
+    <assigner>
+      <display value="Acme Healthcare"/>
+    </assigner>
+  </identifier>
+  <active value="true"/>
+  <name>
+    <use value="official"/>
+    <family value="Chalmers"/>
+    <given value="Peter"/>
+    <given value="James"/>
+  </name>
+  <name>
+    <use value="usual"/>
+    <given value="Jim"/>
+  </name>
+  <name>
+    <use value="maiden"/>
+    <family value="Windsor"/>
+    <given value="Peter"/>
+    <given value="James"/>
+    <period>
+      <end value="2002"/>
+    </period>
+  </name>
+  <telecom>
+    <use value="home"/>
+  </telecom>
+  <telecom>
+    <system value="phone"/>
+    <value value="(03) 5555 6473"/>
+    <use value="work"/>
+    <rank value="1"/>
+  </telecom>
+  <telecom>
+    <system value="phone"/>
+    <value value="(03) 3410 5613"/>
+    <use value="mobile"/>
+    <rank value="2"/>
+  </telecom>
+  <telecom>
+    <system value="phone"/>
+    <value value="(03) 5555 8834"/>
+    <use value="old"/>
+    <period>
+      <end value="2014"/>
+    </period>
+  </telecom>
+  <gender value="male"/>
+  <birthDate value="1974-12-25">
+    <extension url="http://hl7.org/fhir/StructureDefinition/patient-birthTime">
+      <valueDateTime value="1974-12-25T14:35:45-05:00"/>
+    </extension>
+  </birthDate>
+  <deceasedBoolean value="false"/>
+  <address>
+    <use value="home"/>
+    <type value="both"/>
+    <text value="534 Erewhon St PeasantVille, Rainbow, Vic  3999"/>
+    <line value="534 Erewhon St"/>
+    <city value="PleasantVille"/>
+    <district value="Rainbow"/>
+    <state value="Vic"/>
+    <postalCode value="3999"/>
+    <period>
+      <start value="1974-12-25"/>
+    </period>
+  </address>
+  <contact>
+    <relationship>
+      <coding>
+        <system value="http://terminology.hl7.org/CodeSystem/v2-0131"/>
+        <code value="N"/>
+      </coding>
+    </relationship>
+    <name>
+      <family value="du Marché">
+        <extension url="http://hl7.org/fhir/StructureDefinition/humanname-own-prefix">
+          <valueString value="VV"/>
+        </extension>
+      </family>
+      <given value="Bénédicte"/>
+    </name>
+    <telecom>
+      <system value="phone"/>
+      <value value="+33 (237) 998327"/>
+    </telecom>
+    <address>
+      <use value="home"/>
+      <type value="both"/>
+      <line value="534 Erewhon St"/>
+      <city value="PleasantVille"/>
+      <district value="Rainbow"/>
+      <state value="Vic"/>
+      <postalCode value="3999"/>
+      <period>
+        <start value="1974-12-25"/>
+      </period>
+    </address>
+    <gender value="female"/>
+    <period>
+      <start value="2012"/>
+    </period>
+  </contact>
+  <managingOrganization>
+    <reference value="Organization/1"/>
+  </managingOrganization>
+</Patient>
+```
+
+
+## Decoding
+
+XML messages can be decoded by simply passing the raw string message to the
+XMLMsg constructor:
+
+```ts
+import XMLMsg from '@gofer-engine/xml';
+import fs from 'fs';
+
+const XML_String = fs.readFileSync('./sample.xml', 'utf-8');
+
+const msg = new XMLMsg(XML_String);
+```
+
+To see the JSON decoded message, you can use the json() method:
+
+```ts
+const json = new XMLMsg(XML_String).json()
+console.log(JSON.stringify(json, undefined, 2))
+```
+
+This `xml-js` decodes XML to JSON with either "compact" or "non-compact" JSON.
+The compact JSON stores the same data as the non-compact, the difference beeing
+that the non-compact provides a normalized schema'd JSON data object. By default
+the `json` method returns the compact JSON. To get the normalized, aka
+"non-compact", JSON you can pass `true` to the `json` method
+
+```ts
+const normalizedJSON = new XMLMsg(XML_string).json(true)
+console.log(JSON.stringify(normalizedJSON, undefined, 2))
+```
+
+If you have a normalize, non-compact JSON object that you want to replace the
+decoded JSON object, you can use the setMsg method:
+
+```ts
+msg.setMsg(normalizedJSON);
+```
+
+## Encoding
+
+To encode a message back to an XML string, you can use the `toString` method on
+the XMLMsg class:
+
+```ts
+const xml = msg.toString();
+
+console.log(xml);
+```
+
+## Extrapolating
+
+The `XMLMsg` class exposes a `get` method that makes extracting inner XML data
+an easy task. This `get` method works by using the compacted JSON structure and
+the `lodash.get` library to extract the path.
+
+### Value Attributes
+
+If path returned an XML element with a value attribute, then the value will be returned as a string.
+
+```
+const familyName = msg.get('Patient.name[0].family');
+
+console.log(familyName);
+```
+
+The path `"Patient.name[0].family"` points to the XML line `<family
+value="Chalmers"/>` since this XML element has a `value` attribute then this
+string is returned.
+
+### Inner XML
+
+If path returned an single XML element **without a value attribute**, then the inner XML will be returned as a string;
+
+```ts
+const name = msg.get('Patient.name[0]');
+
+console.log(name);
+```
+
+The path `"Patient.name[0]"` points to an XML element:
+
+```xml
+<name>
+  <use value="official"/>
+  <family value="Chalmers"/>
+  <given value="Peter"/>
+  <given value="James"/>
+</name>
+```
+
+Since there is no value attribute on the `name`, then the inner XML will be returned as a string:
+
+```xml
+<use value="official"/>
+<family value="Chalmers"/>
+<given value="Peter"/>
+<given value="James"/>
+```
+
+### Multiple Elements
+
+If path returned multiple XML elements, then a XML numeric indexed list will be returned as a string.
+
+
+
+```ts
+```
+
+```xml
+<0>
+  <use value=\"official\"/>
+  <family value=\"Chalmers\"/>
+  <given value=\"Peter\"/>
+  <given value=\"James\"/>
+</0>
+<1>
+  <use value=\"usual\"/>
+  <given value=\"Jim\"/>
+</1>
+<2>
+  <use value=\"maiden\"/>
+  <family value=\"Windsor\"/>
+  <given value=\"Peter\"/>
+  <given value=\"James\"/>
+  <period>
+    <end value=\"2002\"/>
+  </period>
+</2>
+```
+
+## Transforming
+
+:::info Limited Functionality Un-Documented
+
+The transformation methods are not yet documented, because the library is in the
+middle of being rewritten using proper xPath and XLST template transformers.
+
+Some transforming methods may work, some may not work with no error notice, and
+others will throw an error. Use at your own risk.
+
+If available, your help would be appreciated to complete the rewriting of this
+library, writing tests, and completing the documentation.
+
+:::
+
+### ...
+
+<!-- ### Concatenating Transformers-->
+

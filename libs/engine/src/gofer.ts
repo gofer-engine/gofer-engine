@@ -1,17 +1,24 @@
-import { state } from './state';
+import { Server } from 'net';
+import { Job } from 'node-schedule';
+
+import { HTTPConfig } from '@gofer-engine/http';
+import { HTTPSConfig } from '@gofer-engine/https';
+import { ScheduleDef } from '@gofer-engine/scheduler';
+
 import { coerceStrictTypedChannels } from './helpers';
-import { initServers } from './initServers';
+import { initServers, jobs, servers } from './initServers';
 import { initStores } from './initStores';
+import { IngestionClass } from './IngestionClass';
+import { messenger } from './messenger';
+import { state } from './state';
 import {
   ChannelConfig,
   Connection,
+  MessageRunner,
   OGofer,
   OIngest,
 } from './types';
-import { IngestionClass } from './IngestionClass';
-import { messenger } from './messenger';
-import { HTTPSConfig } from "@gofer-engine/https";
-import { HTTPConfig } from "@gofer-engine/http";
+import { MsgTypes } from '@gofer-engine/message-type';
 
 class Gofer implements OGofer {
   private init = (channels?: ChannelConfig[]) => {
@@ -34,6 +41,53 @@ class Gofer implements OGofer {
   constructor(channels?: ChannelConfig[]) {
     this.init(channels);
   }
+  public schedule = (
+    msgType?: MsgTypes,
+    schedule?: ScheduleDef,
+    runOnceOnStart?: boolean,
+  ): MessageRunner => {
+    return {
+      run(runner) {
+        return new IngestionClass({
+          kind: 'schedule',
+          schedule: {
+            msgType,
+            schedule,
+            runOnStart: runOnceOnStart,
+            runner,
+          },
+        });
+      },
+      sftp(config) {
+        return new IngestionClass({
+          kind: 'schedule',
+          schedule: {
+            msgType,
+            schedule,
+            runOnStart: runOnceOnStart,
+            runner: {
+              kind: 'sftp',
+              sftp: config,
+            },
+          },
+        });
+      },
+      file(config) {
+        return new IngestionClass({
+          kind: 'schedule',
+          schedule: {
+            msgType,
+            schedule,
+            runOnStart: runOnceOnStart,
+            runner: {
+              kind: 'file',
+              file: config,
+            },
+          },
+        });
+      },
+    };
+  };
   public listen(type: 'https', options: HTTPSConfig<'I'>): OIngest;
   public listen(type: 'http', options: HTTPConfig<'I'>): OIngest;
   public listen(type: 'tcp', host: string, port: number): OIngest;
@@ -69,13 +123,13 @@ class Gofer implements OGofer {
     // this error should be unreachable.
     throw new Error(`Unsupported connection type ${type}`);
   }
-  // public files: OGofer['files'] = (config) => {
-  //   return undefined as any
-  // }
-  // public msg: OGofer['msg'] = (msg) => {
-  //    RouteClass()
-  // }
   public messenger = messenger;
+  public getJob = (channelId: string): Job | undefined => {
+    return jobs?.[channelId];
+  };
+  public getServer = (serverId: string): Server => {
+    return servers?.[serverId];
+  };
 }
 
 export const gofer = new Gofer();

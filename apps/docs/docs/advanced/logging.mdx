@@ -1,0 +1,34 @@
+---
+sidebar_position: 2
+---
+
+import ExampleCode from '@site/src/components/ExampleCode';
+
+# Logging
+
+Logger is part of the `Context`. This allows you to use the logger from within
+any flow that includes the `context` such as a `filter` or `transformer`.
+
+There are 4 log levels:
+
+- `debug` should be used for development, testing, and debugging purposes only
+- `info` should be used for your information only
+- `warn` should be used for warnings that should be fixed, but are not show stoppers
+- `error` should be used for show-stopping errors
+
+Log Levels are configurable per each channel. This allows some channels to log
+at a higher level while others are active in production and logging with a lower
+level. In the OOP style, use the `logLevel` method.
+
+Setting the Log Level logs everything up to that level. For instance, using the
+`warn` log level will log both `error` and `warn` events.
+
+The logger is fairly simple to use as seen in this example of a filter step:
+
+<ExampleCode path="logExample.ts" hide={[[2,14]]} />
+
+The `logger` is by default set up to log with `console.log`. You can replace the
+default logger using the global `"LOGGER"` from Gofer Engine's [Event
+System](./event-system), `handelse`.
+
+<ExampleCode path="logExample.ts" />

@@ -1,46 +1,31 @@
-import { SetRequired, RequireAtLeastOne, RequireExactlyOne } from 'type-fest'
+import { SetRequired } from 'type-fest';
 
 import { HL7v2, Message, StrictMessage } from '@gofer-engine/hl7';
 import { IJSONMsg } from '@gofer-engine/json';
-import { AckConfig, AckFunc, FunctProp, IMessageContext, IMsg, JSONValue, TLogLevel } from '@gofer-engine/message-type';
+import {
+  AckConfig,
+  AckFunc,
+  FunctProp,
+  IMessageContext,
+  IMsg,
+  JSONValue,
+  MsgTypes,
+  TLogLevel,
+} from '@gofer-engine/message-type';
 import { StoreConfig } from '@gofer-engine/stores';
-import { TCPConnection } from "@gofer-engine/tcp";
-import { QueueConfig } from "@gofer-engine/queue";
-import { HTTPConfig, IHTTPConfig } from "@gofer-engine/http";
-import { HTTPSConfig, IHTTPSConfig } from "@gofer-engine/https";
+import { TCPConnection } from '@gofer-engine/tcp';
+import { QueueConfig } from '@gofer-engine/queue';
+import { HTTPConfig, IHTTPConfig } from '@gofer-engine/http';
+import { HTTPSConfig, IHTTPSConfig } from '@gofer-engine/https';
+import {
+  GetMsgFunc,
+  ScheduleDef,
+  SchedulerConfig,
+} from '@gofer-engine/scheduler';
+import { SFTPReadConfig, SFTPWriteConfig } from '@gofer-engine/sftp';
+import { FileReadConfig } from '@gofer-engine/file';
 
 export type varTypes = 'Global' | 'Channel' | 'Route' | 'Msg';
-
-interface IFileConfig {
-  directory: string;
-  ftp?: string;
-  sftp?: string;
-  filenamePattern?: string;
-  includeAllSubDirs?: boolean;
-  ignoreDotFiles?: boolean;
-  username?: boolean;
-  password?: boolean;
-  timeout?: number;
-  deleteAfterRead?: boolean;
-  moveAfterRead?: {
-    directory: string;
-    filename: string;
-  };
-  moveAfterError?: {
-    directory: string;
-    filename: string;
-  };
-  checkFileAge?: number;
-  limitSize?: RequireAtLeastOne<{
-    min?: number;
-    max?: number;
-  }>;
-}
-
-export type FileConfig = RequireExactlyOne<
-  IFileConfig,
-  'ftp' | 'sftp' | 'directory'
->;
 
 export type HTTPConnection<T extends 'I' | 'O'> = T extends 'I'
   ? { queue?: QueueConfig; kind: 'http'; http: HTTPConfig<T> }
@@ -50,11 +35,25 @@ export type HTTPSConnection<T extends 'I' | 'O'> = T extends 'I'
   ? { queue?: QueueConfig; kind: 'https'; https: HTTPSConfig<T> }
   : { kind: 'https'; https: HTTPSConfig<T> };
 
+export type ScheduleConnection<T extends 'I' | 'O'> = T extends 'I'
+  ? {
+      kind: 'schedule';
+      schedule: SchedulerConfig;
+    }
+  : never;
+
+export type SFTPConnection<T extends 'I' | 'O'> = {
+  kind: 'sftp';
+  sftp: T extends 'I' ? SFTPReadConfig : SFTPWriteConfig;
+};
+
 // NOTE: if new kind is added, adjust the isConnectionFlow type guard
 export type Connection<T extends 'I' | 'O'> =
   | TCPConnection<T>
   | HTTPConnection<T>
-  | HTTPSConnection<T>;
+  | HTTPSConnection<T>
+  | ScheduleConnection<T>
+  | SFTPConnection<T>;
 // TODO: implement file reader source
 // NOTE: file source is different than the `file` store, because it will support additional methods such as ftp/sftp
 // | FileConnection<T>
@@ -94,7 +93,7 @@ export type FilterFlow<Filt extends 'O' | 'F' | 'B' = 'B'> = Filt extends 'O'
   ? FilterFunc
   : FilterFunc | { kind: 'filter'; filter: FilterFunc };
 
-type TransformFunc = (msg: IMsg, context: IMessageContext) => IMsg;
+export type TransformFunc = (msg: IMsg, context: IMessageContext) => IMsg;
 
 // O = require objectified transformers
 // F = require raw function transformers
@@ -333,13 +332,23 @@ export type RunRouteFunc = <
   callback?: (msg: IMsg) => void,
 ) => Promise<boolean>;
 
+export interface MessageRunner {
+  run(func: GetMsgFunc): OIngest;
+  sftp(config: SFTPReadConfig): OIngest;
+  file(config: FileReadConfig): OIngest;
+}
+
 export interface OGofer {
   run: (channels: ChannelConfig) => string | number | undefined;
   configs: (channels: ChannelConfig[]) => void;
   listen(method: 'tcp', host: string, port: number): OIngest;
   listen(method: 'http', options: IHTTPConfig): OIngest;
   listen(method: 'https', options: IHTTPSConfig): OIngest;
-  // files: (config: FileConfig) => OIngest
+  schedule(
+    msgType: MsgTypes,
+    schedule?: ScheduleDef,
+    runOnceOnStart?: boolean,
+  ): MessageRunner;
   // msg: (msg: Msg) => OIngest
   messenger: Messenger;
 }
@@ -423,10 +432,12 @@ export type MessengerRoute = (
 export type MessengerInput<T> = T extends HL7v2
   ? string | HL7v2 | ((msg: T) => T) | Message | StrictMessage
   : T extends IJSONMsg
-    ? string | JSONValue | T | ((msg: T) => T)
-    : string | T | ((msg: T) => T);
+  ? string | JSONValue | T | ((msg: T) => T)
+  : string | T | ((msg: T) => T);
 
-export type MessengerFunc<T extends IMsg = IMsg> = (msg: MessengerInput<T>) => Promise<T>;
+export type MessengerFunc<T extends IMsg = IMsg> = (
+  msg: MessengerInput<T>,
+) => Promise<T>;
 export type Messenger = <T extends IMsg = IMsg>(
   route: MessengerRoute,
 ) => [messenger: MessengerFunc<T>, messengerId: string];

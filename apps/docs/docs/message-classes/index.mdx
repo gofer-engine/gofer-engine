@@ -1,0 +1,18 @@
+import DocCardList from '@theme/DocCardList';
+import ExampleCode from '@site/src/components/ExampleCode';
+
+Gofer Engine supports a variety of message types. Each one of these message
+types begins by implementing the `IMsg` interface. This interface is defined
+as follows:
+
+<ExampleCode path="IMsg.ts" hide={[[12, 25]]} />
+
+This interface provides the basic operations and methods to extrapolate data
+from the message, transform the message, and serialize the message to the raw
+format.
+
+The specific message types may provide additional methods and properties to
+further manipulate the message. The following sections will describe each
+message type in detail.
+
+<DocCardList />

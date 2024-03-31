@@ -54,6 +54,7 @@ class DBStore implements IStoreClass {
           ? 'string'
           : 'json'
         : this.format;
+    // TODO: support XML, (delimited) CSV, PSV, TXT, etc.
     const _extension =
       this.extension === undefined
         ? context.kind === 'HL7v2'
@@ -99,7 +100,7 @@ class DBStore implements IStoreClass {
                   return genId('UUID');
                 }
               }
-              if (context.kind === 'JSON') {
+              if (context.kind === 'JSON' || context.kind === 'XML' || context.kind === 'DELIMITED') {
                 if (n.startsWith('$')) {
                   const id = data.get(n.slice(1))
                   if (typeof id === 'number' && id !== 0 && !isNaN(id)) {
@@ -108,7 +109,7 @@ class DBStore implements IStoreClass {
                   if (typeof id === 'string' && id !== '') {
                     return id;
                   }
-                  context.logger(`The JSON path ${n} does not exist in the message, using UUID instead`, 'warn')
+                  context.logger(`The ${context.kind} path ${n} does not exist in the message, using UUID instead`, 'warn')
                   return genId('UUID');
                 }
               }

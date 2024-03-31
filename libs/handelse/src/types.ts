@@ -1,6 +1,7 @@
 export interface IEventHandlerConfig {
   quitEarly?: boolean;
   eventType?: string;
+  getIfAlreadyCreated?: boolean;
 }
 export type TEventGetHandlerOptions = Pick<IEventHandlerConfig, 'eventType'> & {
   verbose?: boolean;
@@ -67,13 +68,14 @@ export interface IEventServer<T = unknown> {
   signal: this['pub'];
 }
 export interface IEventClient<T = unknown> {
-  sub: (handler: SubFunc<T>) => SubscriberID;
+  sub: (handler: SubFunc<T>, id?: string) => SubscriberID;
   subscribe: this['sub'];
   on: this['sub'];
   do: this['sub'];
   start: this['sub'];
   listen: this['sub'];
   remove: (id: SubscriberID) => boolean;
+  removeAll: () => boolean;
   unsub: this['remove'];
   unsubscribe: this['remove'];
   off: this['remove'];

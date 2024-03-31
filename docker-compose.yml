@@ -1,5 +1,19 @@
 version: '3'
 services:
+  docs:
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    image: node:20
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "3000:3000"
+    working_dir: /usr/src/app/apps/docs
+    command: npm run dev
+    user: node
+    environment:
+      - container=docker
   app:
     restart: unless-stopped
     stdin_open: true
@@ -12,3 +26,20 @@ services:
     user: node
     environment:
       - container=docker
+  sftp:
+    image: atmoz/sftp
+    volumes:
+      - ./samples:/home/foo/upload
+    ports:
+      - "2222:22"
+    command: foo:pass:::upload
+  ftp:
+    image: garethflowers/ftp-server
+    volumes:
+      - ./samples:/home/foo
+    ports:
+      - "20-21:20-21/tcp"
+      - "40000-40009:40000-40009/tcp"
+    environment:
+      - FTP_USER=foo
+      - FTP_PASS=pass

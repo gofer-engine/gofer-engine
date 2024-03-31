@@ -1,0 +1,8 @@
+{
+  "label": "Channel Workflows",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Workflows that power the channels"
+  }
+}

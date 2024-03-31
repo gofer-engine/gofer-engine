@@ -1,4 +1,9 @@
 {
   "name": "@gofer-engine/events",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "dependencies": {
+    "tslib": "*",
+    "@gofer-engine/handelse": "*",
+    "@gofer-engine/message-type": "*"
+  }
 }

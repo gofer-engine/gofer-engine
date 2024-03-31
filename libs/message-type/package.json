@@ -1,4 +1,9 @@
 {
   "name": "@gofer-engine/message-type",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "dependencies": {
+    "@gofer-engine/handelse": "*",
+    "type-fest": "*",
+    "tslib": "*"
+  }
 }

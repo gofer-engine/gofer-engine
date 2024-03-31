@@ -23,6 +23,7 @@ export const doAck = (
   const org = ackConfig.organization ?? '';
   const res = ackConfig.responseCode ?? 'AA';
   const txt = ackConfig.text ?? '';
+  // FIXME: this will only work for HL7v2 messages. Need to add support for XML, JSON, etc.
   const id = msg.get('MSH-10.1');
   const now = new Date()
     .toUTCString()

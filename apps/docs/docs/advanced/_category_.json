@@ -1,0 +1,8 @@
+{
+  "label": "Advanced",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "Advanced concepts and features useful within the context of other workflows"
+  }
+}

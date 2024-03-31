@@ -1,6 +1,12 @@
 type Promisable<T> = T | Promise<T>;
 type UnPromised<T> = T extends Promise<infer U> ? U : T;
 
+/**
+ * Takes an object of promises and resolves them
+ * @param obj - object of promises
+ * @param quitEarly - if true, will quit after the first truthy resolved promise
+ * @returns 
+ */
 export const resolveObj = async <
   V = unknown,
   T extends { [s: string]: Promisable<V> } = { [s: string]: Promisable<V> },

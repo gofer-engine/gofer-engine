@@ -1,16 +1,24 @@
-import gofer from '@gofer-engine/engine';
-import { IJSONMsg } from '@gofer-engine/json';
 import fs from 'fs';
 import path from 'path';
+import gofer from '@gofer-engine/engine';
+import { IJSONMsg } from '@gofer-engine/json';
+import { IDelimitedMsg } from '@gofer-engine/delimited';
 
-const PatientFhirExample = JSON.parse(fs.readFileSync(
-  path.join(
-    process.env.NX_WORKSPACE_ROOT,
-    'samples',
-    'samplePatient.fhir.json',
+const PatientFhirExample = JSON.parse(
+  fs.readFileSync(
+    path.join(
+      process.env.NX_WORKSPACE_ROOT,
+      'samples',
+      'samplePatient.fhir.json',
+    ),
+    'utf8',
   ),
-  'utf8'
-));
+);
+
+const CSVExample = fs.readFileSync(
+  path.join(process.env.NX_WORKSPACE_ROOT, 'samples', 'example.csv'),
+  'utf8',
+);
 
 /********************************************************
  * Examples of using TCP (MLLP) Listener and Messenger  *
@@ -197,3 +205,80 @@ setTimeout(async () => {
     `Message sent to HTTP JSON Client ${httpsJSONMessengerId}: ${sent}`,
   );
 }, 3000);
+
+// HTTP Listener for CSV
+gofer
+  .listen('http', {
+    msgType: 'DELIMITED',
+    host: '127.0.0.1',
+    port: 8103,
+    method: 'POST',
+    basicAuth: {
+      username: 'user',
+      password: 'pass',
+    },
+  })
+  .logLevel('debug')
+  .ack()
+  // .filter(msg => msg.get('resourceType') !== 'Patient')
+  .transform((msg) => {
+    return msg
+      .set('C0', 'Baz')
+      .delete('D')
+      .delete('3+')
+  })
+  .route((r) => r.store({ file: { extension: '.csv', format: 'string' } }))
+  .run();
+
+// HTTP Messenger for CSV
+const [sendHttpsCSV, httpsCSVMessengerId] = gofer.messenger<IDelimitedMsg>(
+  (route) =>
+    route.send('http', {
+      msgType: 'DELIMITED',
+      host: '127.0.0.1',
+      port: 8103,
+      method: 'POST',
+      basicAuth: {
+        username: 'user',
+        password: 'pass',
+      },
+    }),
+);
+
+// Example Use of HTTP Messenger for CSV
+setTimeout(async () => {
+  const sent = await sendHttpsCSV(CSVExample);
+  console.log(
+    `Message sent to HTTP JSON Client ${httpsCSVMessengerId}: ${sent}`,
+  );
+}, 3000);
+
+gofer
+  .schedule('DELIMITED', '*/15 * * * *')
+  .sftp({
+    connection: {
+      host: 'localhost',
+      port: 22,
+    },
+    afterProcess: {
+      action: 'move',
+      directory: '/archived',
+    },
+    directory: '/upload/',
+    encoding: 'utf8',
+    filterOptions: {
+      fileAgeMinMS: 100,
+      ignoreDotFiles: true,
+      fileSizeMinBytes: 1,
+      filenameRegex: '\\.json$',
+    },
+  })
+  .id('SFTP Scheduler')
+  .logLevel('debug')
+  .ack()
+  // .filter(msg => msg.get('resourceType') !== 'Patient')
+  .transform((msg) => {
+    return msg.set('C0', 'Baz').delete('D').delete('3+');
+  })
+  .route((r) => r.store({ file: { extension: '.csv', format: 'string' } }))
+  .run();
