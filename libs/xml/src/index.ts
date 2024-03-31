@@ -11,7 +11,6 @@ import { IMsg, isMsg } from '@gofer-engine/message-type';
 
 import { parseXMLPath } from './parseXMLPath';
 import { getJson } from "./getJson";
-import { domSetAttribute } from "xslt-processor/dom";
 
 // export { parseXMLPath };
 
@@ -215,7 +214,7 @@ export class XMLMsg implements IXMLMsg {
   set = (
     path?: string,
     value?: Document | SelectReturnType | SelectSingleReturnType | SelectSingleReturnType[] | Record<string, string>,
-    parse = false,
+    _parse = false,
     ns?: Record<string, string> | boolean,
   ): IXMLMsg => {
     // WIP:
@@ -242,20 +241,20 @@ export class XMLMsg implements IXMLMsg {
               }
             }
           }
-          console.log(
-            e.toString(),
-            typeof e,
-            e.constructor.name,
-            e.nodeValue,
-          )
+          // console.log(
+          //   e.toString(),
+          //   typeof e,
+          //   e.constructor.name,
+          //   e.nodeValue,
+          // )
         })
         if (typeof value === 'object' && value !== null) {
-          for (const [k, v] of Object.entries(value)) {
+          for (const [_k, _v] of Object.entries(value)) {
             const e = existing?.[0]
-            console.log(e, e.constructor.name, e.toString())
+            // console.log(e, e.constructor.name, e.toString())
             if (e.constructor.name === 'Attr') {
-              const p = e.parentElement
-              console.log(p, p.constructor.name, p.toString())
+              const _p = e.parentElement
+              // console.log(p, p.constructor.name, p.toString())
             }
             // const attr = this._doc.createAttribute(k);
             // attr.textContent = v;
@@ -267,17 +266,20 @@ export class XMLMsg implements IXMLMsg {
 
     return this;
   };
-  delete = (path: string): IXMLMsg => {
+  delete = (_path: string): IXMLMsg => {
     // FIXME! Implement this with xPath and Document API
-    return this;
+    throw new Error('XML support for delete is not yet implemented.');
+    // return this;
   };
-  copy = (path: string, toPath: string): IXMLMsg => {
+  copy = (_path: string, _toPath: string): IXMLMsg => {
     // FIXME! Implement this with xPath and Document API
-    return this;
+    throw new Error('XML support for copy is not yet implemented.');
+    // return this;
   };
-  move = (fromPath: string, toPath: string): IXMLMsg => {
+  move = (_fromPath: string, _toPath: string): IXMLMsg => {
     // FIXME! Implement this with xPath and Document API
-    return this;
+    throw new Error('XML support for move is not yet implemented.');
+    // return this;
   };
 
   private _jsonify = () => {
@@ -325,10 +327,11 @@ export class XMLMsg implements IXMLMsg {
   getJson = <R extends Element>(path?: string) => {
     return getJson(this.json(true), parseXMLPath(path)) as R;
   };
-  setJSON = (path: string, msg: Element) => {
+  setJSON = (_path: string, _msg: Element) => {
     // FIXME: Implement this with path and non-compact json
     // this.setMsg(js2xml(msg, { compact: false }))
-    return this;
+    throw new Error('XML support for setJSON is not yet implemented.');
+    // return this;
   };
   // getJs uses compact json, and does NOT support xPath-like paths.
   getJs = <R extends ElementCompact>(path?: string) => {
@@ -383,11 +386,12 @@ export class XMLMsg implements IXMLMsg {
   };
 
   map = (
-    path: string,
-    v: string | Record<string, string> | string[] | (<T>(v: T, i: number) => T),
-    { iteration }: { iteration?: boolean | undefined } = {},
+    _path: string,
+    _v: string | Record<string, string> | string[] | (<T>(v: T, i: number) => T),
+    { iteration: _iteration }: { iteration?: boolean | undefined } = {},
   ): IXMLMsg => {
     // FIXME: Implement this with xPath and Document API
+    throw new Error('XML support for map is not yet implemented.');
     // if (typeof this._msg !== 'object') {
     //   throw new Error('Cannot map path on non-object msg');
     // }
@@ -419,14 +423,15 @@ export class XMLMsg implements IXMLMsg {
     // } else {
     //   throw new Error('Cannot map non-array');
     // }
-    return this;
+    // return this;
   };
   setIteration = <Y>(
-    path: string,
-    map: Y[] | ((val: Y, i: number) => Y),
-    { allowLoop }: { allowLoop: boolean } = { allowLoop: true },
+    _path: string,
+    _map: Y[] | ((val: Y, i: number) => Y),
+    { allowLoop: _allowLoop }: { allowLoop: boolean } = { allowLoop: true },
   ): IXMLMsg => {
     // FIXME: Implement this with xPath and Document API
+    throw new Error('XML support for setIteration is not yet implemented.');
     // if (typeof this._msg !== 'object') {
     //   throw new Error('Cannot map path on non-object msg');
     // }
@@ -446,7 +451,7 @@ export class XMLMsg implements IXMLMsg {
     // } else {
     //   throw new Error('Cannot map non-array, non-function');
     // }
-    return this;
+    // return this;
   };
 }
 
