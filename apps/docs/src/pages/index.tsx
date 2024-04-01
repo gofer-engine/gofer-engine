@@ -36,7 +36,7 @@ export default function Home(): JSX.Element {
   return (
     <Layout
       title={`Hello from ${siteConfig.title}`}
-      description=siteConfig.tagline
+      description={siteConfig.tagline}
     >
       <HomepageHeader />
       <main>
